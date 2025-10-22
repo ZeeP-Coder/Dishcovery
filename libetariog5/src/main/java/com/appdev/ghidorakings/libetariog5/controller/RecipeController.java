@@ -31,11 +31,11 @@ public class RecipeController {
         return recipeService.getAllRecipes();
     }
 
-    @PutMapping("/updateRecipe")
-    public RecipeEntity updateRecipe(@RequestParam int recipeId, @RequestBody RecipeEntity newRecipeDetails) {
+    @PutMapping("/updateRecipe/{recipeId}")
+    public RecipeEntity updateRecipe(@PathVariable int recipeId, @RequestBody RecipeEntity newRecipeDetails) {
         return recipeService.updateRecipe(recipeId, newRecipeDetails);
     }
-
+    
     @DeleteMapping("/deleteRecipe/{recipeId}")
     public String deleteRecipe(@PathVariable int recipeId) {
         return recipeService.deleteRecipe(recipeId);
