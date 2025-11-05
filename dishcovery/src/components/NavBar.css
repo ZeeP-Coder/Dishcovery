@@ -1,0 +1,53 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 48px;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+  font-family: "Poppins", sans-serif;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  color: #ff7043;
+  font-size: 1.3rem;
+}
+
+.brand-name {
+  margin-left: 8px;
+}
+
+.welcome {
+  background: #fff5ee;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.navbar-right a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.navbar-right a:hover,
+.navbar-right a.active {
+  color: #ff7043;
+}

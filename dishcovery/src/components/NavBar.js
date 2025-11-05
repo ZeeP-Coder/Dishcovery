@@ -1,17 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import "./NavBar.css";
 
-export default function NavBar() {
+function NavBar() {
+  const [nickname, setNickname] = useState("");
+  const location = useLocation();
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("dishcovery:user"));
+    setNickname(storedUser?.nickname || "Guest");
+  }, []);
+
   return (
-    <header className="header">
-      <nav className="nav container">
-        <div className="brand">Dishcovery <span style={{fontSize:".9rem"}}>🍽️</span></div>
-        <div className="nav-links">
-          <a href="#recipes">Home</a>
-          <a href="#recipes">Recipes</a>
-          <a href="#categories">Categories</a>
-          <a href="#favorites">Favorites</a>
+    <nav className="navbar">
+      <div className="navbar-left">
+        <div className="logo">
+          <span role="img" aria-label="logo">🍽️</span>
+          <span className="brand-name">Dishcovery</span>
         </div>
-      </nav>
-    </header>
+        <span className="welcome">Hi, {nickname}!</span>
+      </div>
+
+      <div className="navbar-right">
+        <Link to="/" className={location.pathname === "/" ? "active" : ""}>
+          Home
+        </Link>
+        <Link to="/recipes">Recipes</Link>
+        <Link to="/categories">Categories</Link>
+        <Link to="/favorites">Favorites</Link>
+        <Link to="/settings">Settings</Link>
+      </div>
+    </nav>
   );
 }
+
+export default NavBar;
