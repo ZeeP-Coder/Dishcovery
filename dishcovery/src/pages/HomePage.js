@@ -1,7 +1,9 @@
+// HomePage.js
 import React, { useEffect, useMemo, useState } from "react";
-import "../App.css"; // ✅ go up one level to reach App.css
+import "../App.css";
+import { useNavigate } from "react-router-dom"; // ✅ Add navigation
 
-// ✅ All component paths fixed (go up one folder)
+// ✅ Component imports
 import NavBar from "../components/NavBar";
 import HeroBanner from "../components/HeroBanner";
 import SearchBar from "../components/SearchBar";
@@ -22,6 +24,8 @@ function HomePage() {
       return [];
     }
   });
+
+  const navigate = useNavigate(); // ✅ allows navigation to routes
 
   // Simulate fetching dish data
   useEffect(() => {
@@ -56,15 +60,21 @@ function HomePage() {
   }, [dishes, query, cuisineFilter]);
 
   // Toggle favorite recipes
-  function toggleFav(id) {
+  const toggleFav = (id) => {
     setFavorites((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
-  }
+  };
 
   return (
     <div className="App">
-      <NavBar />
+      {/* ✅ Updated NavBar with routing buttons */}
+      <NavBar
+        onRecipes={() => navigate("/recipes")}
+        onFavorites={() => navigate("/favorites")}
+        onSettings={() => navigate("/settings")}
+      />
+
       <HeroBanner />
 
       <main className="container">

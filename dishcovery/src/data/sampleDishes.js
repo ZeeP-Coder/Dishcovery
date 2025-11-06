@@ -1,52 +1,134 @@
 const SAMPLE_DISHES = [
   {
-    id: "dish-001",
-    name: "Adobo sa Gata",
-    description: "Rich coconut adobo with tender pork belly and savory sauce.",
-    cuisine: "Filipino",
-    cookTimeMinutes: 60,
-    difficulty: "medium",
-    rating: 4.6,
-    tags: ["pork", "comfort"],
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=",
-    ingredients: [
-      { id: "i1", name: "Pork belly", quantity: "1 kg" },
-      { id: "i2", name: "Coconut milk", quantity: "400 ml" }
-    ],
-    steps: ["Sear pork until brown", "Add vinegar, soy, and simmer", "Add coconut milk and reduce"]
-  },
-  {
-    id: "dish-002",
-    name: "Sinigang na Hipon",
-    description: "Tamarind-based sour soup with shrimp and seasonal vegetables.",
-    cuisine: "Filipino",
-    cookTimeMinutes: 35,
-    difficulty: "easy",
-    rating: 4.4,
-    tags: ["seafood", "soup"],
-    image: "https://images.unsplash.com/photo-1512058564366-c9e3b7bb3d55?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=",
-    ingredients: [
-      { id: "i3", name: "Shrimp", quantity: "500 g" },
-      { id: "i4", name: "Tamarind paste", quantity: "2 tbsp" }
-    ],
-    steps: ["Boil vegetables until tender", "Add shrimp and tamarind", "Simmer until shrimp cooks through"]
-  },
-  {
-    id: "dish-003",
+    id: 1,
     name: "Spaghetti Carbonara",
-    description: "Creamy and comforting Italian pasta with bacon and cheese.",
     cuisine: "Italian",
-    cookTimeMinutes: 25,
-    difficulty: "easy",
-    rating: 4.8,
-    tags: ["pasta", "comfort"],
-    image: "https://images.unsplash.com/photo-1604908554022-9ec2a2b875d9?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=",
+    description: "Classic creamy pasta with bacon and parmesan cheese.",
     ingredients: [
-      { id: "i5", name: "Spaghetti", quantity: "400 g" },
-      { id: "i6", name: "Bacon", quantity: "150 g" }
+      { name: "Spaghetti" },
+      { name: "Eggs" },
+      { name: "Parmesan" },
+      { name: "Bacon" },
     ],
-    steps: ["Cook pasta", "Fry bacon", "Combine with eggs and cheese off heat"]
-  }
+    image: "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg",
+  },
+  {
+    id: 2,
+    name: "Sushi Platter",
+    cuisine: "Japanese",
+    description: "Assorted sushi with salmon, tuna, and shrimp.",
+    ingredients: [
+      { name: "Rice" },
+      { name: "Nori" },
+      { name: "Fish" },
+      { name: "Soy Sauce" },
+    ],
+    image: "https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg",
+  },
+  {
+    id: 3,
+    name: "Adobo",
+    cuisine: "Filipino",
+    description: "Tender pork or chicken stewed in soy sauce, vinegar, and garlic.",
+    ingredients: [
+      { name: "Soy Sauce" },
+      { name: "Vinegar" },
+      { name: "Garlic" },
+      { name: "Bay Leaf" },
+    ],
+    image: "https://salu-salo.com/wp-content/uploads/2015/04/Pork-Adobo-3.jpg",
+  },
+  {
+    id: 4,
+    name: "Kimchi Fried Rice",
+    cuisine: "Korean",
+    description: "Savory fried rice with kimchi and egg on top.",
+    ingredients: [
+      { name: "Kimchi" },
+      { name: "Rice" },
+      { name: "Egg" },
+      { name: "Gochujang" },
+    ],
+    image: "https://www.themealdb.com/images/media/meals/ssrrrs1503664277.jpg",
+  },
+  {
+    id: 5,
+    name: "Chicken Tikka Masala",
+    cuisine: "Indian",
+    description: "Grilled chicken simmered in creamy spiced tomato sauce.",
+    ingredients: [
+      { name: "Chicken" },
+      { name: "Tomato" },
+      { name: "Cream" },
+      { name: "Spices" },
+    ],
+    image: "https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg",
+  },
+  {
+    id: 6,
+    name: "Tacos al Pastor",
+    cuisine: "Mexican",
+    description: "Soft corn tortillas with marinated pork and pineapple.",
+    ingredients: [
+      { name: "Pork" },
+      { name: "Tortilla" },
+      { name: "Pineapple" },
+      { name: "Onion" },
+    ],
+    image: "https://www.themealdb.com/images/media/meals/xquakq1619787532.jpg",
+  },
+  {
+    id: 7,
+    name: "Paella Valenciana",
+    cuisine: "Spanish",
+    description: "Traditional rice dish with saffron, chicken, and seafood.",
+    ingredients: [
+      { name: "Rice" },
+      { name: "Saffron" },
+      { name: "Seafood" },
+      { name: "Peas" },
+    ],
+    image: "https://www.themealdb.com/images/media/meals/wxywrq1468235067.jpg",
+  },
+  {
+    id: 8,
+    name: "Beef Bourguignon",
+    cuisine: "French",
+    description: "Beef slow-cooked in red wine with mushrooms and bacon.",
+    ingredients: [
+      { name: "Beef" },
+      { name: "Red Wine" },
+      { name: "Mushrooms" },
+      { name: "Bacon" },
+    ],
+    image: "https://www.themealdb.com/images/media/meals/vtqxtu1511784197.jpg",
+  },
+  {
+    id: 9,
+    name: "Pad Thai",
+    cuisine: "Thai",
+    description: "Stir-fried rice noodles with shrimp, egg, and peanuts.",
+    ingredients: [
+      { name: "Rice Noodles" },
+      { name: "Shrimp" },
+      { name: "Peanuts" },
+      { name: "Bean Sprouts" },
+    ],
+    image: "https://www.themealdb.com/images/media/meals/uuuspp1468263334.jpg",
+  },
+  {
+    id: 10,
+    name: "Greek Salad",
+    cuisine: "Greek",
+    description: "Fresh salad with cucumber, tomato, feta, and olives.",
+    ingredients: [
+      { name: "Cucumber" },
+      { name: "Tomato" },
+      { name: "Feta" },
+      { name: "Olives" },
+    ],
+    image: "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg",
+  },
 ];
 
 export default SAMPLE_DISHES;
