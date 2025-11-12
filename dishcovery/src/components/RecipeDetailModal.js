@@ -38,13 +38,80 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
     setNewComment("");
   };
 
-  const steps = dish.steps || [
-    "Prepare ingredients and clean the meat.",
-    "Sauté garlic and onions until fragrant.",
-    "Add the meat and cook until lightly browned.",
-    "Add soy sauce, vinegar, and bay leaves. Simmer until tender.",
-    "Season and serve with rice.",
-  ];
+  // ✅ Simple and real steps per recipe
+  const getSteps = (name) => {
+    switch (name) {
+      case "Adobo":
+        return [
+          "Marinate meat in soy sauce, vinegar, garlic, and bay leaf for 30 minutes.",
+          "Sauté garlic and onion, then add marinated meat.",
+          "Simmer until meat is tender and sauce thickens.",
+          "Serve with steamed rice."
+        ];
+      case "Spaghetti Carbonara":
+        return [
+          "Boil spaghetti until al dente.",
+          "Cook bacon until crispy and set aside.",
+          "Mix eggs and parmesan in a bowl.",
+          "Combine pasta with bacon and sauce while warm, then serve."
+        ];
+      case "Sushi Platter":
+        return [
+          "Prepare sushi rice with vinegar seasoning.",
+          "Lay nori on bamboo mat and spread rice evenly.",
+          "Add slices of fish and roll tightly.",
+          "Slice into pieces and serve with soy sauce."
+        ];
+      case "Kimchi Fried Rice":
+        return [
+          "Sauté kimchi in oil until fragrant.",
+          "Add rice, gochujang, and stir well.",
+          "Top with a fried egg and serve hot."
+        ];
+      case "Chicken Tikka Masala":
+        return [
+          "Marinate chicken in yogurt and spices.",
+          "Grill or pan-fry the chicken until cooked.",
+          "Simmer in tomato cream sauce for 10 minutes.",
+          "Serve with rice or naan."
+        ];
+      case "Tacos al Pastor":
+        return [
+          "Marinate pork in pineapple and chili paste overnight.",
+          "Grill until golden and slice thinly.",
+          "Assemble in tortillas with onions and pineapple."
+        ];
+      case "Paella Valenciana":
+        return [
+          "Sauté chicken and seafood in olive oil.",
+          "Add rice, saffron, and broth.",
+          "Cook uncovered until rice is tender and liquid is absorbed."
+        ];
+      case "Beef Bourguignon":
+        return [
+          "Brown beef and bacon in a pot.",
+          "Add wine, broth, and herbs; simmer until tender.",
+          "Add mushrooms and onions before serving."
+        ];
+      case "Pad Thai":
+        return [
+          "Soak noodles until soft.",
+          "Stir-fry shrimp, egg, and tofu.",
+          "Add noodles, sauce, and peanuts.",
+          "Toss well and serve with lime."
+        ];
+      case "Greek Salad":
+        return [
+          "Chop cucumber, tomato, onion, and olives.",
+          "Toss with olive oil, lemon juice, and oregano.",
+          "Top with feta cheese before serving."
+        ];
+      default:
+        return ["Prepare ingredients and cook according to recipe."];
+    }
+  };
+
+  const steps = getSteps(dish.name);
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -174,8 +241,6 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
               background: "#f9f9f9",
               transition: "0.2s",
             }}
-            onFocus={(e) => (e.target.style.borderColor = "#36489e")}
-            onBlur={(e) => (e.target.style.borderColor = "#ccc")}
           />
           <button
             type="submit"
@@ -189,8 +254,6 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
               cursor: "pointer",
               transition: "0.2s",
             }}
-            onMouseEnter={(e) => (e.target.style.background = "#2e3d8f")}
-            onMouseLeave={(e) => (e.target.style.background = "#36489e")}
           >
             Post
           </button>
