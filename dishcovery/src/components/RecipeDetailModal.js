@@ -1,37 +1,74 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
+  const user = JSON.parse(localStorage.getItem("dishcovery:user")) || { nickname: "Guest" };
+
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+
+  // Load saved comments
+  useEffect(() => {
+    if (dish) {
+      const saved = JSON.parse(localStorage.getItem(`dishcovery:comments:${dish.id}`) || "[]");
+      setComments(saved);
+    }
+  }, [dish]);
+
+  // Save comments
+  useEffect(() => {
+    if (dish) {
+      localStorage.setItem(`dishcovery:comments:${dish.id}`, JSON.stringify(comments));
+    }
+  }, [comments, dish]);
+
   if (!dish) return null;
 
-  // Add default steps if not available
-  const steps = dish.steps && dish.steps.length > 0 ? dish.steps : [
-    "Prepare all ingredients and clean the meat.",
-    "Heat oil in a pan and sauté garlic and onions until fragrant.",
+  const handleAddComment = (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    const newEntry = {
+      id: Date.now(),
+      user: user.nickname,
+      content: newComment,
+      date: new Date().toLocaleString(),
+    };
+
+    setComments((prev) => [...prev, newEntry]);
+    setNewComment("");
+  };
+
+  const steps = dish.steps || [
+    "Prepare ingredients and clean the meat.",
+    "Sauté garlic and onions until fragrant.",
     "Add the meat and cook until lightly browned.",
-    "Pour in soy sauce, vinegar, water, and bay leaves. Simmer for 30–40 minutes.",
-    "Season with pepper and salt to taste. Continue cooking until sauce thickens.",
-    "Serve hot with steamed rice and enjoy!"
+    "Add soy sauce, vinegar, and bay leaves. Simmer until tender.",
+    "Season and serve with rice.",
   ];
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
+        {/* ===== HEADER ===== */}
         <div className="modal-header">
           <div>
             <h2>{dish.name}</h2>
             <div style={{ color: "#777", fontSize: ".95rem" }}>
-              {dish.cuisine} • {dish.cookTimeMinutes}m • {dish.difficulty}
+              {dish.cuisine} • {dish.cookTimeMinutes || "45"}m • {dish.difficulty || "Medium"}
             </div>
           </div>
           <div>
             <button className="fav-btn" onClick={() => toggleFav(dish.id)}>
               {isFav(dish.id) ? "★" : "☆"}
             </button>
-            <button onClick={onClose} style={{ marginLeft: 10 }}>Close</button>
+            <button onClick={onClose} style={{ marginLeft: 10 }}>
+              Close
+            </button>
           </div>
         </div>
 
-        <div className="modal-body">
+        {/* ===== BODY ===== */}
+        <div className="modal-body" style={{ paddingBottom: "100px" }}>
           <div>
             <img
               src={dish.image}
@@ -44,70 +81,120 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
                 marginBottom: 12,
               }}
             />
+
             <h3>How to Cook</h3>
             {steps.map((s, idx) => (
               <div key={idx} className="step" style={{ marginBottom: 6 }}>
                 <strong>Step {idx + 1}.</strong> {s}
               </div>
             ))}
+
+            {/* ===== COMMENTS SECTION ===== */}
+            <div style={{ marginTop: "25px" }}>
+              <h3 style={{ marginBottom: "10px" }}>Comments</h3>
+
+              {comments.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {comments.map((c) => (
+                    <div
+                      key={c.id}
+                      style={{
+                        background: "#f8f9ff",
+                        border: "1px solid #e3ebee",
+                        borderRadius: "10px",
+                        padding: "10px 14px",
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: "6px",
+                        }}
+                      >
+                        <strong style={{ color: "#36489e" }}>{c.user}</strong>
+                        <small style={{ color: "#999" }}>{c.date}</small>
+                      </div>
+                      <p style={{ margin: 0, fontSize: "0.95rem", color: "#333" }}>{c.content}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ color: "#777" }}>No comments yet. Be the first to share your thoughts!</p>
+              )}
+            </div>
           </div>
 
+          {/* ===== INGREDIENTS ===== */}
           <aside>
             <div className="ingredients">
               <h4>Ingredients</h4>
               <ul style={{ marginTop: 8 }}>
-                {dish.ingredients && dish.ingredients.length > 0 ? (
-                  dish.ingredients.map((ing, idx) => (
-                    <li key={idx}>
-                      {ing.name} {ing.quantity ? `— ${ing.quantity}` : ""}
-                    </li>
-                  ))
-                ) : (
-                  <li>No ingredients listed.</li>
-                )}
+                {dish.ingredients.map((ing, idx) => (
+                  <li key={idx}>
+                    {ing.name} {ing.quantity ? `— ${ing.quantity}` : ""}
+                  </li>
+                ))}
               </ul>
-            </div>
-
-            <div
-              style={{
-                marginTop: 12,
-                padding: 12,
-                background: "#fff",
-                borderRadius: 8,
-              }}
-            >
-              <strong>Tags</strong>
-              <div
-                style={{
-                  marginTop: 8,
-                  display: "flex",
-                  gap: 8,
-                  flexWrap: "wrap",
-                }}
-              >
-                {dish.tags && dish.tags.length > 0 ? (
-                  dish.tags.map((t) => (
-                    <span
-                      key={t}
-                      style={{
-                        fontSize: ".8rem",
-                        padding: "6px 8px",
-                        background: "#fff2ea",
-                        borderRadius: 999,
-                      }}
-                    >
-                      {t}
-                    </span>
-                  ))
-                ) : (
-                  <span style={{ fontSize: ".8rem", color: "#999" }}>
-                    No tags available
-                  </span>
-                )}
-              </div>
             </div>
           </aside>
         </div>
+
+        {/* ===== COMMENT BAR ===== */}
+        <form
+          onSubmit={handleAddComment}
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            width: "100%",
+            background: "#ffffff",
+            borderTop: "1px solid #ddd",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: "12px 20px",
+            boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
+          }}
+        >
+          <input
+            type="text"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Write a comment..."
+            style={{
+              flex: 1,
+              padding: "12px 14px",
+              borderRadius: "20px",
+              border: "1px solid #ccc",
+              outline: "none",
+              fontSize: "14px",
+              background: "#f9f9f9",
+              transition: "0.2s",
+            }}
+            onFocus={(e) => (e.target.style.borderColor = "#36489e")}
+            onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+          />
+          <button
+            type="submit"
+            style={{
+              background: "#36489e",
+              color: "white",
+              border: "none",
+              borderRadius: "20px",
+              padding: "10px 18px",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => (e.target.style.background = "#2e3d8f")}
+            onMouseLeave={(e) => (e.target.style.background = "#36489e")}
+          >
+            Post
+          </button>
+        </form>
       </div>
     </div>
   );
