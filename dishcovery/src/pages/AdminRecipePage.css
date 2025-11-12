@@ -1,0 +1,152 @@
+.admin-recipes-container {
+  padding: 30px;
+  background-color: #FFFFFF;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.admin-page-title {
+  color: #36489e;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* Card layout */
+.admin-card {
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Input styling */
+.admin-card input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #BFB9FA;
+  font-size: 16px;
+  outline: none;
+}
+
+.admin-card input:focus {
+  border: 2px solid #36489e;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: #36489e;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background-color: #BFB9FA;
+  color: #36489e;
+}
+
+.btn-accent {
+  background-color: #BFB9FA;
+  color: #36489e;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.btn-accent:hover {
+  background-color: #36489e;
+  color: #fff;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.btn-delete {
+  background-color: #d93025;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-delete:hover {
+  background-color: #a52714;
+}
+
+/* Recipe card layout */
+.recipe-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.recipe-card {
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recipe-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Edit modal */
+.edit-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.edit-modal-card {
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 16px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.edit-modal input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #BFB9FA;
+  outline: none;
+}
+
+.edit-modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

@@ -1,0 +1,76 @@
+/* Container uses auto-layout (flex) for centering */
+.admin-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #FFFFFF; /* Dishcovery background */
+}
+
+/* Card frame with padding and shadow */
+.admin-login-card {
+  width: 360px;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Auto-layout spacing */
+  align-items: center;
+}
+
+/* Title */
+.admin-login-title {
+  color: #36489e; /* Primary color */
+  font-size: 24px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+/* Form layout */
+.admin-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* spacing between inputs/buttons */
+  width: 100%;
+}
+
+/* Input styling */
+.admin-input {
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #BFB9FA; /* Accent color border */
+  font-size: 16px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.admin-input:focus {
+  border: 2px solid #36489e; /* Primary focus */
+}
+
+/* Login button */
+.admin-login-button {
+  padding: 12px 15px;
+  border-radius: 8px;
+  background-color: #36489e; /* Primary color */
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.admin-login-button:hover {
+  background-color: #BFB9FA; /* Accent hover */
+  color: #36489e;
+}
+
+/* Error text */
+.admin-error {
+  color: #d93025; /* Delete color */
+  font-size: 14px;
+  text-align: center;
+}

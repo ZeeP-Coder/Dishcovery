@@ -1,18 +1,43 @@
 import React, { useState, useEffect } from "react";
 
 export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
-  const user = JSON.parse(localStorage.getItem("dishcovery:user")) || { nickname: "Guest" };
+  const user = JSON.parse(localStorage.getItem("dishcovery:user")) || { id: 1, nickname: "Guest" };
 
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
+  const [hasRated, setHasRated] = useState(false);
 
-  // Load saved comments
+  // Load saved comments + rating
   useEffect(() => {
     if (dish) {
-      const saved = JSON.parse(localStorage.getItem(`dishcovery:comments:${dish.id}`) || "[]");
-      setComments(saved);
+      const savedComments = JSON.parse(localStorage.getItem(`dishcovery:comments:${dish.id}`) || "[]");
+      const savedRatings = JSON.parse(localStorage.getItem(`dishcovery:ratings`) || "[]");
+
+      setComments(savedComments);
+
+      // Get all ratings for this dish
+      const recipeRatings = savedRatings.filter(r => r.recipe_id === dish.id);
+      if (recipeRatings.length > 0) {
+        const avg = recipeRatings.reduce((a, b) => a + b.score, 0) / recipeRatings.length;
+        setAverageRating(avg.toFixed(1));
+      } else {
+        setAverageRating(0);
+      }
+
+      // Check if user already rated
+      const userRating = recipeRatings.find(r => r.user_id === user.id);
+      if (userRating) {
+        setRating(userRating.score);
+        setHasRated(true);
+      } else {
+        setRating(0);
+        setHasRated(false);
+      }
     }
-  }, [dish]);
+  }, [dish, user.id]);
 
   // Save comments
   useEffect(() => {
@@ -28,7 +53,9 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
     if (!newComment.trim()) return;
 
     const newEntry = {
-      id: Date.now(),
+      comment_id: Date.now(),
+      recipe_id: dish.id,
+      user_id: user.id,
       user: user.nickname,
       content: newComment,
       date: new Date().toLocaleString(),
@@ -38,7 +65,34 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
     setNewComment("");
   };
 
-  // ✅ Simple and real steps per recipe
+  // Handle one-time rating per user
+  const handleRating = (value) => {
+    if (hasRated) {
+      alert("You have already rated this recipe.");
+      return;
+    }
+
+    const savedRatings = JSON.parse(localStorage.getItem("dishcovery:ratings") || "[]");
+
+    const newRating = {
+      rating_id: Date.now(),
+      user_id: user.id,
+      recipe_id: dish.id,
+      score: value,
+    };
+
+    const updatedRatings = [...savedRatings, newRating];
+    localStorage.setItem("dishcovery:ratings", JSON.stringify(updatedRatings));
+
+    const recipeRatings = updatedRatings.filter(r => r.recipe_id === dish.id);
+    const avg = recipeRatings.reduce((a, b) => a + b.score, 0) / recipeRatings.length;
+
+    setRating(value);
+    setAverageRating(avg.toFixed(1));
+    setHasRated(true);
+  };
+
+  // Realistic short steps
   const getSteps = (name) => {
     switch (name) {
       case "Adobo":
@@ -46,68 +100,16 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
           "Marinate meat in soy sauce, vinegar, garlic, and bay leaf for 30 minutes.",
           "Sauté garlic and onion, then add marinated meat.",
           "Simmer until meat is tender and sauce thickens.",
-          "Serve with steamed rice."
+          "Serve with steamed rice.",
         ];
       case "Spaghetti Carbonara":
         return [
-          "Boil spaghetti until al dente.",
-          "Cook bacon until crispy and set aside.",
-          "Mix eggs and parmesan in a bowl.",
-          "Combine pasta with bacon and sauce while warm, then serve."
-        ];
-      case "Sushi Platter":
-        return [
-          "Prepare sushi rice with vinegar seasoning.",
-          "Lay nori on bamboo mat and spread rice evenly.",
-          "Add slices of fish and roll tightly.",
-          "Slice into pieces and serve with soy sauce."
-        ];
-      case "Kimchi Fried Rice":
-        return [
-          "Sauté kimchi in oil until fragrant.",
-          "Add rice, gochujang, and stir well.",
-          "Top with a fried egg and serve hot."
-        ];
-      case "Chicken Tikka Masala":
-        return [
-          "Marinate chicken in yogurt and spices.",
-          "Grill or pan-fry the chicken until cooked.",
-          "Simmer in tomato cream sauce for 10 minutes.",
-          "Serve with rice or naan."
-        ];
-      case "Tacos al Pastor":
-        return [
-          "Marinate pork in pineapple and chili paste overnight.",
-          "Grill until golden and slice thinly.",
-          "Assemble in tortillas with onions and pineapple."
-        ];
-      case "Paella Valenciana":
-        return [
-          "Sauté chicken and seafood in olive oil.",
-          "Add rice, saffron, and broth.",
-          "Cook uncovered until rice is tender and liquid is absorbed."
-        ];
-      case "Beef Bourguignon":
-        return [
-          "Brown beef and bacon in a pot.",
-          "Add wine, broth, and herbs; simmer until tender.",
-          "Add mushrooms and onions before serving."
-        ];
-      case "Pad Thai":
-        return [
-          "Soak noodles until soft.",
-          "Stir-fry shrimp, egg, and tofu.",
-          "Add noodles, sauce, and peanuts.",
-          "Toss well and serve with lime."
-        ];
-      case "Greek Salad":
-        return [
-          "Chop cucumber, tomato, onion, and olives.",
-          "Toss with olive oil, lemon juice, and oregano.",
-          "Top with feta cheese before serving."
+          "Boil pasta until al dente and drain.",
+          "Cook bacon until crispy, then mix with egg and cheese sauce.",
+          "Combine with hot pasta and serve immediately.",
         ];
       default:
-        return ["Prepare ingredients and cook according to recipe."];
+        return ["Prepare ingredients and cook according to recipe instructions."];
     }
   };
 
@@ -123,7 +125,41 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
             <div style={{ color: "#777", fontSize: ".95rem" }}>
               {dish.cuisine} • {dish.cookTimeMinutes || "45"}m • {dish.difficulty || "Medium"}
             </div>
+
+            {/* ===== RATING ===== */}
+            <div style={{ marginTop: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <span
+                    key={value}
+                    onMouseEnter={() => !hasRated && setHoverRating(value)}
+                    onMouseLeave={() => !hasRated && setHoverRating(0)}
+                    onClick={() => handleRating(value)}
+                    style={{
+                      cursor: hasRated ? "default" : "pointer",
+                      color:
+                        value <= (hoverRating || rating)
+                          ? "#FFD700"
+                          : "#ccc",
+                      fontSize: "1.5rem",
+                      transition: "color 0.2s",
+                    }}
+                  >
+                    ★
+                  </span>
+                ))}
+                <span style={{ color: "#36489e", fontWeight: 600 }}>
+                  {averageRating > 0 ? `${averageRating}/5` : "No ratings yet"}
+                </span>
+              </div>
+              <small style={{ color: "#666" }}>
+                {hasRated
+                  ? `You rated this ${rating} star${rating > 1 ? "s" : ""}`
+                  : "Click a star to rate this recipe"}
+              </small>
+            </div>
           </div>
+
           <div>
             <button className="fav-btn" onClick={() => toggleFav(dish.id)}>
               {isFav(dish.id) ? "★" : "☆"}
@@ -156,7 +192,7 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
               </div>
             ))}
 
-            {/* ===== COMMENTS SECTION ===== */}
+            {/* ===== COMMENTS ===== */}
             <div style={{ marginTop: "25px" }}>
               <h3 style={{ marginBottom: "10px" }}>Comments</h3>
 
@@ -164,7 +200,7 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {comments.map((c) => (
                     <div
-                      key={c.id}
+                      key={c.comment_id}
                       style={{
                         background: "#f8f9ff",
                         border: "1px solid #e3ebee",
