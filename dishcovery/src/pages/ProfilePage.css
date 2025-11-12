@@ -1,0 +1,45 @@
+.profile-center {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.profile-pic-box {
+  width: 150px;          /* fixed width */
+  height: 150px;         /* fixed height */
+  border: 2px dashed #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px auto;
+  overflow: hidden;      /* ensures image does not overflow */
+  border-radius: 10px;
+  background-color: #f4f4f4;
+}
+
+.profile-pic-img {
+  width: 100%;           /* fill box */
+  height: 100%;          /* fill box */
+  object-fit: cover;     /* scale image correctly */
+}
+
+.profile-no-pic {
+  color: #888;
+  font-size: 14px;
+  text-align: center;
+}
+
+.profile-pic-input {
+  display: block;
+  margin: 10px auto;
+}
+
+.btn-remove-pic {
+  display: block;
+  margin: 10px auto;
+  background-color: #d93025;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}

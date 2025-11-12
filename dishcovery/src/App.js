@@ -3,13 +3,14 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import SettingsPage from "./pages/SettingsPage";
+import ProfilePage from "./pages/ProfilePage";
 import RecipesPage from "./pages/RecipesPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import MyRecipesPage from "./pages/MyRecipesPage"; 
 import CreateRecipePage from "./pages/CreateRecipePage"; 
 import "./App.css";
+
 
 // ✅ Protects routes that require login
 const PrivateRoute = ({ children }) => {
@@ -55,13 +56,14 @@ function App() {
           }
         />
         <Route
-          path="/settings"
+          path="/profile"
           element={
             <PrivateRoute>
-              <SettingsPage />
+              <ProfilePage />
             </PrivateRoute>
           }
         />
+
 
         {/* 👤 User Recipe Management */}
         <Route

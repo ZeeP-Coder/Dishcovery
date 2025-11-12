@@ -72,7 +72,7 @@ function HomePage() {
       <NavBar
         onRecipes={() => navigate("/recipes")}
         onFavorites={() => navigate("/favorites")}
-        onSettings={() => navigate("/settings")}
+        onProfile={() => navigate("/settings")}
       />
 
       <HeroBanner />

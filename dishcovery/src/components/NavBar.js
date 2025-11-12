@@ -28,7 +28,7 @@ function NavBar() {
         <Link to="/recipes">Recipes</Link>
         <Link to="/categories">Categories</Link>
         <Link to="/favorites">Favorites</Link>
-        <Link to="/settings">Settings</Link>
+        <Link to="/profile">Profile</Link>
       </div>
     </nav>
   );
