@@ -18,7 +18,7 @@ function LoginPage() {
     }
 
     if (stored.email === email && stored.password === password) {
-      alert(`Welcome back, ${stored.nickname}!`);
+      alert(`Welcome, ${stored.nickname}!`);
       navigate("/");
     } else {
       alert("Invalid email or password.");

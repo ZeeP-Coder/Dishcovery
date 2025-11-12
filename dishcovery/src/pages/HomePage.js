@@ -1,7 +1,7 @@
 // HomePage.js
 import React, { useEffect, useMemo, useState } from "react";
 import "../App.css";
-import { useNavigate } from "react-router-dom"; // ✅ Add navigation
+import { useNavigate } from "react-router-dom";
 
 // ✅ Component imports
 import NavBar from "../components/NavBar";
@@ -25,7 +25,7 @@ function HomePage() {
     }
   });
 
-  const navigate = useNavigate(); // ✅ allows navigation to routes
+  const navigate = useNavigate();
 
   // Simulate fetching dish data
   useEffect(() => {
@@ -68,7 +68,7 @@ function HomePage() {
 
   return (
     <div className="App">
-      {/* ✅ Updated NavBar with routing buttons */}
+      {/* NavBar with routing */}
       <NavBar
         onRecipes={() => navigate("/recipes")}
         onFavorites={() => navigate("/favorites")}
@@ -90,7 +90,17 @@ function HomePage() {
         </div>
 
         <section className="section">
-          <h2 className="section-title">Recipes</h2>
+          {/* Header + Add Recipe Button */}
+          <div className="section-header">
+            <h2 className="section-title">Recipes</h2>
+            <button
+              className="btn-primary create-recipe-btn"
+              onClick={() => navigate("/create-recipe")}
+            >
+              + Add Recipe
+            </button>
+          </div>
+
           <RecipeGrid
             dishes={filtered}
             onOpen={setSelected}
