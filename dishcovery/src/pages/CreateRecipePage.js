@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import NavBar from "../components/NavBar";
 import "./CreateRecipePage.css";
 
 export default function CreateRecipePage() {
@@ -13,14 +14,12 @@ export default function CreateRecipePage() {
   const [ingredient, setIngredient] = useState("");
   const [error, setError] = useState("");
 
-  // Add ingredient to list
   const addIngredient = () => {
-    if (ingredient.trim() === "") return;
+    if (!ingredient.trim()) return;
     setRecipe({ ...recipe, ingredients: [...recipe.ingredients, ingredient] });
     setIngredient("");
   };
 
-  // Save recipe
   const handleSave = () => {
     if (!recipe.name || !recipe.instructions) {
       setError("Please fill all required fields.");
@@ -41,45 +40,62 @@ export default function CreateRecipePage() {
   };
 
   return (
-    <div className="create-recipe-container">
-      <h2>Create New Recipe</h2>
-      {error && <p className="error">{error}</p>}
+    <div className="create-recipe-page">
+      <NavBar />
+      <div className="create-recipe-container">
+        <div className="header-row">
+          <button className="back-btn" onClick={() => navigate("/")}>
+            ← Home
+          </button>
+          <h2>Create New Recipe</h2>
+        </div>
 
-      <input
-        type="text"
-        placeholder="Recipe Name"
-        value={recipe.name}
-        onChange={(e) => setRecipe({ ...recipe, name: e.target.value })}
-      />
-      <textarea
-        placeholder="Instructions"
-        value={recipe.instructions}
-        onChange={(e) => setRecipe({ ...recipe, instructions: e.target.value })}
-      />
-      <input
-        type="text"
-        placeholder="Image URL (optional)"
-        value={recipe.image}
-        onChange={(e) => setRecipe({ ...recipe, image: e.target.value })}
-      />
+        {error && <p className="error">{error}</p>}
 
-      <div className="ingredient-section">
         <input
           type="text"
-          placeholder="Add Ingredient"
-          value={ingredient}
-          onChange={(e) => setIngredient(e.target.value)}
+          placeholder="Recipe Name"
+          value={recipe.name}
+          onChange={(e) => setRecipe({ ...recipe, name: e.target.value })}
         />
-        <button className="btn-accent" onClick={addIngredient}>Add</button>
+
+        <textarea
+          placeholder="Instructions"
+          value={recipe.instructions}
+          onChange={(e) => setRecipe({ ...recipe, instructions: e.target.value })}
+        />
+
+        <input
+          type="text"
+          placeholder="Image URL (optional)"
+          value={recipe.image}
+          onChange={(e) => setRecipe({ ...recipe, image: e.target.value })}
+        />
+
+        <div className="ingredient-section">
+          <input
+            type="text"
+            placeholder="Add Ingredient"
+            value={ingredient}
+            onChange={(e) => setIngredient(e.target.value)}
+          />
+          <button className="btn-accent" onClick={addIngredient}>
+            Add
+          </button>
+        </div>
+
+        {recipe.ingredients.length > 0 && (
+          <ul className="ingredient-list">
+            {recipe.ingredients.map((ing, index) => (
+              <li key={index}>{ing}</li>
+            ))}
+          </ul>
+        )}
+
+        <button className="btn-primary save-btn" onClick={handleSave}>
+          Save Recipe
+        </button>
       </div>
-
-      <ul className="ingredient-list">
-        {recipe.ingredients.map((ing, index) => (
-          <li key={index}>{ing}</li>
-        ))}
-      </ul>
-
-      <button className="btn-primary" onClick={handleSave}>Save Recipe</button>
     </div>
   );
 }
