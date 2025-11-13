@@ -1,35 +1,55 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
-
+ 
 function RegisterPage() {
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-
+ 
+  const validateEmail = (email) => {
+    // Basic email format check
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  };
+ 
   const handleRegister = (e) => {
     e.preventDefault();
-
-    if (password !== confirm) {
-      alert("Passwords do not match!");
+    setError("");
+ 
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address.");
       return;
     }
-
+ 
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+ 
+    if (password !== confirm) {
+      setError("Passwords do not match!");
+      return;
+    }
+ 
     const userData = { nickname, email, password };
     localStorage.setItem("dishcovery:user", JSON.stringify(userData));
     localStorage.setItem("dishcovery:nickname", nickname);
-
+ 
     alert("Registration successful! Please log in.");
     navigate("/login");
   };
-
+ 
   return (
     <div className="register-container">
       <div className="register-box">
         <h2>Create Account</h2>
         <form onSubmit={handleRegister}>
+          {error && <p className="error-message">{error}</p>}
+ 
           <input
             type="text"
             placeholder="Nickname"
@@ -46,7 +66,7 @@ function RegisterPage() {
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Password (min 6 characters)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -59,11 +79,14 @@ function RegisterPage() {
             required
           />
           <button type="submit">Sign Up</button>
-          <p>Already have an account? <a href="/login">Login here</a></p>
+          <p>
+            Already have an account?{" "}
+            <a href="/login">Login here</a>
+          </p>
         </form>
       </div>
     </div>
   );
 }
-
+ 
 export default RegisterPage;
