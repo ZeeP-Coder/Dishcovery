@@ -29,6 +29,7 @@ function NavBar() {
         <Link to="/categories">Categories</Link>
         <Link to="/favorites">Favorites</Link>
         <Link to="/profile">Profile</Link>
+        <Link to="/my-recipes">My Recipes</Link>
       </div>
     </nav>
   );
