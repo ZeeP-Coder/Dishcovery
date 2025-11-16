@@ -6,15 +6,12 @@ import "../App.css"; // make sure CSS is included
 function SettingsPage() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("dishcovery:user"));
-  const [myRecipes, setMyRecipes] = useState([]);
   const [profilePic, setProfilePic] = useState(
     localStorage.getItem("dishcovery:profilePic") || ""
   );
 
   useEffect(() => {
-    const allRecipes = JSON.parse(localStorage.getItem("dishcovery:recipes") || "[]");
-    const userRecipes = allRecipes.filter(r => r.user === user?.email);
-    setMyRecipes(userRecipes);
+    // Placeholder if you want to fetch user recipes later
   }, [user?.email]);
 
   const handleLogout = () => {
@@ -73,31 +70,6 @@ function SettingsPage() {
           <div className="profile-details">
             <p><strong>Nickname:</strong> {user?.nickname || "Nickname"}</p>
             <p><strong>Email:</strong> {user?.email || "Email"}</p>
-          </div>
-        </div>
-
-        {/* My Recipes Section */}
-        <div className="my-recipes-section">
-          <h2>My Recipes</h2>
-          <button
-            className="btn-add-recipe"
-            onClick={() => navigate("/create-recipe")}
-          >
-            + Add Recipe
-          </button>
-
-          {myRecipes.length === 0 && <p>You haven't added any recipes yet.</p>}
-          <div className="recipes-list">
-            {myRecipes.map(recipe => (
-              <div key={recipe.id} className="recipe-card">
-                {recipe.image && <img src={recipe.image} alt={recipe.name} className="recipe-img" />}
-                <div className="recipe-info">
-                  <h4>{recipe.name}</h4>
-                  <p><strong>Ingredients:</strong> {recipe.ingredients}</p>
-                  <p><strong>Instructions:</strong> {recipe.instructions}</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
 

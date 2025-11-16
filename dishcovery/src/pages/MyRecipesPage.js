@@ -9,13 +9,13 @@ export default function MyRecipesPage() {
   const currentUser = JSON.parse(localStorage.getItem("dishcovery:user"));
 
   useEffect(() => {
-    const allRecipes =
-      JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
-    const userRecipes = allRecipes.filter(
-      (r) => r.user === currentUser?.email
-    );
-    setRecipes(userRecipes);
-  }, []);
+  const allRecipes =
+    JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
+  const userRecipes = allRecipes.filter(
+    (r) => r.user === currentUser?.email
+  );
+  setRecipes(userRecipes);
+}, [currentUser?.email]);
 
   const handleDelete = (id) => {
     const allRecipes =
