@@ -447,3 +447,34 @@ body, html, #root {
 .btn-logout:hover {
   background-color: #b9291f;
 }
+
+/* ----------------------------------------------------------
+   ADD RECIPES BUTTON
+---------------------------------------------------------- */
+
+.create-recipe-btn {
+  background: #ff7f50;        /* orange */
+  color: white;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.create-recipe-btn:hover {
+  background: #ff9569;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* add space under the Recipes header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
