@@ -235,11 +235,12 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
             <div className="ingredients">
               <h4>Ingredients</h4>
               <ul style={{ marginTop: 8 }}>
-                {dish.ingredients.map((ing, idx) => (
-                  <li key={idx}>
-                    {ing.name} {ing.quantity ? `— ${ing.quantity}` : ""}
-                  </li>
-                ))}
+                {(dish.ingredients || []).map((ing, idx) => (
+                    <li key={idx}>
+                      {typeof ing === "string" ? ing : ing.name} {ing?.quantity ? `— ${ing.quantity}` : ""}
+                    </li>
+                  ))}
+
               </ul>
             </div>
           </aside>

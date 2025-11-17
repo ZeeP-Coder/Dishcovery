@@ -1,22 +1,16 @@
-// HomePage.js
+// HomePage.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import "../App.css";
 import { useNavigate } from "react-router-dom";
-
-// ✅ Component imports
 import NavBar from "../components/NavBar";
-import HeroBanner from "../components/HeroBanner";
-import SearchBar from "../components/SearchBar";
-import FilterBar from "../components/FilterBar";
 import RecipeGrid from "../components/RecipeGrid";
 import RecipeDetailModal from "../components/RecipeDetailModal";
 import SAMPLE_DISHES from "../data/sampleDishes";
+import "./HomePage.css";
 
-function HomePage() {
-  const [dishes, setDishes] = useState([]);
-  const [query, setQuery] = useState("");
-  const [cuisineFilter, setCuisineFilter] = useState("All");
+export default function HomePage() {
+  const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
+  const [search, setSearch] = useState("");
   const [favorites, setFavorites] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("dishcovery:favs") || "[]");
@@ -25,104 +19,82 @@ function HomePage() {
     }
   });
 
-  const navigate = useNavigate();
+  const [userRecipes, setUserRecipes] = useState([]);
 
-  // Simulate fetching dish data
   useEffect(() => {
-    setTimeout(() => {
-      setDishes(SAMPLE_DISHES);
-    }, 150);
+    const saved = JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
+    setUserRecipes(saved);
   }, []);
 
-  // Save favorites to localStorage
-  useEffect(() => {
-    localStorage.setItem("dishcovery:favs", JSON.stringify(favorites));
-  }, [favorites]);
+  // normalize helper
+  const normalizeRecipe = (r) => ({
+    id: r.id,
+    name: r.name || "Untitled",
+    image: r.image || "",
+    cuisine: r.cuisine || "Other",
+    ingredients: Array.isArray(r.ingredients)
+      ? r.ingredients.map((i) => (typeof i === "string" ? { name: i } : i))
+      : [],
+    instructions: r.instructions || "",
+    cookTimeMinutes: r.cookTimeMinutes || 45,
+    difficulty: r.difficulty || "Medium",
+    isUserMade: !!r.user,
+    original: r,
+  });
 
-  // Extract unique cuisines
-  const cuisines = useMemo(() => {
-    const set = new Set(dishes.map((d) => d.cuisine));
-    return ["All", ...Array.from(set)];
-  }, [dishes]);
+  const allDishes = useMemo(() => {
+    const userNorm = userRecipes.map(normalizeRecipe);
+    const sampleNorm = SAMPLE_DISHES.map(normalizeRecipe);
+    // Optionally put user recipes first or last — we'll put newest first
+    // sort user recipes by id (timestamp)
+    userNorm.sort((a, b) => (b.id || 0) - (a.id || 0));
+    return [...sampleNorm, ...userNorm];
+  }, [userRecipes]);
 
-  // Filter dishes by search query and cuisine
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return dishes.filter((d) => {
-      if (cuisineFilter !== "All" && d.cuisine !== cuisineFilter) return false;
-      if (!q) return true;
-      return (
-        d.name.toLowerCase().includes(q) ||
-        d.description.toLowerCase().includes(q) ||
-        d.ingredients.some((i) => i.name.toLowerCase().includes(q))
-      );
+  const filteredDishes = useMemo(() => {
+    const s = search.trim().toLowerCase();
+    if (!s) return allDishes;
+    return allDishes.filter((d) => {
+      if (d.name.toLowerCase().includes(s)) return true;
+      if (d.cuisine.toLowerCase().includes(s)) return true;
+      if (d.instructions && d.instructions.toLowerCase().includes(s)) return true;
+      // ingredients
+      if (Array.isArray(d.ingredients)) {
+        if (d.ingredients.some((i) => (i?.name || "").toLowerCase().includes(s)))
+          return true;
+      }
+      return false;
     });
-  }, [dishes, query, cuisineFilter]);
+  }, [search, allDishes]);
 
-  // Toggle favorite recipes
-  const toggleFav = (id) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  };
+  // Toggle favorite
+  function toggleFav(id) {
+    setFavorites((prev) => {
+      const updated = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      localStorage.setItem("dishcovery:favs", JSON.stringify(updated));
+      return updated;
+    });
+  }
 
   return (
     <div className="App">
-      {/* NavBar with routing */}
-      <NavBar
-        onRecipes={() => navigate("/recipes")}
-        onFavorites={() => navigate("/favorites")}
-        onProfile={() => navigate("/settings")}
-      />
-
-      <HeroBanner />
+      <NavBar />
 
       <main className="container">
-        <div className="controls-row">
-          <SearchBar value={query} onChange={setQuery} />
-          <div className="right-controls">
-            <FilterBar
-              cuisines={cuisines}
-              selected={cuisineFilter}
-              onSelect={setCuisineFilter}
-            />
-          </div>
-        </div>
+        <h2 className="section-title">Discover Recipes</h2>
 
-        <section className="section">
-          {/* Header + Add Recipe Button */}
-          <div className="section-header">
-            <h2 className="section-title">Recipes</h2>
+        <input
+          type="text"
+          placeholder="Search recipes..."
+          className="search-bar"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
 
-            <button
-              className="btn-primary create-recipe-btn"
-              onClick={() => navigate("/create-recipe")}
-            >
-              + Add Recipe
-            </button>
-          </div>
-
-          <RecipeGrid
-            dishes={filtered}
-            onOpen={setSelected}
-            favorites={favorites}
-            toggleFav={toggleFav}
-          />
-        </section>
+        <RecipeGrid dishes={filteredDishes} onOpen={setSelected} favorites={favorites} toggleFav={toggleFav} />
       </main>
 
-      <footer className="footer">
-        © {new Date().getFullYear()} Dishcovery • Built with ❤️
-      </footer>
-
-      <RecipeDetailModal
-        dish={selected}
-        onClose={() => setSelected(null)}
-        isFav={(id) => favorites.includes(id)}
-        toggleFav={toggleFav}
-      />
+      <RecipeDetailModal dish={selected} onClose={() => setSelected(null)} isFav={(id) => favorites.includes(id)} toggleFav={toggleFav} />
     </div>
   );
 }
-
-export default HomePage;

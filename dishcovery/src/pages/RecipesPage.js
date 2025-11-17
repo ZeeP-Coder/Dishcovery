@@ -17,15 +17,40 @@ function RecipesPage() {
     }
   });
 
+  const [userRecipes, setUserRecipes] = useState([]);
+
+  // Load user-added recipes
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
+    setUserRecipes(saved);
+  }, []);
+
   // Extract ?filter=<CuisineName>
   const params = new URLSearchParams(location.search);
   const category = params.get("filter") || "All";
 
-  // Filter recipes based on selected category
+  // Merge sample dishes + user-added dishes
+  const allDishes = useMemo(() => {
+    const merged = [
+      ...SAMPLE_DISHES,
+      ...userRecipes.map((r) => ({
+        id: r.id,
+        name: r.name,
+        image: r.image,
+        cuisine: r.cuisine,
+        ingredients: r.ingredients,
+        instructions: r.instructions,
+        isUserMade: true, // so you know where it came from (optional)
+      })),
+    ];
+    return merged;
+  }, [userRecipes]);
+
+  // Filter recipes
   const dishes = useMemo(() => {
-    if (category === "All") return SAMPLE_DISHES;
-    return SAMPLE_DISHES.filter((d) => d.cuisine === category);
-  }, [category]);
+    if (category === "All") return allDishes;
+    return allDishes.filter((d) => d.cuisine === category);
+  }, [category, allDishes]);
 
   // Toggle favorite
   function toggleFav(id) {
@@ -53,7 +78,7 @@ function RecipesPage() {
             {category === "All" ? "All Recipes" : `${category} Recipes`}
           </h2>
 
-          {/* Replace Back with Clear Filter */}
+          {/* Clear Filter */}
           {category !== "All" && (
             <button
               onClick={() => navigate("/recipes?filter=All")}
