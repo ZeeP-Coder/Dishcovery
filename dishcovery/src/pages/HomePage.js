@@ -5,7 +5,7 @@ import NavBar from "../components/NavBar";
 import RecipeGrid from "../components/RecipeGrid";
 import RecipeDetailModal from "../components/RecipeDetailModal";
 import SAMPLE_DISHES from "../data/sampleDishes";
-import "./HomePage.css";
+import "../App.css";
 
 export default function HomePage() {
   const navigate = useNavigate();
