@@ -87,8 +87,8 @@ function SettingsPage() {
           </button>
         </div>
       </div>
-    </div>
-  );
+      </div>
+    );
 }
 
 export default SettingsPage;
