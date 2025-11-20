@@ -1,4 +1,6 @@
-/* Entire Profile Section Centered in a Card */
+/* ProfilePage.css */
+
+/* Container Card */
 .settings-container {
   max-width: 500px;
   margin: 30px auto;
@@ -6,34 +8,33 @@
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
 }
 
 /* Profile Header */
 .profile-title {
-  text-align: center;
   font-size: 28px;
-  color: #ff7043;       /* matches your theme */
-  margin-bottom: 20px;
+  color: #ff7043;
   font-weight: 700;
+  margin-bottom: 20px;
 }
 
-/* Profile Box */
+/* Profile Picture Box */
 .profile-center {
   text-align: center;
 }
 
-/* Profile Picture */
 .profile-pic-box {
   width: 150px;
   height: 150px;
-  border-radius: 50%;               /* circle for nice UI */
+  border-radius: 50%;
   overflow: hidden;
   background-color: #f4f4f4;
   border: 3px solid #d3d3d3;
-  margin: 0 auto 15px auto;
+  margin: 0 auto 15px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
 .profile-pic-img {
@@ -53,7 +54,7 @@
   display: block;
 }
 
-/* Remove Button */
+/* Remove Picture Button */
 .btn-remove-pic {
   margin-top: 8px;
   background-color: #d93025;
@@ -90,7 +91,7 @@
 }
 
 .btn-logout {
-  background-color: #36489e;
+  background-color: #ff7043;
   color: white;
   padding: 10px 20px;
   border-radius: 10px;
@@ -101,5 +102,5 @@
 }
 
 .btn-logout:hover {
-  background-color: #2a357a;
+  background-color: #ff7043;
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
-import "../App.css"; // make sure CSS is included
+import "./ProfilePage.css";
 
 function SettingsPage() {
   const navigate = useNavigate();
@@ -46,21 +46,28 @@ function SettingsPage() {
         <div className="profile-center">
           <h1 className="profile-title">PROFILE</h1>
 
-          <div className="profile-pic-box">
+          {/* Profile Picture Box (clickable) */}
+          <div
+            className="profile-pic-box"
+            onClick={() => document.getElementById("profileInput").click()}
+          >
             {profilePic ? (
               <img src={profilePic} alt="Profile" className="profile-pic-img" />
             ) : (
-              <div className="profile-no-pic">No Profile Picture</div>
+              <div className="profile-no-pic">Click to upload</div>
             )}
           </div>
 
+          {/* Hidden File Input */}
           <input
             type="file"
             accept="image/*"
+            id="profileInput"
             onChange={handleProfilePicChange}
-            className="profile-pic-input"
+            style={{ display: "none" }}
           />
 
+          {/* Remove Picture Button */}
           {profilePic && (
             <button className="btn-remove-pic" onClick={handleRemoveProfilePic}>
               Remove Picture
