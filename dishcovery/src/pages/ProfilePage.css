@@ -1,40 +1,32 @@
-/* ProfilePage.css */
-
-/* Container Card */
-.settings-container {
-  max-width: 500px;
+/* Profile Container */
+.profile-container {
+  max-width: 450px;
   margin: 30px auto;
-  padding: 25px;
+  padding: 20px;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   text-align: center;
 }
 
-/* Profile Header */
 .profile-title {
-  font-size: 28px;
+  font-size: 26px;
   color: #ff7043;
   font-weight: 700;
   margin-bottom: 20px;
 }
 
-/* Profile Picture Box */
-.profile-center {
-  text-align: center;
-}
-
 .profile-pic-box {
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   overflow: hidden;
+  margin: 0 auto 10px;
   background-color: #f4f4f4;
   border: 3px solid #d3d3d3;
-  margin: 0 auto 15px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
 .profile-pic-img {
@@ -48,21 +40,29 @@
   font-size: 14px;
 }
 
-/* File Input */
-.profile-pic-input {
-  margin: 12px auto;
-  display: block;
+.profile-details {
+  margin-top: 20px;
+  text-align: left;
+  background-color: #f7f7f7;
+  padding: 15px 18px;
+  border-radius: 12px;
 }
 
-/* Remove Picture Button */
+.profile-details p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+/* File input button */
 .btn-remove-pic {
-  margin-top: 8px;
-  background-color: #d93025;
+  margin-top: 10px;
+  background-color: #ff7f50;
   color: white;
   border: none;
-  padding: 7px 15px;
+  padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
+  font-size: 14px;
   transition: 0.2s;
 }
 
@@ -70,28 +70,71 @@
   background-color: #b7281d;
 }
 
-/* User Info Section */
-.profile-details {
+.file-name {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #555;
+}
+
+/* Password Section */
+.password-section {
   margin-top: 25px;
-  padding: 15px 18px;
-  border-radius: 12px;
-  background: #f7f7f7;
-  text-align: left;
 }
 
-.profile-details p {
-  font-size: 16px;
-  margin: 8px 0;
+.password-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ff7043;
+  margin-bottom: 12px;
 }
 
-/* Logout Button */
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.password-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.password-row input {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.password-update-row input {
+  flex: 1;
+}
+
+.btn-change-password {
+  padding: 10px 18px;
+  background-color: #ff7f50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-change-password:hover {
+  background-color: #b7281d;
+}
+
+/* Logout */
 .logout-container {
-  text-align: center;
-  margin-top: 25px;
+  margin-top: 20px;
 }
 
 .btn-logout {
-  background-color: #ff7043;
+  background-color: red;
   color: white;
   padding: 10px 20px;
   border-radius: 10px;
@@ -102,5 +145,5 @@
 }
 
 .btn-logout:hover {
-  background-color: #ff7043;
+  background-color: darkred;
 }
