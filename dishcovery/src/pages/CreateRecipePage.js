@@ -1,56 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import NavBar from "../components/NavBar";
-import "./CreateRecipePage.css";
+import "../pages/CreateRecipePage.css";
 
-export default function CreateRecipePage() {
+function CreateRecipePage() {
   const navigate = useNavigate();
+
   const [recipe, setRecipe] = useState({
     name: "",
-    instructions: "",
     image: "",
     ingredients: [],
+    instructions: "",
+    category: "",
   });
-  const [ingredient, setIngredient] = useState("");
-  const [error, setError] = useState("");
 
-  const addIngredient = () => {
-    if (!ingredient.trim()) return;
-    setRecipe({ ...recipe, ingredients: [...recipe.ingredients, ingredient] });
-    setIngredient("");
-  };
+  const [ingredientInput, setIngredientInput] = useState("");
 
-  const handleSave = () => {
-    if (!recipe.name || !recipe.instructions) {
-      setError("Please fill all required fields.");
+  function addIngredient() {
+    if (!ingredientInput.trim()) return;
+    setRecipe({
+      ...recipe,
+      ingredients: [...recipe.ingredients, ingredientInput.trim()],
+    });
+    setIngredientInput("");
+  }
+
+  function removeIngredient(index) {
+    setRecipe({
+      ...recipe,
+      ingredients: recipe.ingredients.filter((_, i) => i !== index),
+    });
+  }
+
+  function handleSave() {
+    if (!recipe.name || !recipe.category || recipe.ingredients.length === 0) {
+      alert("Please complete all required fields.");
       return;
     }
 
-    const currentUser = JSON.parse(localStorage.getItem("dishcovery:user"));
-    const allRecipes = JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
-
     const newRecipe = {
       ...recipe,
+      cuisine: recipe.category, // IMPORTANT FIX 🔥 ensures filtering works
       id: Date.now(),
-      user: currentUser?.email || "unknown",
     };
 
-    localStorage.setItem("dishcovery:recipes", JSON.stringify([...allRecipes, newRecipe]));
-    navigate("/my-recipes");
-  };
+    const saved = JSON.parse(localStorage.getItem("dishcovery:recipes") || "[]");
+
+    const updated = [...saved, newRecipe];
+    localStorage.setItem("dishcovery:recipes", JSON.stringify(updated));
+
+    navigate("/myrecipes");
+  }
 
   return (
     <div className="create-recipe-page">
-      <NavBar />
       <div className="create-recipe-container">
         <div className="header-row">
-          <button className="back-btn" onClick={() => navigate("/")}>
-            ← Home
+          <button onClick={() => navigate(-1)} className="back-btn">
+            ← Back
           </button>
-          <h2>Create New Recipe</h2>
+          <h2>Create Recipe</h2>
         </div>
-
-        {error && <p className="error">{error}</p>}
 
         <input
           type="text"
@@ -59,43 +68,60 @@ export default function CreateRecipePage() {
           onChange={(e) => setRecipe({ ...recipe, name: e.target.value })}
         />
 
-        <textarea
-          placeholder="Instructions"
-          value={recipe.instructions}
-          onChange={(e) => setRecipe({ ...recipe, instructions: e.target.value })}
-        />
-
         <input
           type="text"
-          placeholder="Image URL (optional)"
+          placeholder="Image URL"
           value={recipe.image}
           onChange={(e) => setRecipe({ ...recipe, image: e.target.value })}
         />
+
+        <select
+          value={recipe.category}
+          onChange={(e) => setRecipe({ ...recipe, category: e.target.value })}
+        >
+          <option value="">Select Category</option>
+          <option value="Filipino">Filipino</option>
+          <option value="Italian">Italian</option>
+          <option value="Japanese">Japanese</option>
+          <option value="Korean">Korean</option>
+          <option value="American">American</option>
+          <option value="Chinese">Chinese</option>
+        </select>
 
         <div className="ingredient-section">
           <input
             type="text"
             placeholder="Add Ingredient"
-            value={ingredient}
-            onChange={(e) => setIngredient(e.target.value)}
+            value={ingredientInput}
+            onChange={(e) => setIngredientInput(e.target.value)}
           />
           <button className="btn-accent" onClick={addIngredient}>
             Add
           </button>
         </div>
 
-        {recipe.ingredients.length > 0 && (
-          <ul className="ingredient-list">
-            {recipe.ingredients.map((ing, index) => (
-              <li key={index}>{ing}</li>
-            ))}
-          </ul>
-        )}
+        <ul className="ingredient-list">
+          {recipe.ingredients.map((ing, i) => (
+            <li key={i} onClick={() => removeIngredient(i)}>
+              {ing}
+            </li>
+          ))}
+        </ul>
 
-        <button className="btn-primary save-btn" onClick={handleSave}>
+        <textarea
+          placeholder="Cooking Instructions"
+          value={recipe.instructions}
+          onChange={(e) =>
+            setRecipe({ ...recipe, instructions: e.target.value })
+          }
+        />
+
+        <button className="btn-primary" onClick={handleSave}>
           Save Recipe
         </button>
       </div>
     </div>
   );
 }
+
+export default CreateRecipePage;

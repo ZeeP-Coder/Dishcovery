@@ -39,15 +39,22 @@
   font-size: 1.8rem;
 }
 
-/* ONLY target inputs inside this page */
+/* Inputs & textarea */
 .create-recipe-page input,
-.create-recipe-page textarea {
+.create-recipe-page textarea,
+.create-recipe-page select.category-select {
   width: 100%;
   margin: 10px 0;
   padding: 12px;
   border-radius: 10px;
   border: 1px solid #ccc;
   font-size: 1rem;
+  background: white;
+}
+
+/* Category dropdown */
+.create-recipe-page select.category-select {
+  cursor: pointer;
 }
 
 .create-recipe-page textarea {
@@ -67,7 +74,7 @@
   margin-bottom: 15px;
 }
 
-/* Prevent global override of ALL buttons */
+/* Buttons */
 .create-recipe-page .btn-primary,
 .create-recipe-page .btn-accent {
   border-radius: 10px;
@@ -76,7 +83,6 @@
   font-weight: 600;
 }
 
-/* Only this page's Save button, not your HomePage button */
 .create-recipe-page .btn-primary {
   background: #ff7f50;
   color: white;
