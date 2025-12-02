@@ -1,27 +1,41 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
+import { setCurrentUser } from "../utils/userStorage";
+import { apiGet } from "../api/backend";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    const stored = JSON.parse(localStorage.getItem("dishcovery:user"));
-    if (!stored) {
-      alert("No account found. Please register first!");
-      navigate("/register");
-      return;
-    }
+    try {
+      const users = await apiGet("/user/getAll");
+      const user = users.find(
+        (u) => u.email === email && u.password === password
+      );
 
-    if (stored.email === email && stored.password === password) {
-      alert(`Welcome, ${stored.nickname}!`);
+      if (!user) {
+        alert("Invalid email or password, or account does not exist.");
+        return;
+      }
+
+      // Map backend fields into the shape used on the frontend
+      const current = {
+        id: user.user_id,
+        nickname: user.username,
+        email: user.email,
+      };
+
+      setCurrentUser(current);
+      alert(`Welcome, ${current.nickname}!`);
       navigate("/");
-    } else {
-      alert("Invalid email or password.");
+    } catch (err) {
+      console.error(err);
+      alert("Login failed. Please try again.");
     }
   };
 
