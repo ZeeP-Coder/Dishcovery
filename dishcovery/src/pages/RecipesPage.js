@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import RecipeGrid from "../components/RecipeGrid";
 import RecipeDetailModal from "../components/RecipeDetailModal";
-import SAMPLE_DISHES from "../data/sampleDishes";
+import { getAllRecipes, loadUserRecipes } from "../utils/recipeStorage";
 
 function RecipesPage() {
   const location = useLocation();
@@ -19,31 +19,32 @@ function RecipesPage() {
 
   const [userRecipes, setUserRecipes] = useState([]);
 
-  // Load user-added recipes
+  // Load user-added recipes from storage
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
-    setUserRecipes(saved);
+    const saved = loadUserRecipes();
+    const normalized = saved.map((r) => ({
+      id: r.id,
+      name: r.name,
+      image: r.image,
+      cuisine: r.category || "Unknown",
+      ingredients: r.ingredients || [],
+      instructions: r.instructions || "",
+      cookTimeMinutes: r.cookTimeMinutes || 0,
+      rating: r.rating || 0,
+      user: r.user || "Unknown",
+      isUserMade: true,
+    }));
+    setUserRecipes(normalized);
   }, []);
 
   // Extract ?filter=<CuisineName>
   const params = new URLSearchParams(location.search);
   const category = params.get("filter") || "All";
 
-  // Merge sample dishes + user-added dishes
+  // Merge sample dishes from JSON + user-added dishes
   const allDishes = useMemo(() => {
-    const merged = [
-      ...SAMPLE_DISHES,
-      ...userRecipes.map((r) => ({
-        id: r.id,
-        name: r.name,
-        image: r.image,
-        cuisine: r.cuisine,
-        ingredients: r.ingredients,
-        instructions: r.instructions,
-        isUserMade: true, // so you know where it came from (optional)
-      })),
-    ];
-    return merged;
+    const { sample } = getAllRecipes();
+    return [...sample, ...userRecipes];
   }, [userRecipes]);
 
   // Filter recipes
@@ -78,10 +79,10 @@ function RecipesPage() {
             {category === "All" ? "All Recipes" : `${category} Recipes`}
           </h2>
 
-          {/* Clear Filter */}
+          {/* Clear Filter - go back to Categories so user can pick again */}
           {category !== "All" && (
             <button
-              onClick={() => navigate("/recipes?filter=All")}
+              onClick={() => navigate("/categories")}
               style={{
                 background: "#36489e",
                 color: "white",
@@ -110,12 +111,14 @@ function RecipesPage() {
         )}
       </main>
 
-      <RecipeDetailModal
-        dish={selected}
-        onClose={() => setSelected(null)}
-        isFav={(id) => favorites.includes(id)}
-        toggleFav={toggleFav}
-      />
+      {selected && (
+        <RecipeDetailModal
+          dish={selected}
+          onClose={() => setSelected(null)}
+          isFav={(id) => favorites.includes(id)}
+          toggleFav={toggleFav}
+        />
+      )}
     </div>
   );
 }
