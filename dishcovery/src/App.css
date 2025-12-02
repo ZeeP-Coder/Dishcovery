@@ -1,7 +1,6 @@
 /* ----------------------------------------------------------
    GLOBAL RESET + BASE
 ---------------------------------------------------------- */
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -10,7 +9,7 @@
 
 body, html, #root {
   height: 100%;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Poppins", sans-serif;
   color: #333;
   background: #ffffff;
 }
@@ -18,7 +17,6 @@ body, html, #root {
 /* ----------------------------------------------------------
    LAYOUT
 ---------------------------------------------------------- */
-
 .App {
   min-height: 100vh;
   display: flex;
@@ -28,7 +26,7 @@ body, html, #root {
 .container {
   width: 95%;
   max-width: 1100px;
-  margin: 24px auto; /* slightly smaller top margin for better spacing */
+  margin: 24px auto;
 }
 
 .section {
@@ -41,10 +39,16 @@ body, html, #root {
   color: #333;
 }
 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
 /* ----------------------------------------------------------
    NAVBAR
 ---------------------------------------------------------- */
-
 .header {
   background: #ffffff;
   border-bottom: 1px solid #f4f4f4;
@@ -88,10 +92,9 @@ body, html, #root {
 /* ----------------------------------------------------------
    HERO SECTION
 ---------------------------------------------------------- */
-
 .hero {
   background: none;
-  padding: 12px 0; /* reduced gap above/below hero */
+  padding: 12px 0;
 }
 
 .hero-banner {
@@ -99,7 +102,7 @@ body, html, #root {
   background-size: cover;
   background-position: center;
   border-radius: 16px;
-  padding: 50px 28px; /* keep internal padding */
+  padding: 50px 28px;
   position: relative;
 }
 
@@ -132,7 +135,6 @@ body, html, #root {
 /* ----------------------------------------------------------
    SEARCH BAR
 ---------------------------------------------------------- */
-
 .search {
   display: flex;
   align-items: center;
@@ -142,8 +144,8 @@ body, html, #root {
   border-radius: 12px;
   border: 1px solid #eaeaea;
   box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-  margin-top: 16px; /* reduced margin to bring it closer to hero banner */
-  margin-bottom: 12px; /* space to filter bar */
+  margin-top: 16px;
+  margin-bottom: 12px;
 }
 
 .search input {
@@ -156,12 +158,11 @@ body, html, #root {
 /* ----------------------------------------------------------
    FILTER BAR
 ---------------------------------------------------------- */
-
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 14px; /* space below filter bar before button */
+  margin-bottom: 14px;
 }
 
 .filter-chip {
@@ -188,7 +189,6 @@ body, html, #root {
 /* ----------------------------------------------------------
    CREATE RECIPE BUTTON
 ---------------------------------------------------------- */
-
 .create-recipe-btn {
   background: #ff7f50;
   color: white;
@@ -208,18 +208,9 @@ body, html, #root {
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
 }
 
-/* Section header for title + button alignment */
-.section-header {
-  display: flex;
-  justify-content: space-between; /* title left, button right */
-  align-items: center;
-  margin-bottom: 18px;
-}
-
 /* ----------------------------------------------------------
-   RECIPE GRID
+   RECIPE GRID & CARD
 ---------------------------------------------------------- */
-
 .grid {
   display: grid;
   gap: 20px;
@@ -237,10 +228,6 @@ body, html, #root {
     grid-template-columns: 1fr;
   }
 }
-
-/* ----------------------------------------------------------
-   RECIPE CARD
----------------------------------------------------------- */
 
 .card {
   background: #ffffff;
@@ -289,7 +276,6 @@ body, html, #root {
 /* ----------------------------------------------------------
    FAVORITE BUTTON
 ---------------------------------------------------------- */
-
 .fav-btn {
   background: none;
   border: none;
@@ -300,7 +286,6 @@ body, html, #root {
 /* ----------------------------------------------------------
    MODAL
 ---------------------------------------------------------- */
-
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -350,7 +335,6 @@ body, html, #root {
 /* ----------------------------------------------------------
    FOOTER
 ---------------------------------------------------------- */
-
 .footer {
   margin-top: auto;
   background: #ffffff;
