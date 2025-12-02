@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
+  // always declare hooks at the top level
   const user = JSON.parse(localStorage.getItem("dishcovery:user")) || { id: 1, nickname: "Guest" };
 
   const [comments, setComments] = useState([]);
@@ -12,38 +13,35 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
 
   // Load saved comments + rating
   useEffect(() => {
-    if (dish) {
-      const savedComments = JSON.parse(localStorage.getItem(`dishcovery:comments:${dish.id}`) || "[]");
-      const savedRatings = JSON.parse(localStorage.getItem(`dishcovery:ratings`) || "[]");
+    if (!dish) return;
 
-      setComments(savedComments);
+    const savedComments = JSON.parse(localStorage.getItem(`dishcovery:comments:${dish.id}`) || "[]");
+    setComments(savedComments);
 
-      // Get all ratings for this dish
-      const recipeRatings = savedRatings.filter(r => r.recipe_id === dish.id);
-      if (recipeRatings.length > 0) {
-        const avg = recipeRatings.reduce((a, b) => a + b.score, 0) / recipeRatings.length;
-        setAverageRating(avg.toFixed(1));
-      } else {
-        setAverageRating(0);
-      }
+    const savedRatings = JSON.parse(localStorage.getItem("dishcovery:ratings") || "[]");
+    const recipeRatings = savedRatings.filter(r => r.recipe_id === dish.id);
 
-      // Check if user already rated
-      const userRating = recipeRatings.find(r => r.user_id === user.id);
-      if (userRating) {
-        setRating(userRating.score);
-        setHasRated(true);
-      } else {
-        setRating(0);
-        setHasRated(false);
-      }
+    if (recipeRatings.length > 0) {
+      const avg = recipeRatings.reduce((a, b) => a + b.score, 0) / recipeRatings.length;
+      setAverageRating(avg.toFixed(1));
+    } else {
+      setAverageRating(0);
+    }
+
+    const userRating = recipeRatings.find(r => r.user_id === user.id);
+    if (userRating) {
+      setRating(userRating.score);
+      setHasRated(true);
+    } else {
+      setRating(0);
+      setHasRated(false);
     }
   }, [dish, user.id]);
 
   // Save comments
   useEffect(() => {
-    if (dish) {
-      localStorage.setItem(`dishcovery:comments:${dish.id}`, JSON.stringify(comments));
-    }
+    if (!dish) return;
+    localStorage.setItem(`dishcovery:comments:${dish.id}`, JSON.stringify(comments));
   }, [comments, dish]);
 
   if (!dish) return null;
@@ -61,11 +59,10 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
       date: new Date().toLocaleString(),
     };
 
-    setComments((prev) => [...prev, newEntry]);
+    setComments(prev => [...prev, newEntry]);
     setNewComment("");
   };
 
-  // Handle one-time rating per user
   const handleRating = (value) => {
     if (hasRated) {
       alert("You have already rated this recipe.");
@@ -92,7 +89,6 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
     setHasRated(true);
   };
 
-  // Realistic short steps
   const getSteps = (name) => {
     switch (name) {
       case "Adobo":
@@ -117,19 +113,17 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        {/* ===== HEADER ===== */}
+      <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <div>
             <h2>{dish.name}</h2>
             <div style={{ color: "#777", fontSize: ".95rem" }}>
-              {dish.cuisine} • {dish.cookTimeMinutes || "45"}m • {dish.difficulty || "Medium"}
+              {dish.cuisine || "Unknown"} • {dish.cookTimeMinutes || "45"}m • {dish.difficulty || "Medium"}
             </div>
 
-            {/* ===== RATING ===== */}
             <div style={{ marginTop: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                {[1, 2, 3, 4, 5].map((value) => (
+                {[1, 2, 3, 4, 5].map(value => (
                   <span
                     key={value}
                     onMouseEnter={() => !hasRated && setHoverRating(value)}
@@ -137,10 +131,7 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
                     onClick={() => handleRating(value)}
                     style={{
                       cursor: hasRated ? "default" : "pointer",
-                      color:
-                        value <= (hoverRating || rating)
-                          ? "#FFD700"
-                          : "#ccc",
+                      color: value <= (hoverRating || rating) ? "#FFD700" : "#ccc",
                       fontSize: "1.5rem",
                       transition: "color 0.2s",
                     }}
@@ -162,43 +153,44 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
 
           <div>
             <button className="fav-btn" onClick={() => toggleFav(dish.id)}>
-              {isFav(dish.id) ? "★" : "☆"}
+              {isFav ? "★" : "☆"}
             </button>
-            <button onClick={onClose} style={{ marginLeft: 10 }}>
-              Close
-            </button>
+            <button onClick={onClose} style={{ marginLeft: 10 }}>Close</button>
           </div>
         </div>
 
-        {/* ===== BODY ===== */}
         <div className="modal-body" style={{ paddingBottom: "100px" }}>
           <div>
-            <img
-              src={dish.image}
-              alt={dish.name}
-              style={{
-                width: "100%",
-                height: 260,
-                objectFit: "cover",
-                borderRadius: 8,
-                marginBottom: 12,
-              }}
-            />
+            {dish.image && (
+              <img
+                src={dish.image}
+                alt={dish.name}
+                style={{
+                  width: "100%",
+                  height: 260,
+                  objectFit: "cover",
+                  borderRadius: 8,
+                  marginBottom: 12,
+                }}
+              />
+            )}
 
             <h3>How to Cook</h3>
-            {steps.map((s, idx) => (
-              <div key={idx} className="step" style={{ marginBottom: 6 }}>
-                <strong>Step {idx + 1}.</strong> {s}
-              </div>
-            ))}
+            {dish.isUserMade ? (
+              <p>{dish.instructions}</p>
+            ) : (
+              steps.map((s, idx) => (
+                <div key={idx} className="step" style={{ marginBottom: 6 }}>
+                  <strong>Step {idx + 1}.</strong> {s}
+                </div>
+              ))
+            )}
 
-            {/* ===== COMMENTS ===== */}
             <div style={{ marginTop: "25px" }}>
               <h3 style={{ marginBottom: "10px" }}>Comments</h3>
-
               {comments.length > 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {comments.map((c) => (
+                  {comments.map(c => (
                     <div
                       key={c.comment_id}
                       style={{
@@ -209,14 +201,7 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
                         boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
                       }}
                     >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          marginBottom: "6px",
-                        }}
-                      >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
                         <strong style={{ color: "#36489e" }}>{c.user}</strong>
                         <small style={{ color: "#999" }}>{c.date}</small>
                       </div>
@@ -230,23 +215,20 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
             </div>
           </div>
 
-          {/* ===== INGREDIENTS ===== */}
           <aside>
             <div className="ingredients">
               <h4>Ingredients</h4>
               <ul style={{ marginTop: 8 }}>
                 {(dish.ingredients || []).map((ing, idx) => (
-                    <li key={idx}>
-                      {typeof ing === "string" ? ing : ing.name} {ing?.quantity ? `— ${ing.quantity}` : ""}
-                    </li>
-                  ))}
-
+                  <li key={idx}>
+                    {typeof ing === "string" ? ing : ing.name} {ing?.quantity ? `— ${ing.quantity}` : ""}
+                  </li>
+                ))}
               </ul>
             </div>
           </aside>
         </div>
 
-        {/* ===== COMMENT BAR ===== */}
         <form
           onSubmit={handleAddComment}
           style={{
