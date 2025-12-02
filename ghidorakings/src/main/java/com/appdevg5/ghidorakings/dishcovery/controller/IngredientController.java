@@ -1,7 +1,8 @@
-package com.appdevg5.ghidorakings.controller;
+package com.appdevg5.ghidorakings.dishcovery.controller;
 
-import com.appdevg5.ghidorakings.entity.IngredientEntity;
-import com.appdevg5.ghidorakings.service.IngredientService;
+import com.appdevg5.ghidorakings.dishcovery.entity.IngredientEntity;
+import com.appdevg5.ghidorakings.dishcovery.service.IngredientService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,7 +1,8 @@
-package com.appdevg5.ghidorakings.service;
+package com.appdevg5.ghidorakings.dishcovery.service;
 
-import com.appdevg5.ghidorakings.entity.IngredientEntity;
-import com.appdevg5.ghidorakings.repository.IngredientRepository;
+import com.appdevg5.ghidorakings.dishcovery.entity.IngredientEntity;
+import com.appdevg5.ghidorakings.dishcovery.repository.IngredientRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

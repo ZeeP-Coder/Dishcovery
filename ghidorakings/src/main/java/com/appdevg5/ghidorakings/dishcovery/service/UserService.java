@@ -1,7 +1,8 @@
-package com.appdevg5.ghidorakings.service;
+package com.appdevg5.ghidorakings.dishcovery.service;
 
-import com.appdevg5.ghidorakings.entity.UserEntity;
-import com.appdevg5.ghidorakings.repository.UserRepository;
+import com.appdevg5.ghidorakings.dishcovery.entity.UserEntity;
+import com.appdevg5.ghidorakings.dishcovery.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;

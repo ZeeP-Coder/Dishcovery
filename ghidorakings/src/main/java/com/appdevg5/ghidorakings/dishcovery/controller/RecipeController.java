@@ -1,10 +1,12 @@
-package com.appdevg5.ghidorakings.controller;
+package com.appdevg5.ghidorakings.dishcovery.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.appdevg5.ghidorakings.entity.RecipeEntity;
-import com.appdevg5.ghidorakings.service.RecipeService;
+
+import com.appdevg5.ghidorakings.dishcovery.entity.RecipeEntity;
+import com.appdevg5.ghidorakings.dishcovery.service.RecipeService;
+
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

@@ -1,12 +1,13 @@
-package com.appdevg5.ghidorakings.service;
+package com.appdevg5.ghidorakings.dishcovery.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.appdevg5.ghidorakings.entity.RecipeEntity;
-import com.appdevg5.ghidorakings.repository.RecipeRepository;
+
+import com.appdevg5.ghidorakings.dishcovery.entity.RecipeEntity;
+import com.appdevg5.ghidorakings.dishcovery.repository.RecipeRepository;
 
 
 @Service
