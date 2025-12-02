@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
+import { apiGet, apiPost } from "../api/backend";
 
 function RegisterPage() {
   const [nickname, setNickname] = useState("");
@@ -15,7 +16,7 @@ function RegisterPage() {
     return emailPattern.test(email);
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -34,12 +35,28 @@ function RegisterPage() {
       return;
     }
 
-    const userData = { nickname, email, password };
-    localStorage.setItem("dishcovery:user", JSON.stringify(userData));
-    localStorage.setItem("dishcovery:nickname", nickname);
+    try {
+      // Check if email already exists in backend
+      const users = await apiGet("/user/getAll");
+      const existing = users.find((u) => u.email === email);
+      if (existing) {
+        setError("An account with this email already exists.");
+        return;
+      }
 
-    alert("Registration successful! Please log in.");
-    navigate("/login");
+      // Backend expects: username, email, password
+      await apiPost("/user/add", {
+        username: nickname,
+        email,
+        password,
+      });
+
+      alert("Registration successful! Please log in.");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      setError("Registration failed. Please try again.");
+    }
   };
 
   return (
