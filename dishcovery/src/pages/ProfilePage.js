@@ -2,12 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import "./ProfilePage.css";
+import { getCurrentUser, setCurrentUser } from "../utils/userStorage";
 
 function ProfilePage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  const user = JSON.parse(localStorage.getItem("dishcovery:user"));
+  const user = getCurrentUser();
   const [profilePic, setProfilePic] = useState(
     localStorage.getItem("dishcovery:profilePic") || ""
   );
@@ -23,8 +24,7 @@ function ProfilePage() {
   }, [user?.email]);
 
   const handleLogout = () => {
-    localStorage.removeItem("dishcovery:user");
-    localStorage.removeItem("dishcovery:nickname");
+    setCurrentUser(null);
     localStorage.removeItem("dishcovery:profilePic");
     navigate("/login");
   };
