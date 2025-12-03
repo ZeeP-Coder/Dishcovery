@@ -37,18 +37,34 @@ function CreateRecipePage() {
       return;
     }
 
-    const newRecipe = {
-      ...recipe,
-      cuisine: recipe.category, // IMPORTANT FIX 🔥 ensures filtering works
-      id: Date.now(),
+    const payload = {
+      title: recipe.name,
+      description: recipe.image || recipe.category,
+      steps: recipe.instructions,
+      userId: 1 // TODO: replace with logged-in user id
     };
 
-    const saved = JSON.parse(localStorage.getItem("dishcovery:recipes") || "[]");
-
-    const updated = [...saved, newRecipe];
-    localStorage.setItem("dishcovery:recipes", JSON.stringify(updated));
-
-    navigate("/myrecipes");
+    // send to backend
+    fetch("http://localhost:8080/recipe/insertRecipe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to save recipe");
+        return res.json();
+      })
+      .then((data) => {
+        // optionally store locally as well
+        const saved = JSON.parse(localStorage.getItem("dishcovery:recipes") || "[]");
+        const updated = [...saved, { ...recipe, id: data.recipeId }];
+        localStorage.setItem("dishcovery:recipes", JSON.stringify(updated));
+        navigate("/myrecipes");
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Could not save recipe to server.");
+      });
   }
 
   return (
