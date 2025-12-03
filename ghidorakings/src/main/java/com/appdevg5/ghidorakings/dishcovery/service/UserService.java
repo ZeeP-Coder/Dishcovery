@@ -20,6 +20,8 @@ public class UserService {
 
     // CREATE
     public UserEntity createUser(UserEntity user) {
+        // Ensure a new user is inserted even if client includes a userId
+        user.setUserId(null);
         return userRepository.save(user);
     }
 
