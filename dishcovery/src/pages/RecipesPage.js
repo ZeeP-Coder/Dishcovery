@@ -21,8 +21,26 @@ function RecipesPage() {
 
   // Load user-added recipes
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
-    setUserRecipes(saved);
+    // fetch recipes from backend and merge
+    fetch("http://localhost:8080/recipe/getAllRecipes")
+      .then((res) => res.json())
+      .then((data) => {
+        // map backend RecipeEntity to frontend shape
+        const mapped = (data || []).map((r) => ({
+          id: r.recipeId,
+          name: r.title,
+          image: r.description,
+          cuisine: r.category || "",
+          ingredients: r.ingredients || [],
+          instructions: r.steps,
+          isUserMade: true,
+        }));
+        setUserRecipes(mapped);
+      })
+      .catch(() => {
+        const saved = JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
+        setUserRecipes(saved);
+      });
   }, []);
 
   // Extract ?filter=<CuisineName>
