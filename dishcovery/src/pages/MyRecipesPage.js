@@ -7,15 +7,29 @@ export default function MyRecipesPage() {
   const [recipes, setRecipes] = useState([]);
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem("dishcovery:user"));
-
   useEffect(() => {
-  const allRecipes =
-    JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
-  const userRecipes = allRecipes.filter(
-    (r) => r.user === currentUser?.email
-  );
-  setRecipes(userRecipes);
-}, [currentUser?.email]);
+    // try to fetch recipes from backend and filter by userId if available
+    fetch("http://localhost:8080/recipe/getAllRecipes")
+      .then((res) => res.json())
+      .then((data) => {
+        const mapped = (data || []).map((r) => ({
+          id: r.recipeId,
+          name: r.title,
+          image: r.description,
+          ingredients: r.ingredients || [],
+          instructions: r.steps,
+          userId: r.userId,
+        }));
+        const uid = currentUser?.userId || currentUser?.user_id || null;
+        const userRecipes = uid ? mapped.filter((r) => r.userId === uid) : mapped;
+        setRecipes(userRecipes);
+      })
+      .catch(() => {
+        const allRecipes = JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
+        const userRecipes = allRecipes.filter((r) => r.user === currentUser?.email);
+        setRecipes(userRecipes);
+      });
+  }, [currentUser?.email]);
 
   const handleDelete = (id) => {
     const allRecipes =
