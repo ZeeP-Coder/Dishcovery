@@ -8,18 +8,24 @@ public class IngredientEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int ingredientId;
+    @Column(name = "ingredient_id")
+    private Integer ingredientId;
 
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "quantity")
     private String quantity;
-    private int recipeId; // Foreign Key reference to Recipe
+
+    @Column(name = "recipe_id")
+    private Integer recipeId; // Foreign Key reference to Recipe
 
     // Getters and Setters
-    public int getIngredientId() {
+    public Integer getIngredientId() {
         return ingredientId;
     }
 
-    public void setIngredientId(int ingredientId) {
+    public void setIngredientId(Integer ingredientId) {
         this.ingredientId = ingredientId;
     }
 

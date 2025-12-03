@@ -17,6 +17,8 @@ public class IngredientService {
 
     // CREATE
     public IngredientEntity createIngredient(IngredientEntity ingredient) {
+        // ensure new insert by clearing id if client provided one
+        ingredient.setIngredientId(null);
         return ingredientRepository.save(ingredient);
     }
 
