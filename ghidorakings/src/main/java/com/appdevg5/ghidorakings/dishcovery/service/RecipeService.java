@@ -17,6 +17,8 @@ public class RecipeService {
     RecipeRepository recipeRepository;
 
     public RecipeEntity createRecipe(RecipeEntity recipe) {
+        // Ensure ID is null so JPA creates a new record instead of updating an existing one
+        recipe.setRecipeId(null);
         return recipeRepository.save(recipe);
     }
 

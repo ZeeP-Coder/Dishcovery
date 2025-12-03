@@ -10,10 +10,12 @@ import com.appdevg5.ghidorakings.dishcovery.service.RecipeService;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
 
 
 @RestController
 @RequestMapping("/recipe")
+@CrossOrigin(origins = "http://localhost:3000")
 public class RecipeController {
     @Autowired
     RecipeService recipeService;
@@ -33,14 +35,22 @@ public class RecipeController {
         return recipeService.getAllRecipes();
     }
 
-    @PutMapping("/updateRecipe")
-    public RecipeEntity updateRecipe(@RequestParam int recipeId, @RequestBody RecipeEntity newRecipeDetails) {
-        return recipeService.updateRecipe(recipeId, newRecipeDetails);
+    @PutMapping("/updateRecipe/{recipeId}")
+    public ResponseEntity<RecipeEntity> updateRecipe(@PathVariable Integer recipeId, @RequestBody RecipeEntity newRecipeDetails) {
+        RecipeEntity updated = recipeService.updateRecipe(recipeId, newRecipeDetails);
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/deleteRecipe/{recipeId}")
-    public String deleteRecipe(@PathVariable int recipeId) {
-        return recipeService.deleteRecipe(recipeId);
+    public ResponseEntity<String> deleteRecipe(@PathVariable Integer recipeId) {
+        String result = recipeService.deleteRecipe(recipeId);
+        if (result == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(result);
     }
     
     
