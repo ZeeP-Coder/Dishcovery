@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import NavBar from "../components/NavBar";
@@ -8,6 +8,7 @@ import FilterBar from "../components/FilterBar";
 import RecipeGrid from "../components/RecipeGrid";
 import RecipeDetailModal from "../components/RecipeDetailModal";
 import { getAllRecipes } from "../utils/recipeStorage";
+import { apiGet } from "../api/backend";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ export default function HomePage() {
   });
 
   const allDishes = useMemo(() => {
+    // placeholder while backend fetch runs
     const { sample, user } = getAllRecipes(); // sample = JSON recipes, user = localStorage recipes
     const userNorm = user.map(normalizeRecipe);
     const sampleNorm = sample.map(normalizeRecipe);
@@ -45,14 +47,68 @@ export default function HomePage() {
     return [...sampleNorm, ...userNorm];
   }, []);
 
+  const [backendDishes, setBackendDishes] = useState(null);
+
+  // Fetch backend recipes and merge with sample dishes; fallback to local-storage if backend unavailable
+  useEffect(() => {
+    let mounted = true;
+    const fetchBackend = () => {
+      apiGet("/recipe/getAllRecipes")
+        .then((data) => {
+          if (!mounted) return;
+          const mapped = (data || []).map((r) => ({
+            id: r.recipeId,
+            backendId: r.recipeId,
+            name: r.title,
+            image: r.description,
+            cuisine: r.category || r.cuisine || "Other",
+            ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
+            description: r.description || r.steps || "",
+            instructions: r.steps || "",
+            user: r.userId,
+          }));
+          setBackendDishes(mapped);
+        })
+        .catch((err) => {
+          console.warn("Could not fetch backend recipes", err);
+          setBackendDishes(null);
+        });
+    };
+
+    fetchBackend();
+
+    const onRecipesChanged = () => {
+      fetchBackend();
+    };
+    window.addEventListener("recipesChanged", onRecipesChanged);
+
+    return () => {
+      mounted = false;
+      window.removeEventListener("recipesChanged", onRecipesChanged);
+    };
+  }, []);
+
+  // Build effective list by preferring backend dishes when available and merging with sample
+  const effectiveDishes = useMemo(() => {
+    const sampleAndLocal = allDishes;
+    if (!backendDishes) return sampleAndLocal;
+    // backend dishes should replace any local/user-made entries that share backendId
+    const backendMap = new Map(backendDishes.map((d) => [d.backendId, d]));
+    // include backend dishes first
+    const backendList = backendDishes.map(normalizeRecipe);
+    // include sample/local dishes that don't exist on backend
+    const others = sampleAndLocal.filter((d) => !d.backendId || !backendMap.has(d.backendId));
+    return [...backendList, ...others];
+  }, [allDishes, backendDishes]);
+
   const cuisines = useMemo(() => {
-    const set = new Set(allDishes.map((d) => d.cuisine));
+    const set = new Set(effectiveDishes.map((d) => d.cuisine));
     return ["All", ...Array.from(set)];
-  }, [allDishes]);
+  }, [effectiveDishes]);
 
   const filteredDishes = useMemo(() => {
     const s = search.trim().toLowerCase();
-    return allDishes.filter((d) => {
+    return effectiveDishes.filter((d) => {
       if (cuisineFilter !== "All" && d.cuisine !== cuisineFilter) return false;
       if (!s) return true;
       if (d.name.toLowerCase().includes(s)) return true;
@@ -61,7 +117,7 @@ export default function HomePage() {
       if (Array.isArray(d.ingredients) && d.ingredients.some((i) => (i?.name || "").toLowerCase().includes(s))) return true;
       return false;
     });
-  }, [search, cuisineFilter, allDishes]);
+  }, [search, cuisineFilter, effectiveDishes]);
 
   function toggleFav(id) {
     setFavorites((prev) => {
