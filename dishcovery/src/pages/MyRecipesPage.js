@@ -4,7 +4,7 @@ import RecipeDetailModal from "../components/RecipeDetailModal";
 import "./MyRecipesPage.css";
 import { useNavigate } from "react-router-dom";
 import { loadUserRecipes, saveUserRecipes } from "../utils/recipeStorage";
-import { apiDelete } from "../api/backend";
+import { apiDelete, apiGet, API_BASE } from "../api/backend";
 
 export default function MyRecipesPage() {
   const [recipes, setRecipes] = useState([]);
@@ -19,29 +19,79 @@ export default function MyRecipesPage() {
   });
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem("dishcovery:user"));
-
   useEffect(() => {
-    const allRecipes = loadUserRecipes();
-    const userRecipes = allRecipes.filter(r => r.user === currentUser?.email);
-    setRecipes(userRecipes);
-  }, [currentUser?.email]);
+    // try to fetch recipes from backend and filter by userId if available
+    apiGet("/recipe/getAllRecipes")
+      .then((data) => {
+        const mapped = (data || []).map((r) => ({
+          id: r.recipeId,
+          backendId: r.recipeId,
+          name: r.title,
+          image: r.description,
+          ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
+          instructions: r.steps,
+          userId: r.userId,
+        }));
+        // frontend user object uses `id` (see LoginPage mapping)
+        const uid = currentUser?.id || currentUser?.userId || currentUser?.user_id || null;
+        const userRecipes = uid ? mapped.filter((r) => r.userId === uid) : mapped;
+        setRecipes(userRecipes);
+      })
+      .catch(() => {
+        // fallback to local storage if backend unavailable
+        const allRecipes = JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
+        const userRecipes = allRecipes.filter((r) => r.user === currentUser?.email);
+        setRecipes(userRecipes);
+      });
+  }, [currentUser?.id]);
 
   const handleDelete = async (id, backendId) => {
-    // Remove locally
-    const allRecipes = loadUserRecipes();
-    const updatedRecipes = allRecipes.filter(r => r.id !== id);
-    saveUserRecipes(updatedRecipes);
-    setRecipes(updatedRecipes.filter(r => r.user === currentUser?.email));
-
-    // Try to delete from backend as well (if it exists there)
+    // If this recipe exists on backend, delete there first
     if (backendId) {
       try {
-        await apiDelete(`/recipe/deleteRecipe/${backendId}`);
+        // Use fetch here to capture response status/body for better diagnostics
+        const url = `${API_BASE}/recipe/deleteRecipe/${backendId}`;
+        const res = await fetch(url, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          console.error(`Delete request failed: ${res.status}`, text);
+          alert(`Delete failed: ${res.status} ${text}`);
+          return;
+        }
+
+        // remove from UI
+        setRecipes((prev) => prev.filter((r) => r.backendId !== backendId));
+        // also remove any local-storage copies that reference this backendId
+        try {
+          const saved = loadUserRecipes();
+          const updatedSaved = saved.filter((r) => r.backendId !== backendId);
+          saveUserRecipes(updatedSaved);
+        } catch (e) {
+          console.warn("Failed to clean up local storage after backend delete", e);
+        }
+        // notify other open pages (e.g., HomePage) to refresh their data
+        try {
+          window.dispatchEvent(new Event("recipesChanged"));
+        } catch (e) {
+          console.warn("Could not dispatch recipesChanged event", e);
+        }
+        return;
       } catch (err) {
-        console.error(err);
-        // We keep the local delete, just log backend failure
+        console.error("Backend delete failed", err);
+        alert("Could not delete recipe on server. Check the console for details.");
+        return;
       }
     }
+
+    // Fallback: remove from local storage if no backend id
+    const allRecipes = loadUserRecipes();
+    const updatedRecipes = allRecipes.filter((r) => r.id !== id);
+    saveUserRecipes(updatedRecipes);
+    setRecipes(updatedRecipes.filter((r) => r.user === currentUser?.email));
   };
 
   const openModal = (recipe) => {
