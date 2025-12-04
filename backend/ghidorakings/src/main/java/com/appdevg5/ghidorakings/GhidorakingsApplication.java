@@ -1,4 +1,4 @@
-package com.appdevg5.ghidorakings.dishcovery;
+package com.appdevg5.ghidorakings;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
