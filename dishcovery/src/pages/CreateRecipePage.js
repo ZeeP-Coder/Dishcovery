@@ -42,47 +42,41 @@ function CreateRecipePage() {
       return;
     }
 
-    // Mirror recipe into backend (MySQL) using minimal fields that exist in RecipeEntity
-    try {
-      const currentUser = JSON.parse(localStorage.getItem("dishcovery:user"));
-      const userId = currentUser?.id || 0;
-      const payload = {
-        recipe_Id: recipe.backendId || 0,
-        title: recipe.name,
-        description: recipe.instructions || "",
-        steps: recipe.instructions || "",
-        user_Id: userId,
-      };
+    const payload = {
+      title: recipe.name,
+      description: recipe.image || recipe.category,
+      steps: recipe.instructions,
+      // Use the logged-in user's id if available
+      userId: JSON.parse(localStorage.getItem("dishcovery:user"))?.id || JSON.parse(localStorage.getItem("dishcovery:user"))?.userId || 1,
+      ingredients: recipe.ingredients
+    };
 
-      let backendRecipe = null;
-      if (recipe.backendId) {
-        // Update existing recipe in backend
-        backendRecipe = await apiPut(
-          `/recipe/updateRecipe?recipeId=${recipe.backendId}`,
-          payload
-        );
-      } else {
-        // Create new recipe in backend
-        backendRecipe = await apiPost("/recipe/insertRecipe", payload);
+    // send to backend
+    try {
+      if (editingRecipe && editingRecipe.backendId) {
+        // update existing recipe on backend
+        const payloadToSend = { ...payload, ingredients: JSON.stringify(payload.ingredients || []) };
+        await apiPut(`/recipe/updateRecipe/${editingRecipe.backendId}`, payloadToSend);
+        // update local storage copy if present
+        const saved = JSON.parse(localStorage.getItem("dishcovery:recipes") || "[]");
+        const updated = saved.map((r) => (r.id === recipe.id ? { ...r, ...recipe } : r));
+        localStorage.setItem("dishcovery:recipes", JSON.stringify(updated));
+        navigate("/myrecipes");
+        return;
       }
 
-      const backendId = backendRecipe?.recipe_Id || recipe.backendId || null;
-
-      // Sync to local storage as before, but keep backendId for future edits/deletes
-      const saved = loadUserRecipes();
-      const exists = saved.find((r) => r.id === recipe.id);
-      const nextRecipe = { ...recipe, backendId };
-      const updated = exists
-        ? saved.map((r) => (r.id === recipe.id ? nextRecipe : r))
-        : [...saved, nextRecipe];
-
-      saveUserRecipes(updated);
-      navigate("/my-recipes");
+      const payloadToSend = { ...payload, ingredients: JSON.stringify(payload.ingredients || []) };
+      const data = await apiPost("/recipe/insertRecipe", payloadToSend);
+      // optionally store locally as well, include backend id
+      const saved = JSON.parse(localStorage.getItem("dishcovery:recipes") || "[]");
+      const updated = [...saved, { ...recipe, id: data.recipeId, backendId: data.recipeId }];
+      localStorage.setItem("dishcovery:recipes", JSON.stringify(updated));
+      navigate("/myrecipes");
     } catch (err) {
       console.error(err);
-      alert("Saving recipe to the server failed. Please try again.");
+      alert("Could not save recipe to server.");
     }
-  };
+  }
 
   return (
     <div className="create-recipe-page">
