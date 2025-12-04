@@ -21,7 +21,24 @@ function RecipesPage() {
 
   // Load user-added recipes from storage
   useEffect(() => {
-    const saved = loadUserRecipes();
+    // fetch recipes from backend and merge
+    fetch("http://localhost:8080/recipe/getAllRecipes")
+      .then((res) => res.json())
+      .then((data) => {
+        // map backend RecipeEntity to frontend shape
+        const mapped = (data || []).map((r) => ({
+          id: r.recipeId,
+          name: r.title,
+          image: r.description,
+          cuisine: r.category || "",
+          ingredients: r.ingredients || [],
+          instructions: r.steps,
+          isUserMade: true,
+        }));
+        setUserRecipes(mapped);
+      })
+      .catch(() => {
+        const saved = loadUserRecipes();
     const normalized = saved.map((r) => ({
       id: r.id,
       name: r.name,
@@ -34,7 +51,8 @@ function RecipesPage() {
       user: r.user || "Unknown",
       isUserMade: true,
     }));
-    setUserRecipes(normalized);
+        setUserRecipes(normalized);
+      });
   }, []);
 
   // Extract ?filter=<CuisineName>
