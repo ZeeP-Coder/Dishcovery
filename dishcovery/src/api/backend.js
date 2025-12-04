@@ -1,5 +1,7 @@
 const API_BASE = "http://localhost:8080";
 
+export { API_BASE };
+
 async function handleResponse(res) {
   if (!res.ok) {
     const text = await res.text().catch(() => "");
