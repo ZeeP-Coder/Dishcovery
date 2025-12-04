@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 import { apiGet, apiPost } from "../api/backend";
+import { setCurrentUser } from "../utils/userStorage";
 
 function RegisterPage() {
   const [nickname, setNickname] = useState("");
@@ -45,14 +46,30 @@ function RegisterPage() {
       }
 
       // Backend expects: username, email, password
-      await apiPost("/user/add", {
+      const created = await apiPost("/user/add", {
         username: nickname,
         email,
         password,
       });
 
-      alert("Registration successful! Please log in.");
-      navigate("/login");
+      // Auto-login the user by saving minimal info in localStorage
+      const mapped = {
+        id: created.getUserId ? created.getUserId : created.userId || created.user_id || created.id,
+        nickname: created.getUsername ? created.getUsername : created.username,
+        email: created.getEmail ? created.getEmail : created.email,
+      };
+
+      // Normalize fields for both plain object and JPA-returned JSON
+      if (typeof mapped.id === "object") {
+        // If response is a class-like object, attempt to read properties
+        mapped.id = created.userId || created.user_id || created.id;
+        mapped.nickname = created.username || created.getUsername?.() || nickname;
+        mapped.email = created.email || created.getEmail?.() || email;
+      }
+
+      setCurrentUser({ id: mapped.id, nickname: mapped.nickname, email: mapped.email });
+      alert("Registration successful — you are now logged in.");
+      navigate("/");
     } catch (err) {
       console.error(err);
       setError("Registration failed. Please try again.");
