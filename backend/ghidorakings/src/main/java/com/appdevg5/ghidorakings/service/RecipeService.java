@@ -1,4 +1,4 @@
-package com.appdevg5.ghidorakings.dishcovery.service;
+package com.appdevg5.ghidorakings.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -6,8 +6,8 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.appdevg5.ghidorakings.dishcovery.entity.RecipeEntity;
-import com.appdevg5.ghidorakings.dishcovery.repository.RecipeRepository;
+import com.appdevg5.ghidorakings.entity.RecipeEntity;
+import com.appdevg5.ghidorakings.repository.RecipeRepository;
 
 
 @Service
@@ -17,6 +17,14 @@ public class RecipeService {
     RecipeRepository recipeRepository;
 
     public RecipeEntity createRecipe(RecipeEntity recipe) {
+        // Validate required fields
+        if (recipe.getTitle() == null || recipe.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Recipe title is required");
+        }
+        if (recipe.getUserId() == null || recipe.getUserId() <= 0) {
+            throw new IllegalArgumentException("Valid user ID is required");
+        }
+        
         // Ensure ID is null so JPA creates a new record instead of updating an existing one
         recipe.setRecipeId(null);
         return recipeRepository.save(recipe);

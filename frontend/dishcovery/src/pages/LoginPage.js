@@ -1,17 +1,44 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
-import { setCurrentUser } from "../utils/userStorage";
 import { apiGet } from "../api/backend";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
   const navigate = useNavigate();
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    // Email validation
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Please enter a valid email";
+    }
+    
+    // Password validation
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    setServerError("");
+    
+    if (!validateForm()) return;
+    
+    setIsLoading(true);
     try {
       const users = await apiGet("/user/getAll");
       const user = users.find(
@@ -19,7 +46,8 @@ function LoginPage() {
       );
 
       if (!user) {
-        alert("Invalid email or password, or account does not exist.");
+        setServerError("Invalid email or password.");
+        setIsLoading(false);
         return;
       }
 
@@ -30,37 +58,58 @@ function LoginPage() {
         email: user.email,
       };
 
-      setCurrentUser(current);
-      alert(`Welcome, ${current.nickname}!`);
+      // Store user in sessionStorage (not localStorage)
+      sessionStorage.setItem("dishcovery:user", JSON.stringify(current));
+      setIsLoading(false);
       navigate("/");
     } catch (err) {
       console.error(err);
-      alert("Login failed. Please try again.");
+      setServerError("Connection failed. Please check your internet and try again.");
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-box">
-        <h2>Login to Dishcovery</h2>
-        <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit">Login</button>
-          <p>Don't have an account? <a href="/register">Register here</a></p>
+        <div className="login-header">
+          <span className="login-logo">🍽️</span>
+          <h2>Login to Dishcovery</h2>
+        </div>
+        
+        {serverError && <div className="error-banner">{serverError}</div>}
+        
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="form-group">
+            <input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={errors.email ? "input-error" : ""}
+            />
+            {errors.email && <span className="error-text">{errors.email}</span>}
+          </div>
+
+          <div className="form-group">
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={errors.password ? "input-error" : ""}
+            />
+            {errors.password && <span className="error-text">{errors.password}</span>}
+          </div>
+
+          <button type="submit" className="btn-login" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
+          </button>
         </form>
+
+        <div className="login-footer">
+          <p>Don't have an account? <a href="/register">Register here</a></p>
+        </div>
       </div>
     </div>
   );

@@ -3,55 +3,35 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import RecipeGrid from "../components/RecipeGrid";
 import RecipeDetailModal from "../components/RecipeDetailModal";
-import { getAllRecipes, loadUserRecipes } from "../utils/recipeStorage";
+import { getRecipes } from "../api/backend";
 
 function RecipesPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
-  const [favorites, setFavorites] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("dishcovery:favs") || "[]");
-    } catch {
-      return [];
-    }
-  });
-
+  const [favorites, setFavorites] = useState([]);
   const [userRecipes, setUserRecipes] = useState([]);
 
-  // Load user-added recipes from storage
+  // Load recipes from backend only
   useEffect(() => {
-    // fetch recipes from backend and merge
-    fetch("http://localhost:8080/recipe/getAllRecipes")
-      .then((res) => res.json())
+    getRecipes()
       .then((data) => {
         // map backend RecipeEntity to frontend shape
         const mapped = (data || []).map((r) => ({
           id: r.recipeId,
+          backendId: r.recipeId,
           name: r.title,
           image: r.description,
           cuisine: r.category || "",
-          ingredients: r.ingredients || [],
+          ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
           instructions: r.steps,
           isUserMade: true,
         }));
         setUserRecipes(mapped);
       })
-      .catch(() => {
-        const saved = loadUserRecipes();
-    const normalized = saved.map((r) => ({
-      id: r.id,
-      name: r.name,
-      image: r.image,
-      cuisine: r.category || "Unknown",
-      ingredients: r.ingredients || [],
-      instructions: r.instructions || "",
-      cookTimeMinutes: r.cookTimeMinutes || 0,
-      rating: r.rating || 0,
-      user: r.user || "Unknown",
-      isUserMade: true,
-    }));
-        setUserRecipes(normalized);
+      .catch((err) => {
+        console.error("Failed to fetch recipes:", err);
+        alert("Failed to load recipes. Please check the server connection.");
       });
   }, []);
 
@@ -59,10 +39,9 @@ function RecipesPage() {
   const params = new URLSearchParams(location.search);
   const category = params.get("filter") || "All";
 
-  // Merge sample dishes from JSON + user-added dishes
+  // Use backend recipes only
   const allDishes = useMemo(() => {
-    const { sample } = getAllRecipes();
-    return [...sample, ...userRecipes];
+    return userRecipes;
   }, [userRecipes]);
 
   // Filter recipes
@@ -74,11 +53,9 @@ function RecipesPage() {
   // Toggle favorite
   function toggleFav(id) {
     setFavorites((prev) => {
-      const updated = prev.includes(id)
+      return prev.includes(id)
         ? prev.filter((x) => x !== id)
         : [...prev, id];
-      localStorage.setItem("dishcovery:favs", JSON.stringify(updated));
-      return updated;
     });
   }
 

@@ -2,69 +2,203 @@
 body {
   margin: 0;
   font-family: "Poppins", sans-serif;
-  background-color: #fff4ec; /* soft beige background */
+  background: linear-gradient(135deg, #fff4ec 0%, #ffe8d6 100%);
 }
 
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 20px;
 }
 
 .login-box {
-  background-color: #ffffff;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  width: 380px;
+  background: white;
+  padding: 45px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  width: 100%;
+  max-width: 420px;
   text-align: center;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
 }
 
 .login-logo {
-  font-size: 28px;
-  font-weight: 700;
-  color: #ff7b54;
-  margin-bottom: 20px;
+  font-size: 40px;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .login-box h2 {
-  font-size: 22px;
+  font-size: 28px;
   color: #333;
-  margin-bottom: 25px;
+  margin: 0;
+  font-weight: 700;
+}
+
+.error-banner {
+  background: #fee;
+  color: #c33;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border-left: 4px solid #c33;
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 25px 0;
+}
+
+.form-group {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .login-box input {
   width: 100%;
-  padding: 12px;
-  margin: 8px 0 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  padding: 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
   font-size: 15px;
   outline: none;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  font-family: inherit;
 }
 
 .login-box input:focus {
   border-color: #ff7b54;
-  box-shadow: 0 0 5px rgba(255, 123, 84, 0.3);
+  box-shadow: 0 0 0 3px rgba(255, 123, 84, 0.1);
+  transform: translateY(-2px);
 }
 
-.login-box button {
-  width: 100%;
-  background-color: #ff7b54;
-  color: #fff;
+.login-box input:hover {
+  border-color: #ffb8a3;
+}
+
+.login-box input.input-error {
+  border-color: #ff6b6b;
+  background: #fff5f5;
+}
+
+.login-box input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.error-text {
+  font-size: 12px;
+  color: #ff6b6b;
+  font-weight: 500;
+}
+
+.btn-login {
+  background: linear-gradient(135deg, #ff7b54, #ff9068);
+  color: white;
+  padding: 14px 24px;
   border: none;
-  padding: 12px;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 16px;
-  cursor: pointer;
   font-weight: 600;
-  transition: 0.3s ease;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(255, 123, 84, 0.4);
+  margin-top: 8px;
 }
 
-.login-box button:hover {
-  background-color: #e26c49;
+.btn-login:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 123, 84, 0.5);
+}
+
+.btn-login:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-login:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-footer {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.login-footer p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.login-footer a {
+  color: #ff7b54;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.login-footer a:hover {
+  color: #ff9068;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .login-box {
+    padding: 30px 20px;
+  }
+
+  .login-header {
+    gap: 10px;
+  }
+
+  .login-logo {
+    font-size: 32px;
+  }
+
+  .login-box h2 {
+    font-size: 22px;
+  }
 }
 
 .login-box p {

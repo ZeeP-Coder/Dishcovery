@@ -1,4 +1,4 @@
-package com.appdevg5.ghidorakings.dishcovery.service;
+package com.appdevg5.ghidorakings.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -6,10 +6,8 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.appdevg5.ghidorakings.dishcovery.entity.FavoriteEntity;
-import com.appdevg5.ghidorakings.dishcovery.entity.UserEntity;
-import com.appdevg5.ghidorakings.dishcovery.entity.RecipeEntity;
-import com.appdevg5.ghidorakings.dishcovery.repository.FavoriteRepository;
+import com.appdevg5.ghidorakings.entity.FavoriteEntity;
+import com.appdevg5.ghidorakings.repository.FavoriteRepository;
 
 @Service
 public class FavoriteService {

@@ -11,9 +11,17 @@ import MyRecipesPage from "./pages/MyRecipesPage";
 import CreateRecipePage from "./pages/CreateRecipePage"; 
 import "./App.css";
 
+// Suppress MetaMask extension errors that aren't related to our app
+window.addEventListener("error", (event) => {
+  if (event.message && event.message.includes("MetaMask")) {
+    event.preventDefault();
+    return true;
+  }
+});
+
 // Protects routes that require login
 const PrivateRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem("dishcovery:user");
+  const isAuthenticated = sessionStorage.getItem("dishcovery:user");
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 

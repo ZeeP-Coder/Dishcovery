@@ -1,7 +1,7 @@
-package com.appdevg5.ghidorakings.dishcovery.controller;
+package com.appdevg5.ghidorakings.controller;
 
-import com.appdevg5.ghidorakings.dishcovery.entity.UserEntity;
-import com.appdevg5.ghidorakings.dishcovery.service.UserService;
+import com.appdevg5.ghidorakings.entity.UserEntity;
+import com.appdevg5.ghidorakings.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

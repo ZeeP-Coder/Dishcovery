@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 import { apiGet, apiPost } from "../api/backend";
-import { setCurrentUser } from "../utils/userStorage";
 
 function RegisterPage() {
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
   const navigate = useNavigate();
 
   const validateEmail = (email) => {
@@ -17,31 +18,59 @@ function RegisterPage() {
     return emailPattern.test(email);
   };
 
+  const getPasswordStrength = (pass) => {
+    if (!pass) return "weak";
+    if (pass.length < 8) return "weak";
+    if (pass.length < 12) return "medium";
+    if (/[A-Z]/.test(pass) && /[0-9]/.test(pass) && /[!@#$%^&*]/.test(pass)) return "strong";
+    return "medium";
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!nickname.trim()) {
+      newErrors.nickname = "Username is required";
+    } else if (nickname.length < 3) {
+      newErrors.nickname = "Username must be at least 3 characters";
+    }
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!validateEmail(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
+
+    if (!confirm) {
+      newErrors.confirm = "Please confirm your password";
+    } else if (password !== confirm) {
+      newErrors.confirm = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError("");
+    setServerError("");
 
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
+    if (!validateForm()) return;
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long.");
-      return;
-    }
-
-    if (password !== confirm) {
-      setError("Passwords do not match!");
-      return;
-    }
-
+    setIsLoading(true);
     try {
       // Check if email already exists in backend
       const users = await apiGet("/user/getAll");
       const existing = users.find((u) => u.email === email);
       if (existing) {
-        setError("An account with this email already exists.");
+        setServerError("An account with this email already exists.");
+        setIsLoading(false);
         return;
       }
 
@@ -52,7 +81,7 @@ function RegisterPage() {
         password,
       });
 
-      // Auto-login the user by saving minimal info in localStorage
+      // Auto-login the user by storing in sessionStorage
       const mapped = {
         id: created.getUserId ? created.getUserId : created.userId || created.user_id || created.id,
         nickname: created.getUsername ? created.getUsername : created.username,
@@ -61,61 +90,92 @@ function RegisterPage() {
 
       // Normalize fields for both plain object and JPA-returned JSON
       if (typeof mapped.id === "object") {
-        // If response is a class-like object, attempt to read properties
         mapped.id = created.userId || created.user_id || created.id;
         mapped.nickname = created.username || created.getUsername?.() || nickname;
         mapped.email = created.email || created.getEmail?.() || email;
       }
 
-      setCurrentUser({ id: mapped.id, nickname: mapped.nickname, email: mapped.email });
-      alert("Registration successful — you are now logged in.");
+      const user = { id: mapped.id, nickname: mapped.nickname, email: mapped.email };
+      sessionStorage.setItem("dishcovery:user", JSON.stringify(user));
+      setIsLoading(false);
       navigate("/");
     } catch (err) {
       console.error(err);
-      setError("Registration failed. Please try again.");
+      setServerError("Registration failed. Please check your connection and try again.");
+      setIsLoading(false);
     }
   };
+
+  const passwordStrength = getPasswordStrength(password);
 
   return (
     <div className="register-container">
       <div className="register-box">
-        <h2>Create Account</h2>
-        <form onSubmit={handleRegister}>
-          {error && <p className="error-message">{error}</p>}
+        <div className="register-header">
+          <span className="register-logo">👨‍🍳</span>
+          <h2>Join Dishcovery</h2>
+        </div>
 
-          <input
-            type="text"
-            placeholder="Nickname"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password (min 8 characters)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            required
-          />
-          <button type="submit">Sign Up</button>
-          <p>
-            Already have an account? <a href="/login">Login here</a>
-          </p>
+        {serverError && <div className="error-banner">{serverError}</div>}
+
+        <form onSubmit={handleRegister} className="register-form">
+          <div className="form-group">
+            <input
+              type="text"
+              placeholder="Username"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              className={errors.nickname ? "input-error" : ""}
+            />
+            {errors.nickname && <span className="error-text">{errors.nickname}</span>}
+          </div>
+
+          <div className="form-group">
+            <input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={errors.email ? "input-error" : ""}
+            />
+            {errors.email && <span className="error-text">{errors.email}</span>}
+          </div>
+
+          <div className="form-group">
+            <input
+              type="password"
+              placeholder="Password (min 8 characters)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={errors.password ? "input-error" : ""}
+            />
+            {password && (
+              <div className={`password-strength strength-${passwordStrength}`}>
+                Strength: <strong>{passwordStrength}</strong>
+              </div>
+            )}
+            {errors.password && <span className="error-text">{errors.password}</span>}
+          </div>
+
+          <div className="form-group">
+            <input
+              type="password"
+              placeholder="Confirm password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              className={errors.confirm ? "input-error" : ""}
+            />
+            {errors.confirm && <span className="error-text">{errors.confirm}</span>}
+          </div>
+
+          <button type="submit" className="btn-register" disabled={isLoading}>
+            {isLoading ? "Creating account..." : "Register"}
+          </button>
         </form>
+
+        <div className="register-footer">
+          <p>Already have an account? <a href="/login">Login here</a></p>
+        </div>
       </div>
     </div>
   );

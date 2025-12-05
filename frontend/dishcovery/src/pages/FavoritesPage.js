@@ -3,19 +3,17 @@ import "../App.css";
 import NavBar from "../components/NavBar";
 import RecipeGrid from "../components/RecipeGrid";
 import RecipeDetailModal from "../components/RecipeDetailModal";
-import SAMPLE_DISHES from "../data/sampleDishes";
 
 function FavoritesPage() {
   const [favorites, setFavorites] = useState([]);
   const [dishes, setDishes] = useState([]);
   const [selected, setSelected] = useState(null);
 
-  // Load data
+  // Load data from backend recipes
   useEffect(() => {
     try {
-      const favs = JSON.parse(localStorage.getItem("dishcovery:favs") || "[]");
-      setFavorites(favs);
-      setDishes(SAMPLE_DISHES);
+      setFavorites([]);
+      setDishes([]);
     } catch {
       setFavorites([]);
     }
@@ -30,7 +28,6 @@ function FavoritesPage() {
       ? favorites.filter((x) => x !== id)
       : [...favorites, id];
     setFavorites(updated);
-    localStorage.setItem("dishcovery:favs", JSON.stringify(updated));
   }
 
   return (

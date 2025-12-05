@@ -3,25 +3,24 @@ import NavBar from "../components/NavBar";
 import RecipeDetailModal from "../components/RecipeDetailModal";
 import "./MyRecipesPage.css";
 import { useNavigate } from "react-router-dom";
-import { loadUserRecipes, saveUserRecipes } from "../utils/recipeStorage";
-import { apiDelete, apiGet, API_BASE } from "../api/backend";
+import { deleteRecipe, getRecipes } from "../api/backend";
 
 export default function MyRecipesPage() {
   const [recipes, setRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [favorites, setFavorites] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("dishcovery:favs") || "[]");
-    } catch {
-      return [];
-    }
-  });
+  const [favorites, setFavorites] = useState([]);
   const navigate = useNavigate();
-  const currentUser = JSON.parse(localStorage.getItem("dishcovery:user"));
+  const userStr = sessionStorage.getItem("dishcovery:user");
+  const currentUser = userStr ? JSON.parse(userStr) : null;
   useEffect(() => {
-    // try to fetch recipes from backend and filter by userId if available
-    apiGet("/recipe/getAllRecipes")
+    if (!currentUser) {
+      setRecipes([]);
+      return;
+    }
+
+    // Fetch recipes from backend and filter by userId
+    getRecipes()
       .then((data) => {
         const mapped = (data || []).map((r) => ({
           id: r.recipeId,
@@ -32,66 +31,30 @@ export default function MyRecipesPage() {
           instructions: r.steps,
           userId: r.userId,
         }));
-        // frontend user object uses `id` (see LoginPage mapping)
-        const uid = currentUser?.id || currentUser?.userId || currentUser?.user_id || null;
-        const userRecipes = uid ? mapped.filter((r) => r.userId === uid) : mapped;
+        const uid = currentUser?.id || currentUser?.userId || currentUser?.user_id;
+        const userRecipes = uid ? mapped.filter((r) => r.userId === uid) : [];
         setRecipes(userRecipes);
       })
-      .catch(() => {
-        // fallback to local storage if backend unavailable
-        const allRecipes = JSON.parse(localStorage.getItem("dishcovery:recipes")) || [];
-        const userRecipes = allRecipes.filter((r) => r.user === currentUser?.email);
-        setRecipes(userRecipes);
+      .catch((err) => {
+        console.error("Failed to fetch recipes:", err);
+        alert("Failed to load recipes. Please check the server connection.");
       });
-  }, [currentUser?.id]);
+  }, [currentUser]);
 
   const handleDelete = async (id, backendId) => {
-    // If this recipe exists on backend, delete there first
-    if (backendId) {
-      try {
-        // Use fetch here to capture response status/body for better diagnostics
-        const url = `${API_BASE}/recipe/deleteRecipe/${backendId}`;
-        const res = await fetch(url, {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (!res.ok) {
-          const text = await res.text().catch(() => "");
-          console.error(`Delete request failed: ${res.status}`, text);
-          alert(`Delete failed: ${res.status} ${text}`);
-          return;
-        }
-
-        // remove from UI
-        setRecipes((prev) => prev.filter((r) => r.backendId !== backendId));
-        // also remove any local-storage copies that reference this backendId
-        try {
-          const saved = loadUserRecipes();
-          const updatedSaved = saved.filter((r) => r.backendId !== backendId);
-          saveUserRecipes(updatedSaved);
-        } catch (e) {
-          console.warn("Failed to clean up local storage after backend delete", e);
-        }
-        // notify other open pages (e.g., HomePage) to refresh their data
-        try {
-          window.dispatchEvent(new Event("recipesChanged"));
-        } catch (e) {
-          console.warn("Could not dispatch recipesChanged event", e);
-        }
-        return;
-      } catch (err) {
-        console.error("Backend delete failed", err);
-        alert("Could not delete recipe on server. Check the console for details.");
-        return;
-      }
+    if (!backendId) {
+      alert("Cannot delete recipe without backend ID.");
+      return;
     }
 
-    // Fallback: remove from local storage if no backend id
-    const allRecipes = loadUserRecipes();
-    const updatedRecipes = allRecipes.filter((r) => r.id !== id);
-    saveUserRecipes(updatedRecipes);
-    setRecipes(updatedRecipes.filter((r) => r.user === currentUser?.email));
+    try {
+      await deleteRecipe(backendId);
+      setRecipes((prev) => prev.filter((r) => r.backendId !== backendId));
+      alert("Recipe deleted successfully!");
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Could not delete recipe. Please try again.");
+    }
   };
 
   const openModal = (recipe) => {
@@ -109,7 +72,6 @@ export default function MyRecipesPage() {
       const updated = prev.includes(id)
         ? prev.filter((x) => x !== id)
         : [...prev, id];
-      localStorage.setItem("dishcovery:favs", JSON.stringify(updated));
       return updated;
     });
   };

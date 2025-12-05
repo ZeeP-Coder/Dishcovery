@@ -7,7 +7,6 @@ import { loadUserRecipes } from "../utils/recipeStorage";
 
 function CategoriesPage() {
   const [categories, setCategories] = useState([]);
-  const [allDishes, setAllDishes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -28,16 +27,10 @@ function CategoriesPage() {
     }));
 
     const combined = [...SAMPLE_DISHES, ...normalizedUserRecipes];
-    setAllDishes(combined);
 
     const unique = Array.from(new Set(combined.map((d) => d.cuisine)));
     setCategories(unique);
   }, []);
-
-  const openModal = (dish) => {
-    setSelectedRecipe(dish);
-    setIsModalOpen(true);
-  };
 
   const closeModal = () => {
     setSelectedRecipe(null);

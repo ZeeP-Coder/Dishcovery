@@ -1,4 +1,4 @@
-package com.appdevg5.ghidorakings.dishcovery.entity;
+package com.appdevg5.ghidorakings.entity;
 
 import jakarta.persistence.*;
 

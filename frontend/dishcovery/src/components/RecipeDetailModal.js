@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { getComments, addComment, getRatings, addRating } from "../api/backend";
 
 export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
-  // always declare hooks at the top level
-  const user = JSON.parse(localStorage.getItem("dishcovery:user")) || { id: 1, nickname: "Guest" };
+  // Get user from session storage
+  const userStr = sessionStorage.getItem("dishcovery:user");
+  const user = userStr ? JSON.parse(userStr) : { id: 1, nickname: "Guest" };
 
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
@@ -11,38 +13,49 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
   const [averageRating, setAverageRating] = useState(0);
   const [hasRated, setHasRated] = useState(false);
 
-  // Load saved comments + rating
+  // Load comments and ratings from backend
   useEffect(() => {
     if (!dish) return;
 
-    const savedComments = JSON.parse(localStorage.getItem(`dishcovery:comments:${dish.id}`) || "[]");
-    setComments(savedComments);
+    // Load comments from backend
+    getComments()
+      .then((data) => {
+        const recipeComments = (data || []).filter(c => c.recipeId === (dish.backendId || dish.id));
+        setComments(recipeComments);
+      })
+      .catch((err) => {
+        console.error("Failed to load comments:", err);
+        setComments([]);
+      });
 
-    const savedRatings = JSON.parse(localStorage.getItem("dishcovery:ratings") || "[]");
-    const recipeRatings = savedRatings.filter(r => r.recipe_id === dish.id);
+    // Load ratings from backend
+    getRatings()
+      .then((data) => {
+        const recipeRatings = (data || []).filter(r => r.recipeId === (dish.backendId || dish.id));
 
-    if (recipeRatings.length > 0) {
-      const avg = recipeRatings.reduce((a, b) => a + b.score, 0) / recipeRatings.length;
-      setAverageRating(avg.toFixed(1));
-    } else {
-      setAverageRating(0);
-    }
+        if (recipeRatings.length > 0) {
+          const avg = recipeRatings.reduce((a, b) => a + b.score, 0) / recipeRatings.length;
+          setAverageRating(avg.toFixed(1));
+        } else {
+          setAverageRating(0);
+        }
 
-    const userRating = recipeRatings.find(r => r.user_id === user.id);
-    if (userRating) {
-      setRating(userRating.score);
-      setHasRated(true);
-    } else {
-      setRating(0);
-      setHasRated(false);
-    }
+        const userRating = recipeRatings.find(r => r.userId === user.id);
+        if (userRating) {
+          setRating(userRating.score);
+          setHasRated(true);
+        } else {
+          setRating(0);
+          setHasRated(false);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load ratings:", err);
+        setAverageRating(0);
+        setRating(0);
+        setHasRated(false);
+      });
   }, [dish, user.id]);
-
-  // Save comments
-  useEffect(() => {
-    if (!dish) return;
-    localStorage.setItem(`dishcovery:comments:${dish.id}`, JSON.stringify(comments));
-  }, [comments, dish]);
 
   if (!dish) return null;
 
@@ -51,16 +64,20 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
     if (!newComment.trim()) return;
 
     const newEntry = {
-      comment_id: Date.now(),
-      recipe_id: dish.id,
-      user_id: user.id,
-      user: user.nickname,
+      recipeId: dish.backendId || dish.id,
+      userId: user.id,
       content: newComment,
-      date: new Date().toLocaleString(),
     };
 
-    setComments(prev => [...prev, newEntry]);
-    setNewComment("");
+    addComment(newEntry)
+      .then((response) => {
+        setComments(prev => [...prev, response]);
+        setNewComment("");
+      })
+      .catch((err) => {
+        console.error("Failed to add comment:", err);
+        alert("Failed to add comment. Please check the server connection.");
+      });
   };
 
   const handleRating = (value) => {
@@ -69,24 +86,31 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
       return;
     }
 
-    const savedRatings = JSON.parse(localStorage.getItem("dishcovery:ratings") || "[]");
-
-    const newRating = {
-      rating_id: Date.now(),
-      user_id: user.id,
-      recipe_id: dish.id,
+    const ratingEntry = {
+      userId: user.id,
+      recipeId: dish.backendId || dish.id,
       score: value,
     };
 
-    const updatedRatings = [...savedRatings, newRating];
-    localStorage.setItem("dishcovery:ratings", JSON.stringify(updatedRatings));
-
-    const recipeRatings = updatedRatings.filter(r => r.recipe_id === dish.id);
-    const avg = recipeRatings.reduce((a, b) => a + b.score, 0) / recipeRatings.length;
-
-    setRating(value);
-    setAverageRating(avg.toFixed(1));
-    setHasRated(true);
+    addRating(ratingEntry)
+      .then(() => {
+        setRating(value);
+        setHasRated(true);
+        // Refresh ratings from backend
+        getRatings()
+          .then((data) => {
+            const recipeRatings = (data || []).filter(r => r.recipeId === (dish.backendId || dish.id));
+            if (recipeRatings.length > 0) {
+              const avg = recipeRatings.reduce((a, b) => a + b.score, 0) / recipeRatings.length;
+              setAverageRating(avg.toFixed(1));
+            }
+          })
+          .catch((err) => console.error("Failed to refresh ratings:", err));
+      })
+      .catch((err) => {
+        console.error("Failed to add rating:", err);
+        alert("Failed to save rating. Please check the server connection.");
+      });
   };
 
   const getSteps = (name) => {

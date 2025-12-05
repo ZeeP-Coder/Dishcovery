@@ -1,21 +1,18 @@
-package com.appdevg5.ghidorakings.dishcovery.controller;
+package com.appdevg5.ghidorakings.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import com.appdevg5.ghidorakings.dishcovery.entity.RecipeEntity;
-import com.appdevg5.ghidorakings.dishcovery.service.RecipeService;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
+import com.appdevg5.ghidorakings.entity.RecipeEntity;
+import com.appdevg5.ghidorakings.service.RecipeService;
 
 
 @RestController
 @RequestMapping("/recipe")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class RecipeController {
     @Autowired
     RecipeService recipeService;
@@ -26,8 +23,25 @@ public class RecipeController {
     }
     
     @PostMapping("/insertRecipe")
-    public RecipeEntity insertRecipe(@RequestBody RecipeEntity recipeEntity) {
-        return recipeService.createRecipe(recipeEntity);
+    public ResponseEntity<?> insertRecipe(@RequestBody RecipeEntity recipeEntity) {
+        try {
+            if (recipeEntity == null) {
+                return ResponseEntity.badRequest().body("Recipe entity cannot be null");
+            }
+            if (recipeEntity.getTitle() == null || recipeEntity.getTitle().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Recipe title is required");
+            }
+            if (recipeEntity.getUserId() == null || recipeEntity.getUserId() <= 0) {
+                return ResponseEntity.badRequest().body("Valid user ID is required");
+            }
+            RecipeEntity created = recipeService.createRecipe(recipeEntity);
+            return ResponseEntity.ok(created);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating recipe: " + e.getMessage());
+        }
     }
 
     @GetMapping("/getAllRecipes")

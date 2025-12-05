@@ -7,7 +7,8 @@ function NavBar() {
   const location = useLocation();
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("dishcovery:user"));
+    const userStr = sessionStorage.getItem("dishcovery:user");
+    const storedUser = userStr ? JSON.parse(userStr) : null;
     setNickname(storedUser?.nickname || "Guest");
   }, []);
 

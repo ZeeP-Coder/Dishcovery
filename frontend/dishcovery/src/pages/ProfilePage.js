@@ -2,16 +2,14 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import "./ProfilePage.css";
-import { getCurrentUser, setCurrentUser } from "../utils/userStorage";
 
 function ProfilePage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  const user = getCurrentUser();
-  const [profilePic, setProfilePic] = useState(
-    localStorage.getItem("dishcovery:profilePic") || ""
-  );
+  const userStr = sessionStorage.getItem("dishcovery:user");
+  const user = userStr ? JSON.parse(userStr) : null;
+  const [profilePic, setProfilePic] = useState("");
   const [fileName, setFileName] = useState("");
 
   // Password state
@@ -24,8 +22,7 @@ function ProfilePage() {
   }, [user?.email]);
 
   const handleLogout = () => {
-    setCurrentUser(null);
-    localStorage.removeItem("dishcovery:profilePic");
+    sessionStorage.removeItem("dishcovery:user");
     navigate("/login");
   };
 
@@ -37,7 +34,6 @@ function ProfilePage() {
     const reader = new FileReader();
     reader.onload = () => {
       setProfilePic(reader.result);
-      localStorage.setItem("dishcovery:profilePic", reader.result);
     };
     reader.readAsDataURL(file);
   };
@@ -45,7 +41,6 @@ function ProfilePage() {
   const handleRemoveProfilePic = () => {
     setProfilePic("");
     setFileName("");
-    localStorage.removeItem("dishcovery:profilePic");
   };
 
   const handleChangePassword = (e) => {

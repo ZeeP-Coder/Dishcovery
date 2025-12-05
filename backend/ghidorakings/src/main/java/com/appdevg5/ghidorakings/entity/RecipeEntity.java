@@ -1,4 +1,4 @@
-package com.appdevg5.ghidorakings.dishcovery.entity;
+package com.appdevg5.ghidorakings.entity;
 
 import jakarta.persistence.*;
 
@@ -14,10 +14,10 @@ public class RecipeEntity {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "description", length = 1000)
+    @Column(name = "description", length = 5000, columnDefinition = "VARCHAR(5000)")
     private String description;
 
-    @Column(name = "steps", length = 2000)
+    @Column(name = "steps", length = 5000, columnDefinition = "VARCHAR(5000)")
     private String steps;
 
     @Column(name = "user_id")

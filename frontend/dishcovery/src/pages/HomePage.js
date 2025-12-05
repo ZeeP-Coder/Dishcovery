@@ -7,7 +7,6 @@ import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
 import RecipeGrid from "../components/RecipeGrid";
 import RecipeDetailModal from "../components/RecipeDetailModal";
-import { getAllRecipes } from "../utils/recipeStorage";
 import { apiGet } from "../api/backend";
 
 export default function HomePage() {
@@ -15,9 +14,8 @@ export default function HomePage() {
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState("");
   const [cuisineFilter, setCuisineFilter] = useState("All");
-  const [favorites, setFavorites] = useState(() =>
-    JSON.parse(localStorage.getItem("dishcovery:favs") || "[]")
-  );
+  const [favorites, setFavorites] = useState([]);
+  const [backendDishes, setBackendDishes] = useState(null);
 
   const normalizeRecipe = (r) => ({
     id: r.id,
@@ -39,15 +37,9 @@ export default function HomePage() {
   });
 
   const allDishes = useMemo(() => {
-    // placeholder while backend fetch runs
-    const { sample, user } = getAllRecipes(); // sample = JSON recipes, user = localStorage recipes
-    const userNorm = user.map(normalizeRecipe);
-    const sampleNorm = sample.map(normalizeRecipe);
-    userNorm.sort((a, b) => (b.id || 0) - (a.id || 0));
-    return [...sampleNorm, ...userNorm];
-  }, []);
-
-  const [backendDishes, setBackendDishes] = useState(null);
+    // Load from backend recipes, will be updated in useEffect
+    return backendDishes || [];
+  }, [backendDishes]);
 
   // Fetch backend recipes and merge with sample dishes; fallback to local-storage if backend unavailable
   useEffect(() => {
@@ -121,9 +113,7 @@ export default function HomePage() {
 
   function toggleFav(id) {
     setFavorites((prev) => {
-      const updated = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
-      localStorage.setItem("dishcovery:favs", JSON.stringify(updated));
-      return updated;
+      return prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
     });
   }
 

@@ -1,15 +1,15 @@
-package com.appdevg5.ghidorakings.dishcovery.controller;
+package com.appdevg5.ghidorakings.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.appdevg5.ghidorakings.dishcovery.entity.RatingEntity;
-import com.appdevg5.ghidorakings.dishcovery.service.RatingService;
+import com.appdevg5.ghidorakings.entity.RatingEntity;
+import com.appdevg5.ghidorakings.service.RatingService;
 
 @RestController
 @RequestMapping("/rating")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class RatingController {
 
     @Autowired

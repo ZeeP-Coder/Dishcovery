@@ -1,7 +1,7 @@
-package com.appdevg5.ghidorakings.dishcovery.controller;
+package com.appdevg5.ghidorakings.controller;
 
-import com.appdevg5.ghidorakings.dishcovery.entity.IngredientEntity;
-import com.appdevg5.ghidorakings.dishcovery.service.IngredientService;
+import com.appdevg5.ghidorakings.entity.IngredientEntity;
+import com.appdevg5.ghidorakings.service.IngredientService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/ingredients")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/ingredient")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class IngredientController {
 
     @Autowired
