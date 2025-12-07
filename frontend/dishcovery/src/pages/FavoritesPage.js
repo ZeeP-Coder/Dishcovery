@@ -44,7 +44,7 @@ function FavoritesPage() {
           ingredients: r.ingredients ? JSON.parse(r.ingredients) : [],
           instructions: r.steps || "",
           category: "Recipe",
-          cuisine: "Other",
+          cuisine: r.category || "",
           userId: r.userId,
           cookTimeMinutes: 45,
           difficulty: "Medium",
