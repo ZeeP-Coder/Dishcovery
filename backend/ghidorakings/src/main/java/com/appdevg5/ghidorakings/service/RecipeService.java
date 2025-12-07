@@ -51,6 +51,9 @@ public class RecipeService {
             if (newRecipeDetails.getIngredients() != null) {
                 recipe.setIngredients(newRecipeDetails.getIngredients());
             }
+            if (newRecipeDetails.getCategory() != null) {
+                recipe.setCategory(newRecipeDetails.getCategory());
+            }
             if (newRecipeDetails.getUserId() != null) {
                 recipe.setUserId(newRecipeDetails.getUserId());
             }

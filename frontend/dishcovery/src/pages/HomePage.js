@@ -8,6 +8,7 @@ import FilterBar from "../components/FilterBar";
 import RecipeGrid from "../components/RecipeGrid";
 import RecipeDetailModal from "../components/RecipeDetailModal";
 import { apiGet } from "../api/backend";
+import { getUserFavorites, addFavorite, deleteFavorite } from "../api/backend";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -44,27 +45,46 @@ export default function HomePage() {
   // Fetch backend recipes and merge with sample dishes; fallback to local-storage if backend unavailable
   useEffect(() => {
     let mounted = true;
-    const fetchBackend = () => {
-      apiGet("/recipe/getAllRecipes")
-        .then((data) => {
-          if (!mounted) return;
-          const mapped = (data || []).map((r) => ({
-            id: r.recipeId,
-            backendId: r.recipeId,
-            name: r.title,
-            image: r.description,
-            cuisine: r.category || r.cuisine || "Other",
-            ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
-            description: r.description || r.steps || "",
-            instructions: r.steps || "",
-            user: r.userId,
-          }));
-          setBackendDishes(mapped);
-        })
-        .catch((err) => {
-          console.warn("Could not fetch backend recipes", err);
-          setBackendDishes(null);
-        });
+    const fetchBackend = async () => {
+      try {
+        const data = await apiGet("/recipe/getAllRecipes");
+        if (!mounted) return;
+        const mapped = (data || []).map((r) => ({
+          id: r.recipeId,
+          backendId: r.recipeId,
+          name: r.title,
+          image: r.description,
+          cuisine: r.category || r.cuisine || "Other",
+          ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
+          description: r.description || r.steps || "",
+          instructions: r.steps || "",
+          cookTimeMinutes: 45,
+          difficulty: "Medium",
+          user: r.userId,
+          isUserMade: true
+        }));
+        setBackendDishes(mapped);
+      } catch (err) {
+        console.warn("Could not fetch backend recipes", err);
+        setBackendDishes(null);
+      }
+      
+      // Fetch user favorites
+      try {
+        const userStr = sessionStorage.getItem("dishcovery:user");
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          const userId = user?.id;
+          if (userId) {
+            const favoritesData = await getUserFavorites(userId);
+            if (!mounted) return;
+            const favoriteRecipeIds = favoritesData.map(fav => fav.recipeId);
+            setFavorites(favoriteRecipeIds);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch favorites", err);
+      }
     };
 
     fetchBackend();
@@ -111,10 +131,42 @@ export default function HomePage() {
     });
   }, [search, cuisineFilter, effectiveDishes]);
 
-  function toggleFav(id) {
-    setFavorites((prev) => {
-      return prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
-    });
+  async function toggleFav(recipeId) {
+    try {
+      const userStr = sessionStorage.getItem("dishcovery:user");
+      if (!userStr) {
+        alert("Please log in to add favorites");
+        return;
+      }
+      
+      const user = JSON.parse(userStr);
+      const userId = user?.id;
+      
+      if (!userId) {
+        alert("Please log in to add favorites");
+        return;
+      }
+
+      const isFavorite = favorites.includes(recipeId);
+      
+      if (isFavorite) {
+        // Remove from favorites
+        const favoritesData = await getUserFavorites(userId);
+        const favoriteToDelete = favoritesData.find(fav => fav.recipeId === recipeId);
+        
+        if (favoriteToDelete) {
+          await deleteFavorite(favoriteToDelete.favoriteId);
+          setFavorites(prev => prev.filter(id => id !== recipeId));
+        }
+      } else {
+        // Add to favorites
+        await addFavorite({ userId, recipeId });
+        setFavorites(prev => [...prev, recipeId]);
+      }
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+      alert("Failed to update favorite. Please try again.");
+    }
   }
 
   return (

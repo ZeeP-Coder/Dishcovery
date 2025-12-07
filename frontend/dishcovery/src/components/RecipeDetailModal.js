@@ -113,28 +113,6 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
       });
   };
 
-  const getSteps = (name) => {
-    switch (name) {
-      case "Adobo":
-        return [
-          "Marinate meat in soy sauce, vinegar, garlic, and bay leaf for 30 minutes.",
-          "Sauté garlic and onion, then add marinated meat.",
-          "Simmer until meat is tender and sauce thickens.",
-          "Serve with steamed rice.",
-        ];
-      case "Spaghetti Carbonara":
-        return [
-          "Boil pasta until al dente and drain.",
-          "Cook bacon until crispy, then mix with egg and cheese sauce.",
-          "Combine with hot pasta and serve immediately.",
-        ];
-      default:
-        return ["Prepare ingredients and cook according to recipe instructions."];
-    }
-  };
-
-  const steps = getSteps(dish.name);
-
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
@@ -200,15 +178,7 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
             )}
 
             <h3>How to Cook</h3>
-            {dish.isUserMade ? (
-              <p>{dish.instructions}</p>
-            ) : (
-              steps.map((s, idx) => (
-                <div key={idx} className="step" style={{ marginBottom: 6 }}>
-                  <strong>Step {idx + 1}.</strong> {s}
-                </div>
-              ))
-            )}
+            <p style={{ whiteSpace: "pre-wrap" }}>{dish.instructions || "No instructions provided."}</p>
 
             <div style={{ marginTop: "25px" }}>
               <h3 style={{ marginBottom: "10px" }}>Comments</h3>

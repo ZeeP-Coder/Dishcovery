@@ -38,7 +38,7 @@ function RegisterPage() {
     if (!email.trim()) {
       newErrors.email = "Email is required";
     } else if (!validateEmail(email)) {
-      newErrors.email = "Please enter a valid email address";
+      newErrors.email = "Please enter a valid email";
     }
 
     if (!password) {
@@ -118,7 +118,7 @@ function RegisterPage() {
 
         {serverError && <div className="error-banner">{serverError}</div>}
 
-        <form onSubmit={handleRegister} className="register-form">
+        <form onSubmit={handleRegister} className="register-form" noValidate>
           <div className="form-group">
             <input
               type="text"
@@ -132,7 +132,7 @@ function RegisterPage() {
 
           <div className="form-group">
             <input
-              type="email"
+              type="text"
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}

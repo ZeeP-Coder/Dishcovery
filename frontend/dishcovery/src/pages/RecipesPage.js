@@ -25,6 +25,9 @@ function RecipesPage() {
           cuisine: r.category || "",
           ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
           instructions: r.steps,
+          cookTimeMinutes: 45,
+          difficulty: "Medium",
+          rating: 0,
           isUserMade: true,
         }));
         setUserRecipes(mapped);

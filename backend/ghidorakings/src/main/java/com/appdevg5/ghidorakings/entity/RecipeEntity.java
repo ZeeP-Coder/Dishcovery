@@ -27,6 +27,9 @@ public class RecipeEntity {
     @Column(name = "ingredients", columnDefinition = "TEXT")
     private String ingredients;
 
+    @Column(name = "category")
+    private String category;
+
     public RecipeEntity() {
         super();
     }
@@ -77,5 +80,13 @@ public class RecipeEntity {
 
     public void setIngredients(String ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

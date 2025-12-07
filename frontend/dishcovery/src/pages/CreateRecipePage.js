@@ -10,7 +10,7 @@ function CreateRecipePage() {
 
   const [recipe, setRecipe] = useState({
     name: "",
-    image: null,
+    image: "",
     imagePreview: "",
     ingredients: [],
     instructions: "",
@@ -153,7 +153,8 @@ function CreateRecipePage() {
       description: recipe.image || recipe.category,
       steps: recipe.instructions,
       userId: userId,
-      ingredients: recipe.ingredients
+      ingredients: recipe.ingredients,
+      category: recipe.category
     };
 
     setIsLoading(true);
@@ -244,6 +245,7 @@ function CreateRecipePage() {
             <option value="Korean">Korean</option>
             <option value="American">American</option>
             <option value="Chinese">Chinese</option>
+            <option value="Other">Other</option>
           </select>
           {errors.category && <span className="error-text">{errors.category}</span>}
         </div>

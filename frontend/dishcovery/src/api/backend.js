@@ -8,7 +8,14 @@ async function handleResponse(res) {
     throw new Error(text || `Request failed with status ${res.status}`);
   }
   if (res.status === 204) return null;
-  return res.json();
+  
+  // Check content type to determine how to parse the response
+  const contentType = res.headers.get("content-type");
+  if (contentType && contentType.includes("application/json")) {
+    return res.json();
+  }
+  // For text responses (like delete confirmations)
+  return res.text();
 }
 
 export async function apiGet(path) {
@@ -124,3 +131,19 @@ export async function deleteRecipe(recipeId) {
   return apiDelete(`/recipe/deleteRecipe/${recipeId}`);
 }
 
+// ===== FAVORITE API =====
+export async function getFavorites() {
+  return apiGet("/favorite/getAllFavorites");
+}
+
+export async function getUserFavorites(userId) {
+  return apiGet(`/favorite/getUserFavorites/${userId}`);
+}
+
+export async function addFavorite(body) {
+  return apiPost("/favorite/insertFavorite", body);
+}
+
+export async function deleteFavorite(favoriteId) {
+  return apiDelete(`/favorite/deleteFavorite/${favoriteId}`);
+}

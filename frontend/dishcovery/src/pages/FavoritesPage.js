@@ -3,31 +3,112 @@ import "../App.css";
 import NavBar from "../components/NavBar";
 import RecipeGrid from "../components/RecipeGrid";
 import RecipeDetailModal from "../components/RecipeDetailModal";
+import { getUserFavorites, addFavorite, deleteFavorite, getRecipes } from "../api/backend";
 
 function FavoritesPage() {
   const [favorites, setFavorites] = useState([]);
   const [dishes, setDishes] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Load data from backend recipes
+  // Load favorites and recipes from backend
   useEffect(() => {
-    try {
-      setFavorites([]);
-      setDishes([]);
-    } catch {
-      setFavorites([]);
+    async function loadData() {
+      try {
+        const userStr = sessionStorage.getItem("dishcovery:user");
+        if (!userStr) {
+          setLoading(false);
+          return;
+        }
+        
+        const user = JSON.parse(userStr);
+        const userId = user?.id;
+        
+        if (!userId) {
+          setLoading(false);
+          return;
+        }
+
+        // Fetch all recipes and user's favorites in parallel
+        const [recipesData, favoritesData] = await Promise.all([
+          getRecipes(),
+          getUserFavorites(userId)
+        ]);
+
+        // Transform recipes to match the expected format
+        const transformedRecipes = recipesData.map(r => ({
+          id: r.recipeId,
+          backendId: r.recipeId,
+          name: r.title,
+          image: r.description || "",
+          ingredients: r.ingredients ? JSON.parse(r.ingredients) : [],
+          instructions: r.steps || "",
+          category: "Recipe",
+          cuisine: "Other",
+          userId: r.userId,
+          cookTimeMinutes: 45,
+          difficulty: "Medium",
+          isUserMade: true
+        }));
+
+        setDishes(transformedRecipes);
+        
+        // Extract recipe IDs from favorites
+        const favoriteRecipeIds = favoritesData.map(fav => fav.recipeId);
+        setFavorites(favoriteRecipeIds);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error loading favorites:", err);
+        setLoading(false);
+      }
     }
+    loadData();
   }, []);
 
   // Filter only favorite recipes
   const favoriteDishes = dishes.filter((d) => favorites.includes(d.id));
 
-  // Toggle favorite (remove if already in)
-  function toggleFav(id) {
-    const updated = favorites.includes(id)
-      ? favorites.filter((x) => x !== id)
-      : [...favorites, id];
-    setFavorites(updated);
+  // Toggle favorite
+  async function toggleFav(recipeId) {
+    try {
+      const userStr = sessionStorage.getItem("dishcovery:user");
+      if (!userStr) return;
+      
+      const user = JSON.parse(userStr);
+      const userId = user?.id;
+      
+      if (!userId) return;
+
+      const isFavorite = favorites.includes(recipeId);
+      
+      if (isFavorite) {
+        // Remove from favorites
+        const favoritesData = await getUserFavorites(userId);
+        const favoriteToDelete = favoritesData.find(fav => fav.recipeId === recipeId);
+        
+        if (favoriteToDelete) {
+          await deleteFavorite(favoriteToDelete.favoriteId);
+          setFavorites(favorites.filter(id => id !== recipeId));
+        }
+      } else {
+        // Add to favorites
+        await addFavorite({ userId, recipeId });
+        setFavorites([...favorites, recipeId]);
+      }
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="App">
+        <NavBar />
+        <main className="container">
+          <p style={{ textAlign: "center", marginTop: "2rem" }}>Loading...</p>
+        </main>
+      </div>
+    );
   }
 
   return (

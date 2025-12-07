@@ -25,6 +25,10 @@ public class FavoriteService {
         return favoriteRepository.findAll();
     }
 
+    public List<FavoriteEntity> getFavoritesByUserId(Integer userId) {
+        return favoriteRepository.findByUserId(userId);
+    }
+
     public FavoriteEntity updateFavorite(int favoriteId, FavoriteEntity newFavoriteDetails) {
         try {
             FavoriteEntity fav = favoriteRepository.findById(favoriteId).orElseThrow(() -> new NoSuchElementException("Favorite with ID " + favoriteId + " not found."));

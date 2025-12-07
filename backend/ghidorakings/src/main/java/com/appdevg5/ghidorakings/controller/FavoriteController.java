@@ -25,6 +25,11 @@ public class FavoriteController {
         return favoriteService.getAllFavorites();
     }
 
+    @GetMapping("/getUserFavorites/{userId}")
+    public List<FavoriteEntity> getUserFavorites(@PathVariable Integer userId) {
+        return favoriteService.getFavoritesByUserId(userId);
+    }
+
     @PutMapping("/updateFavorite")
     public FavoriteEntity updateFavorite(@RequestParam int favoriteId, @RequestBody FavoriteEntity newFavoriteDetails) {
         return favoriteService.updateFavorite(favoriteId, newFavoriteDetails);

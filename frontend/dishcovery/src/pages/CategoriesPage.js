@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
-import SAMPLE_DISHES from "../data/sampleDishes";
 import { useNavigate } from "react-router-dom";
 import RecipeDetailModal from "../components/RecipeDetailModal";
-import { loadUserRecipes } from "../utils/recipeStorage";
+import { getRecipes } from "../api/backend";
 
 function CategoriesPage() {
   const [categories, setCategories] = useState([]);
@@ -12,24 +11,26 @@ function CategoriesPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userRecipes = loadUserRecipes();
-    const normalizedUserRecipes = userRecipes.map((r) => ({
-      id: r.id,
-      name: r.name || "",
-      image: r.image || "",
-      ingredients: r.ingredients || [],
-      instructions: r.instructions || "",
-      description: r.description || r.instructions || "",
-      cuisine: r.category || "Unknown",
-      cookTimeMinutes: r.cookTimeMinutes || 0,
-      rating: r.rating || 0,
-      user: r.user || "Unknown",
-    }));
-
-    const combined = [...SAMPLE_DISHES, ...normalizedUserRecipes];
-
-    const unique = Array.from(new Set(combined.map((d) => d.cuisine)));
-    setCategories(unique);
+    async function loadCategories() {
+      try {
+        const recipesData = await getRecipes();
+        
+        // Extract categories from recipes
+        const categorySet = new Set();
+        recipesData.forEach(r => {
+          const category = r.category || "Other";
+          categorySet.add(category);
+        });
+        
+        const categoriesArray = Array.from(categorySet).sort();
+        setCategories(categoriesArray);
+      } catch (err) {
+        console.error("Failed to load categories:", err);
+        setCategories([]);
+      }
+    }
+    
+    loadCategories();
   }, []);
 
   const closeModal = () => {
@@ -42,34 +43,40 @@ function CategoriesPage() {
       <NavBar />
       <main className="container">
         <h1 style={{ color: "#ff7f50", marginBottom: "25px" }}>Categories</h1>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "20px",
-          }}
-        >
-          {categories.map((cat, index) => (
-            <div
-              key={index}
-              onClick={() => navigate(`/recipes?filter=${cat}`)}
-              style={{
-                background: "#fff7f1",
-                padding: "30px",
-                borderRadius: "14px",
-                boxShadow: "0 6px 16px rgba(0,0,0,0.06)",
-                cursor: "pointer",
-                textAlign: "center",
-                fontWeight: "600",
-                transition: "0.2s ease",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#ffe7df")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "#fff7f1")}
-            >
-              {cat}
-            </div>
-          ))}
-        </div>
+        {categories.length === 0 ? (
+          <p style={{ textAlign: "center", marginTop: "2rem", color: "#555", fontSize: "1.1rem" }}>
+            No recipes available yet. Create your first recipe to get started! 🍽️
+          </p>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: "20px",
+            }}
+          >
+            {categories.map((cat, index) => (
+              <div
+                key={index}
+                onClick={() => navigate(`/recipes?filter=${cat}`)}
+                style={{
+                  background: "#fff7f1",
+                  padding: "30px",
+                  borderRadius: "14px",
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.06)",
+                  cursor: "pointer",
+                  textAlign: "center",
+                  fontWeight: "600",
+                  transition: "0.2s ease",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#ffe7df")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "#fff7f1")}
+              >
+                {cat}
+              </div>
+            ))}
+          </div>
+        )}
 
         {isModalOpen && selectedRecipe && (
           <RecipeDetailModal
