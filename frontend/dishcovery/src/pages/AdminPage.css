@@ -1,6 +1,6 @@
 .admin-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bg-primary);
   padding-bottom: 2rem;
 }
 
@@ -12,7 +12,7 @@
 }
 
 .admin-container h1 {
-  color: white;
+  color: var(--text-primary);
   text-align: center;
   margin-bottom: 2rem;
   font-size: 2.5rem;
@@ -38,34 +38,37 @@
   padding: 0.75rem 2rem;
   border: none;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  background: var(--card-bg);
+  color: var(--text-primary);
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  border: 2px solid var(--text-primary);
+  font-weight: 600;
 }
 
 .tab-button:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--bg-secondary);
   transform: translateY(-2px);
 }
 
 .tab-button.active {
-  background: white;
-  color: #667eea;
+  background: #ff7f50;
+  color: white;
   font-weight: bold;
+  border-color: #ff7f50;
 }
 
 .loading {
   text-align: center;
-  color: white;
+  color: var(--text-primary);
   font-size: 1.2rem;
   padding: 3rem;
 }
 
 .no-recipes {
   text-align: center;
-  color: white;
+  color: var(--text-secondary);
   font-size: 1.1rem;
   padding: 3rem;
 }
@@ -77,16 +80,16 @@
 }
 
 .admin-recipe-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px var(--shadow);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .admin-recipe-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 12px var(--shadow-hover);
 }
 
 .recipe-header {
@@ -94,19 +97,19 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--border-color);
   padding-bottom: 0.75rem;
 }
 
 .recipe-header h3 {
-  color: #333;
+  color: var(--text-primary);
   margin: 0;
   font-size: 1.3rem;
   flex: 1;
 }
 
 .recipe-category {
-  background: #667eea;
+  background: #ff7f50;
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -120,12 +123,12 @@
 
 .recipe-info p {
   margin: 0.5rem 0;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.95rem;
 }
 
 .recipe-info strong {
-  color: #333;
+  color: var(--text-primary);
 }
 
 .recipe-ingredients {
@@ -134,7 +137,7 @@
 
 .recipe-ingredients strong {
   display: block;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
 }
 
@@ -142,7 +145,7 @@
   list-style-position: inside;
   padding-left: 0;
   margin: 0;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .recipe-ingredients li {
@@ -156,12 +159,12 @@
 
 .recipe-steps strong {
   display: block;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
 }
 
 .recipe-steps p {
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.6;
   font-size: 0.95rem;
   margin: 0;
@@ -172,7 +175,7 @@
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 2px solid #f0f0f0;
+  border-top: 2px solid var(--border-color);
 }
 
 .recipe-actions button {
@@ -208,15 +211,26 @@
   box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
 }
 
+.btn-view {
+  background: #ff7f50;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #ff9569;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 127, 80, 0.3);
+}
+
 .btn-delete {
-  background: #ff9800;
+  background: #f44336;
   color: white;
 }
 
 .btn-delete:hover {
-  background: #e68900;
+  background: #da190b;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
 }
 
 @media (max-width: 768px) {

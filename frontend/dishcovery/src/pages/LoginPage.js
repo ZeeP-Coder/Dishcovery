@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import { apiGet } from "../api/backend";
+import { ThemeContext } from "../App";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -76,8 +77,34 @@ function LoginPage() {
     }
   };
 
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
   return (
     <div className="login-container">
+      <button 
+        onClick={toggleTheme} 
+        className="theme-toggle-btn"
+        style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          background: 'var(--card-bg)',
+          border: '2px solid var(--border-color)',
+          borderRadius: '50%',
+          width: '45px',
+          height: '45px',
+          cursor: 'pointer',
+          fontSize: '1.3rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.3s ease',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          zIndex: 1000
+        }}
+      >
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
       <div className="login-box">
         <div className="login-header">
           <span className="login-logo">🍽️</span>

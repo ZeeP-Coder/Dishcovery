@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 import { apiGet, apiPost } from "../api/backend";
+import { ThemeContext } from "../App";
 
 function RegisterPage() {
   const [nickname, setNickname] = useState("");
@@ -107,13 +108,38 @@ function RegisterPage() {
   };
 
   const passwordStrength = getPasswordStrength(password);
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   return (
     <div className="register-container">
+      <button 
+        onClick={toggleTheme} 
+        className="theme-toggle-btn"
+        style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          background: 'var(--card-bg)',
+          border: '2px solid var(--border-color)',
+          borderRadius: '50%',
+          width: '45px',
+          height: '45px',
+          cursor: 'pointer',
+          fontSize: '1.3rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.3s ease',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          zIndex: 1000
+        }}
+      >
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
       <div className="register-box">
         <div className="register-header">
-          <span className="register-logo">👨‍🍳</span>
-          <h2>Join Dishcovery</h2>
+          <span className="register-logo">🍽️</span>
+          <h2>Register for Dishcovery</h2>
         </div>
 
         {serverError && <div className="error-banner">{serverError}</div>}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
+import RecipeDetailModal from "../components/RecipeDetailModal";
 import { apiGet, apiPut, apiDelete } from "../api/backend";
 import "./AdminPage.css";
 
@@ -10,6 +11,7 @@ function AdminPage() {
   const [activeTab, setActiveTab] = useState("pending");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -90,7 +92,20 @@ function AdminPage() {
   };
 
   const RecipeCard = ({ recipe, isPending }) => {
-    const ingredients = recipe.ingredients ? JSON.parse(recipe.ingredients) : [];
+    let ingredients = [];
+    try {
+      if (recipe.ingredients) {
+        const parsed = JSON.parse(recipe.ingredients);
+        // Filter out empty ingredients (just dashes or empty strings)
+        ingredients = parsed.filter(ing => {
+          const name = typeof ing === 'string' ? ing : ing.name;
+          return name && name.trim() && name.trim() !== '-';
+        });
+      }
+    } catch (e) {
+      console.error("Error parsing ingredients:", e);
+      ingredients = [];
+    }
     
     return (
       <div className="admin-recipe-card">
@@ -106,11 +121,23 @@ function AdminPage() {
 
         <div className="recipe-ingredients">
           <strong>Ingredients:</strong>
-          <ul>
-            {ingredients.map((ing, idx) => (
-              <li key={idx}>{ing.name} - {ing.quantity}</li>
-            ))}
-          </ul>
+          {ingredients.length > 0 ? (
+            <ul>
+              {ingredients.map((ing, idx) => {
+                const name = typeof ing === 'string' ? ing : ing.name;
+                const quantity = typeof ing === 'object' ? ing.quantity : '';
+                return (
+                  <li key={idx}>
+                    {name} {quantity && `- ${quantity}`}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic', margin: '0.5rem 0' }}>
+              No ingredients listed
+            </p>
+          )}
         </div>
 
         <div className="recipe-steps">
@@ -135,12 +162,52 @@ function AdminPage() {
               </button>
             </>
           ) : (
-            <button 
-              className="btn-delete" 
-              onClick={() => handleDeleteApproved(recipe.recipeId)}
-            >
-              Delete
-            </button>
+            <>
+              <button 
+                className="btn-view" 
+                onClick={() => {
+                  // Parse ingredients for the modal
+                  let parsedIngredients = [];
+                  try {
+                    if (recipe.ingredients) {
+                      const parsed = JSON.parse(recipe.ingredients);
+                      parsedIngredients = parsed
+                        .filter(ing => {
+                          const name = typeof ing === 'string' ? ing : ing.name;
+                          return name && name.trim() && name.trim() !== '-';
+                        })
+                        .map(ing => typeof ing === 'string' ? ing : ing.name);
+                    }
+                  } catch (e) {
+                    console.error("Error parsing ingredients:", e);
+                    parsedIngredients = [];
+                  }
+                  
+                  // Convert recipe to the format expected by RecipeDetailModal
+                  const mappedRecipe = {
+                    id: recipe.recipeId,
+                    name: recipe.title,
+                    image: recipe.imageUrl,
+                    description: recipe.description,
+                    cuisine: recipe.category || "",
+                    ingredients: parsedIngredients,
+                    instructions: recipe.steps,
+                    cookTimeMinutes: 45,
+                    difficulty: "Medium",
+                    rating: 0
+                  };
+                  setSelectedRecipe(mappedRecipe);
+                }}
+              >
+                👁 View
+              </button>
+              <button 
+                className="btn-delete" 
+                onClick={() => handleDeleteApproved(recipe.recipeId)}
+              >
+                Delete
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -194,6 +261,15 @@ function AdminPage() {
           </div>
         )}
       </div>
+
+      {selectedRecipe && (
+        <RecipeDetailModal
+          dish={selectedRecipe}
+          onClose={() => setSelectedRecipe(null)}
+          toggleFav={() => {}} // Admin doesn't use favorites
+          isFav={false}
+        />
+      )}
     </div>
   );
 }
