@@ -44,6 +44,8 @@ public class UserService {
             user.setUsername(newUserDetails.getUsername());
             user.setEmail(newUserDetails.getEmail());
             user.setPassword(newUserDetails.getPassword());
+            // Optionally update admin status if provided
+            user.setAdmin(newUserDetails.isAdmin());
 
             return userRepository.save(user);
 
@@ -62,5 +64,10 @@ public class UserService {
             logger.error("Error deleting user with ID {}", userId, e);
             return "Error deleting user with ID " + userId;
         }
+    }
+
+    // LOGIN
+    public UserEntity login(String email, String password) {
+        return userRepository.findByEmailAndPassword(email, password).orElse(null);
     }
 }

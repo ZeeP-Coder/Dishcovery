@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import RecipeGrid from "../components/RecipeGrid";
 import RecipeDetailModal from "../components/RecipeDetailModal";
-import { getRecipes } from "../api/backend";
+import { getRecipes, getUserFavorites, addFavorite, deleteFavorite } from "../api/backend";
 
 function RecipesPage() {
   const location = useLocation();
@@ -21,7 +21,8 @@ function RecipesPage() {
           id: r.recipeId,
           backendId: r.recipeId,
           name: r.title,
-          image: r.description,
+          image: r.imageUrl,
+          description: r.description,
           cuisine: r.category || "",
           ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
           instructions: r.steps,
@@ -36,6 +37,26 @@ function RecipesPage() {
         console.error("Failed to fetch recipes:", err);
         alert("Failed to load recipes. Please check the server connection.");
       });
+    
+    // Fetch user favorites
+    const fetchFavorites = async () => {
+      try {
+        const userStr = sessionStorage.getItem("dishcovery:user");
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          const userId = user?.id;
+          if (userId) {
+            const favoritesData = await getUserFavorites(userId);
+            const favoriteRecipeIds = favoritesData.map(fav => fav.recipeId);
+            setFavorites(favoriteRecipeIds);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch favorites", err);
+      }
+    };
+    
+    fetchFavorites();
   }, []);
 
   // Extract ?filter=<CuisineName>
@@ -54,16 +75,46 @@ function RecipesPage() {
   }, [category, allDishes]);
 
   // Toggle favorite
-  function toggleFav(id) {
-    setFavorites((prev) => {
-      return prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : [...prev, id];
-    });
+  async function toggleFav(recipeId) {
+    try {
+      const userStr = sessionStorage.getItem("dishcovery:user");
+      if (!userStr) {
+        alert("Please log in to add favorites");
+        return;
+      }
+      
+      const user = JSON.parse(userStr);
+      const userId = user?.id;
+      
+      if (!userId) {
+        alert("Please log in to add favorites");
+        return;
+      }
+
+      const isFavorite = favorites.includes(recipeId);
+      
+      if (isFavorite) {
+        // Remove from favorites
+        const favoritesData = await getUserFavorites(userId);
+        const favoriteToDelete = favoritesData.find(fav => fav.recipeId === recipeId);
+        
+        if (favoriteToDelete) {
+          await deleteFavorite(favoriteToDelete.favoriteId);
+          setFavorites(prev => prev.filter(id => id !== recipeId));
+        }
+      } else {
+        // Add to favorites
+        await addFavorite({ userId, recipeId });
+        setFavorites(prev => [...prev, recipeId]);
+      }
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+      alert("Failed to update favorite. Please try again.");
+    }
   }
 
   return (
-    <div className="App">
+    <div className="App" style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
       <NavBar />
       <main className="container">
         <div

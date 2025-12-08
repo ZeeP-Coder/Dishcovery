@@ -3,7 +3,7 @@ import NavBar from "../components/NavBar";
 import RecipeDetailModal from "../components/RecipeDetailModal";
 import "./MyRecipesPage.css";
 import { useNavigate } from "react-router-dom";
-import { deleteRecipe, getRecipes } from "../api/backend";
+import { deleteRecipe, apiGet } from "../api/backend";
 
 export default function MyRecipesPage() {
   const [recipes, setRecipes] = useState([]);
@@ -19,21 +19,28 @@ export default function MyRecipesPage() {
       return;
     }
 
-    // Fetch recipes from backend and filter by userId
-    getRecipes()
+    // Fetch user's recipes from backend (includes both approved and pending)
+    const uid = currentUser?.id || currentUser?.userId || currentUser?.user_id;
+    if (!uid) {
+      setRecipes([]);
+      return;
+    }
+
+    apiGet(`/recipe/getRecipesByUserId/${uid}`)
       .then((data) => {
         const mapped = (data || []).map((r) => ({
           id: r.recipeId,
           backendId: r.recipeId,
           name: r.title,
-          image: r.description,
+          description: r.description,
+          image: r.imageUrl,
           ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
           instructions: r.steps,
+          category: r.category || "",
           userId: r.userId,
+          isApproved: r.approved,
         }));
-        const uid = currentUser?.id || currentUser?.userId || currentUser?.user_id;
-        const userRecipes = uid ? mapped.filter((r) => r.userId === uid) : [];
-        setRecipes(userRecipes);
+        setRecipes(mapped);
       })
       .catch((err) => {
         console.error("Failed to fetch recipes:", err);
@@ -95,6 +102,34 @@ export default function MyRecipesPage() {
               <div key={recipe.id} className="myrecipe-card">
                 {recipe.image && <img src={recipe.image} alt={recipe.name} />}
                 <h3>{recipe.name}</h3>
+                
+                {/* Approval Status Badge */}
+                <div style={{ marginBottom: "10px" }}>
+                  {recipe.isApproved ? (
+                    <span style={{ 
+                      background: "#4caf50", 
+                      color: "white", 
+                      padding: "4px 12px", 
+                      borderRadius: "12px", 
+                      fontSize: "0.85rem",
+                      fontWeight: "bold"
+                    }}>
+                      ✓ Approved
+                    </span>
+                  ) : (
+                    <span style={{ 
+                      background: "#ff9800", 
+                      color: "white", 
+                      padding: "4px 12px", 
+                      borderRadius: "12px", 
+                      fontSize: "0.85rem",
+                      fontWeight: "bold"
+                    }}>
+                      ⏳ Pending Approval
+                    </span>
+                  )}
+                </div>
+
                 <p className="small-label"><b>Ingredients: </b>{recipe.ingredients.join(", ")}</p>
                 <p className="small-label"><b>Instructions: </b>{recipe.instructions}</p>
 

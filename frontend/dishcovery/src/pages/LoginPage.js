@@ -56,12 +56,19 @@ function LoginPage() {
         id: user.userId,
         nickname: user.username,
         email: user.email,
+        isAdmin: user.admin || false,
       };
 
       // Store user in sessionStorage (not localStorage)
       sessionStorage.setItem("dishcovery:user", JSON.stringify(current));
       setIsLoading(false);
-      navigate("/");
+      
+      // Redirect to admin page if user is admin, otherwise home
+      if (current.isAdmin) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       console.error(err);
       setServerError("Connection failed. Please check your internet and try again.");

@@ -1,4 +1,35 @@
 /* ----------------------------------------------------------
+   THEME VARIABLES
+---------------------------------------------------------- */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --border-color: #eee;
+  --card-bg: #ffffff;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+  --navbar-bg: #ff7f50;
+  --navbar-text: #ffffff;
+  --navbar-border: #ff6a3d;
+}
+
+[data-theme='dark'] {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --text-primary: #eee;
+  --text-secondary: #ccc;
+  --border-color: #333;
+  --card-bg: #0f3460;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-hover: rgba(0, 0, 0, 0.5);
+  --navbar-bg: #0f3460;
+  --navbar-text: #eee;
+  --navbar-border: #333;
+}
+
+/* ----------------------------------------------------------
    GLOBAL RESET + BASE
 ---------------------------------------------------------- */
 * {
@@ -10,8 +41,9 @@
 body, html, #root {
   height: 100%;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Poppins", sans-serif;
-  color: #333;
-  background: #ffffff;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ----------------------------------------------------------
@@ -36,7 +68,7 @@ body, html, #root {
 .section-title {
   font-size: 1.35rem;
   margin-bottom: 12px;
-  color: #333;
+  color: #ff7f50;
 }
 
 .section-header {
@@ -50,9 +82,9 @@ body, html, #root {
    NAVBAR
 ---------------------------------------------------------- */
 .header {
-  background: #ffffff;
-  border-bottom: 1px solid #f4f4f4;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 10px var(--shadow);
 }
 
 .nav {
@@ -78,7 +110,7 @@ body, html, #root {
 
 .nav-links a {
   text-decoration: none;
-  color: #333;
+  color: var(--text-primary);
   font-weight: 500;
   padding: 6px 12px;
   border-radius: 8px;
@@ -139,11 +171,11 @@ body, html, #root {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #ffffff;
+  background: var(--card-bg);
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid #eaeaea;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 12px var(--shadow);
   margin-top: 16px;
   margin-bottom: 12px;
 }
@@ -153,6 +185,8 @@ body, html, #root {
   outline: none;
   width: 260px;
   font-size: 0.95rem;
+  background: transparent;
+  color: var(--text-primary);
 }
 
 /* ----------------------------------------------------------
@@ -166,17 +200,18 @@ body, html, #root {
 }
 
 .filter-chip {
-  background: #ffffff;
-  border: 1px solid #eaeaea;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   padding: 6px 12px;
   border-radius: 999px;
   font-size: 0.85rem;
   cursor: pointer;
   transition: 0.15s ease-in-out;
+  color: var(--text-primary);
 }
 
 .filter-chip:hover {
-  background: #fff4ed;
+  background: rgba(255, 112, 67, 0.1);
   border-color: #ffb193;
 }
 
@@ -230,10 +265,10 @@ body, html, #root {
 }
 
 .card {
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 20px var(--shadow);
   transition: 0.18s ease-in-out;
   display: flex;
   flex-direction: column;
@@ -241,7 +276,7 @@ body, html, #root {
 
 .card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.07);
+  box-shadow: 0 12px 32px var(--shadow-hover);
 }
 
 .card img {
@@ -259,16 +294,17 @@ body, html, #root {
 
 .card h3 {
   font-size: 1.05rem;
+  color: var(--text-primary);
 }
 
 .card p {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
 .meta {
   font-size: 0.85rem;
-  color: #777;
+  color: var(--text-secondary);
   display: flex;
   justify-content: space-between;
 }
@@ -279,8 +315,14 @@ body, html, #root {
 .fav-btn {
   background: none;
   border: none;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   cursor: pointer;
+  color: #ff7f50;
+  transition: transform 0.1s ease;
+}
+
+.fav-btn:hover {
+  transform: scale(1.15);
 }
 
 /* ----------------------------------------------------------
@@ -298,7 +340,7 @@ body, html, #root {
 }
 
 .modal {
-  background: #ffffff;
+  background: var(--card-bg);
   width: 100%;
   max-width: 900px;
   border-radius: 14px;
@@ -308,7 +350,7 @@ body, html, #root {
 
 .modal-header {
   padding: 16px 20px;
-  border-bottom: 1px solid #f4f4f4;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
 }
@@ -327,9 +369,30 @@ body, html, #root {
 }
 
 .ingredients {
-  background: #fff7f1;
+  background: var(--bg-secondary);
   padding: 12px;
   border-radius: 8px;
+}
+
+/* ----------------------------------------------------------
+   CATEGORY CARDS
+---------------------------------------------------------- */
+.category-card {
+  background: var(--card-bg);
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px var(--shadow);
+  cursor: pointer;
+  text-align: center;
+  font-weight: 600;
+  transition: 0.2s ease;
+  color: #ff7f50;
+}
+
+.category-card:hover {
+  background: rgba(255, 127, 80, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px var(--shadow-hover);
 }
 
 /* ----------------------------------------------------------
@@ -337,10 +400,10 @@ body, html, #root {
 ---------------------------------------------------------- */
 .footer {
   margin-top: auto;
-  background: #ffffff;
-  border-top: 1px solid #f5f5f5;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
   padding: 18px;
   text-align: center;
-  color: #777;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }

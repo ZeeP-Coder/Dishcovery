@@ -10,6 +10,7 @@ function CreateRecipePage() {
 
   const [recipe, setRecipe] = useState({
     name: "",
+    description: "",
     image: "",
     imagePreview: "",
     ingredients: [],
@@ -150,7 +151,8 @@ function CreateRecipePage() {
 
     const payload = {
       title: recipe.name,
-      description: recipe.image || recipe.category,
+      description: recipe.description,
+      imageUrl: recipe.image,
       steps: recipe.instructions,
       userId: userId,
       ingredients: recipe.ingredients,
@@ -217,6 +219,17 @@ function CreateRecipePage() {
             className={errors.name ? "input-error" : ""}
           />
           {errors.name && <span className="error-text">{errors.name}</span>}
+        </div>
+
+        <div className="form-group">
+          <label>Description</label>
+          <textarea
+            placeholder="A brief description of your recipe..."
+            value={recipe.description}
+            onChange={(e) => setRecipe({ ...recipe, description: e.target.value })}
+            rows="3"
+            style={{ minHeight: "80px" }}
+          />
         </div>
 
         <div className="form-group">

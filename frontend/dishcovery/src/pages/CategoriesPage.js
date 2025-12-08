@@ -39,12 +39,12 @@ function CategoriesPage() {
   };
 
   return (
-    <div className="App">
+    <div className="App" style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
       <NavBar />
       <main className="container">
         <h1 style={{ color: "#ff7f50", marginBottom: "25px" }}>Categories</h1>
         {categories.length === 0 ? (
-          <p style={{ textAlign: "center", marginTop: "2rem", color: "#555", fontSize: "1.1rem" }}>
+          <p style={{ textAlign: "center", marginTop: "2rem", color: "var(--text-secondary)", fontSize: "1.1rem" }}>
             No recipes available yet. Create your first recipe to get started! 🍽️
           </p>
         ) : (
@@ -59,18 +59,7 @@ function CategoriesPage() {
               <div
                 key={index}
                 onClick={() => navigate(`/recipes?filter=${cat}`)}
-                style={{
-                  background: "#fff7f1",
-                  padding: "30px",
-                  borderRadius: "14px",
-                  boxShadow: "0 6px 16px rgba(0,0,0,0.06)",
-                  cursor: "pointer",
-                  textAlign: "center",
-                  fontWeight: "600",
-                  transition: "0.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#ffe7df")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "#fff7f1")}
+                className="category-card"
               >
                 {cat}
               </div>

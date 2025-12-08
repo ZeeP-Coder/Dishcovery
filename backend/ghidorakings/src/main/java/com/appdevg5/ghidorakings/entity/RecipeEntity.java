@@ -30,6 +30,12 @@ public class RecipeEntity {
     @Column(name = "category")
     private String category;
 
+    @Column(name = "image_url", length = 1000)
+    private String imageUrl;
+
+    @Column(name = "is_approved")
+    private boolean isApproved = false;
+
     public RecipeEntity() {
         super();
     }
@@ -88,5 +94,21 @@ public class RecipeEntity {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public boolean isApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(boolean isApproved) {
+        this.isApproved = isApproved;
     }
 }

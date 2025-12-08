@@ -7,7 +7,7 @@ export default function RecipeGrid({ dishes, onOpen, favorites, toggleFav }) {
       {dishes.map((d) => (
         <RecipeCard key={d.id} dish={d} onOpen={() => onOpen(d)} isFav={favorites.includes(d.id)} toggleFav={toggleFav} />
       ))}
-      {dishes.length === 0 && <div style={{gridColumn:"1/-1", color:"#777", padding:"20px", background:"#fff", borderRadius:8}}>No recipes found.</div>}
+      {dishes.length === 0 && <div style={{gridColumn:"1/-1", color:"var(--text-secondary)", padding:"20px", background:"var(--card-bg)", borderRadius:8}}>No recipes found.</div>}
     </div>
   );
 }

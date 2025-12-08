@@ -7,7 +7,7 @@ export default function RecipeCard({ dish, onOpen, isFav, toggleFav }) {
       <div className="card-body">
         <div style={{display:"flex", justifyContent:"space-between", alignItems:"start", gap:8}}>
           <h3>{dish.name}</h3>
-          <button className="fav-btn" onClick={() => toggleFav(dish.id)} aria-label="Toggle favorite">{isFav ? "★" : "☆"}</button>
+          <button className="fav-btn" onClick={() => toggleFav(dish.id)} aria-label="Toggle favorite">{isFav ? "♥" : "♡"}</button>
         </div>
         {dish.description && !dish.description.startsWith('http') && <p>{dish.description}</p>}
         <div className="meta">

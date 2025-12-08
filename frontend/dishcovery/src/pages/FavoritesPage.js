@@ -40,7 +40,8 @@ function FavoritesPage() {
           id: r.recipeId,
           backendId: r.recipeId,
           name: r.title,
-          image: r.description || "",
+          image: r.imageUrl || "",
+          description: r.description || "",
           ingredients: r.ingredients ? JSON.parse(r.ingredients) : [],
           instructions: r.steps || "",
           category: "Recipe",
@@ -115,7 +116,7 @@ function FavoritesPage() {
     <div className="App">
       <NavBar />
       <main className="container">
-        <h2 className="section-title">⭐ Your Favorite Recipes</h2>
+        <h2 className="section-title">♥ Your Favorite Recipes</h2>
         {favoriteDishes.length > 0 ? (
           <RecipeGrid
             dishes={favoriteDishes}
@@ -124,8 +125,8 @@ function FavoritesPage() {
             toggleFav={toggleFav}
           />
         ) : (
-          <p style={{ textAlign: "center", marginTop: "2rem", color: "#555" }}>
-            You don’t have any favorite recipes yet. ⭐<br />
+          <p style={{ textAlign: "center", marginTop: "2rem", color: "var(--text-secondary)" }}>
+            You don't have any favorite recipes yet. ♡<br />
             Go back to the Home Page and add some!
           </p>
         )}

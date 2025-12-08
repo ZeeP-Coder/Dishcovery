@@ -119,7 +119,7 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
         <div className="modal-header">
           <div>
             <h2>{dish.name}</h2>
-            <div style={{ color: "#777", fontSize: ".95rem" }}>
+            <div style={{ color: "var(--text-secondary)", fontSize: ".95rem" }}>
               {dish.cuisine || "Unknown"} • {dish.cookTimeMinutes || "45"}m • {dish.difficulty || "Medium"}
             </div>
 
@@ -141,11 +141,11 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
                     ★
                   </span>
                 ))}
-                <span style={{ color: "#36489e", fontWeight: 600 }}>
+                <span style={{ color: "#ff7f50", fontWeight: 600 }}>
                   {averageRating > 0 ? `${averageRating}/5` : "No ratings yet"}
                 </span>
               </div>
-              <small style={{ color: "#666" }}>
+              <small style={{ color: "var(--text-secondary)" }}>
                 {hasRated
                   ? `You rated this ${rating} star${rating > 1 ? "s" : ""}`
                   : "Click a star to rate this recipe"}
@@ -155,7 +155,7 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
 
           <div>
             <button className="fav-btn" onClick={() => toggleFav(dish.id)}>
-              {isFav ? "★" : "☆"}
+              {isFav ? "♥" : "♡"}
             </button>
             <button onClick={onClose} style={{ marginLeft: 10 }}>Close</button>
           </div>
@@ -186,25 +186,25 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {comments.map(c => (
                     <div
-                      key={c.comment_id}
+                      key={idx}
                       style={{
-                        background: "#f8f9ff",
-                        border: "1px solid #e3ebee",
+                        background: "var(--bg-secondary)",
+                        border: "1px solid var(--border-color)",
                         borderRadius: "10px",
                         padding: "10px 14px",
-                        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                        boxShadow: "0 2px 6px var(--shadow)",
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                        <strong style={{ color: "#36489e" }}>{c.user}</strong>
-                        <small style={{ color: "#999" }}>{c.date}</small>
+                        <strong style={{ color: "#ff7f50" }}>{c.user}</strong>
+                        <small style={{ color: "var(--text-secondary)" }}>{c.date}</small>
                       </div>
-                      <p style={{ margin: 0, fontSize: "0.95rem", color: "#333" }}>{c.content}</p>
+                      <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-primary)" }}>{c.content}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p style={{ color: "#777" }}>No comments yet. Be the first to share your thoughts!</p>
+                <p style={{ color: "var(--text-secondary)" }}>No comments yet. Be the first to share your thoughts!</p>
               )}
             </div>
           </div>

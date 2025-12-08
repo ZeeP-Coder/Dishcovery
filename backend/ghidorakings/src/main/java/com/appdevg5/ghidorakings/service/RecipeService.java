@@ -27,6 +27,8 @@ public class RecipeService {
         
         // Ensure ID is null so JPA creates a new record instead of updating an existing one
         recipe.setRecipeId(null);
+        // New recipes must be approved by admin first
+        recipe.setApproved(false);
         return recipeRepository.save(recipe);
     }
 
@@ -54,6 +56,9 @@ public class RecipeService {
             if (newRecipeDetails.getCategory() != null) {
                 recipe.setCategory(newRecipeDetails.getCategory());
             }
+            if (newRecipeDetails.getImageUrl() != null) {
+                recipe.setImageUrl(newRecipeDetails.getImageUrl());
+            }
             if (newRecipeDetails.getUserId() != null) {
                 recipe.setUserId(newRecipeDetails.getUserId());
             }
@@ -70,6 +75,33 @@ public class RecipeService {
         } else {
             return "Recipe with ID " + recipeId + " not found.";
         }
+    }
+
+    // Get all pending recipes (not approved)
+    public List<RecipeEntity> getPendingRecipes() {
+        return recipeRepository.findByIsApproved(false);
+    }
+
+    // Get all approved recipes
+    public List<RecipeEntity> getApprovedRecipes() {
+        return recipeRepository.findByIsApproved(true);
+    }
+
+    // Approve a recipe
+    public RecipeEntity approveRecipe(int recipeId) {
+        try {
+            RecipeEntity recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new NoSuchElementException("Recipe with ID " + recipeId + " not found."));
+            recipe.setApproved(true);
+            return recipeRepository.save(recipe);
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+
+    // Get all recipes by user ID (for "My Recipes" page)
+    public List<RecipeEntity> getRecipesByUserId(Integer userId) {
+        return recipeRepository.findByUserId(userId);
     }
 
 }

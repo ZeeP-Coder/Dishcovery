@@ -1,6 +1,6 @@
 .create-recipe-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #fffaf5 0%, #fff5ed 100%);
+  background: var(--bg-primary);
   font-family: "Poppins", sans-serif;
   padding: 30px 20px;
 }
@@ -8,10 +8,10 @@
 .create-recipe-page .create-recipe-container {
   max-width: 700px;
   margin: 0 auto;
-  background: white;
+  background: var(--card-bg);
   padding: 40px 35px;
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 60px var(--shadow);
   animation: slideUp 0.5s ease-out;
 }
 
@@ -46,12 +46,12 @@
 }
 
 .create-recipe-page .back-btn:hover {
-  background: #fff3ed;
+  background: var(--bg-secondary);
   transform: translateX(-4px);
 }
 
 .create-recipe-page h2 {
-  color: #333;
+  color: #ff7f50;
   margin: 0;
   font-size: 28px;
   font-weight: 700;
@@ -83,11 +83,10 @@
 
 .create-recipe-page .form-group label {
   font-weight: 600;
-  color: #333;
+  color: var(--text-secondary);
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #666;
 }
 
 /* Inputs & textarea */
@@ -97,9 +96,10 @@
   width: 100%;
   padding: 14px;
   border-radius: 12px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-color);
   font-size: 15px;
-  background: white;
+  background: var(--card-bg);
+  color: var(--text-primary);
   font-family: inherit;
   transition: all 0.3s ease;
   box-sizing: border-box;
@@ -164,7 +164,7 @@
   list-style-type: none;
   padding: 15px;
   margin: 15px 0;
-  background: #f9f9f9;
+  background: var(--bg-secondary);
   border-radius: 12px;
   display: flex;
   flex-wrap: wrap;

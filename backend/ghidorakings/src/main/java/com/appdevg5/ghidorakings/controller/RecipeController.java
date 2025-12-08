@@ -46,7 +46,14 @@ public class RecipeController {
 
     @GetMapping("/getAllRecipes")
     public List<RecipeEntity> getAllRecipes() {
-        return recipeService.getAllRecipes();
+        // Only return approved recipes for regular users
+        return recipeService.getApprovedRecipes();
+    }
+
+    @GetMapping("/getRecipesByUserId/{userId}")
+    public ResponseEntity<List<RecipeEntity>> getRecipesByUserId(@PathVariable Integer userId) {
+        List<RecipeEntity> userRecipes = recipeService.getRecipesByUserId(userId);
+        return ResponseEntity.ok(userRecipes);
     }
 
     @PutMapping("/updateRecipe/{recipeId}")
@@ -60,6 +67,45 @@ public class RecipeController {
 
     @DeleteMapping("/deleteRecipe/{recipeId}")
     public ResponseEntity<String> deleteRecipe(@PathVariable Integer recipeId) {
+        String result = recipeService.deleteRecipe(recipeId);
+        if (result == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ADMIN: Get all pending recipes (not approved)
+    @GetMapping("/admin/pending")
+    public ResponseEntity<List<RecipeEntity>> getPendingRecipes() {
+        List<RecipeEntity> pendingRecipes = recipeService.getPendingRecipes();
+        return ResponseEntity.ok(pendingRecipes);
+    }
+
+    // ADMIN: Get all approved recipes
+    @GetMapping("/admin/approved")
+    public ResponseEntity<List<RecipeEntity>> getApprovedRecipes() {
+        List<RecipeEntity> approvedRecipes = recipeService.getApprovedRecipes();
+        return ResponseEntity.ok(approvedRecipes);
+    }
+
+    // ADMIN: Approve a recipe
+    @PutMapping("/admin/approve/{recipeId}")
+    public ResponseEntity<?> approveRecipe(@PathVariable Integer recipeId) {
+        try {
+            RecipeEntity approved = recipeService.approveRecipe(recipeId);
+            if (approved == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(approved);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error approving recipe: " + e.getMessage());
+        }
+    }
+
+    // ADMIN: Reject/delete a recipe
+    @DeleteMapping("/admin/reject/{recipeId}")
+    public ResponseEntity<String> rejectRecipe(@PathVariable Integer recipeId) {
         String result = recipeService.deleteRecipe(recipeId);
         if (result == null) {
             return ResponseEntity.notFound().build();

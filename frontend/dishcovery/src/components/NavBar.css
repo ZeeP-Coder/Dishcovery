@@ -3,9 +3,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 48px;
-  background-color: white;
-  border-bottom: 1px solid #eee;
+  background-color: var(--navbar-bg);
+  border-bottom: 1px solid var(--navbar-border);
   font-family: "Poppins", sans-serif;
+  transition: background-color 0.3s ease;
 }
 
 .navbar-left {
@@ -18,7 +19,7 @@
   display: flex;
   align-items: center;
   font-weight: bold;
-  color: #ff7043;
+  color: var(--navbar-text);
   font-size: 1.3rem;
 }
 
@@ -27,11 +28,11 @@
 }
 
 .welcome {
-  background: #fff5ee;
+  background: rgba(255, 255, 255, 0.2);
   padding: 4px 12px;
   border-radius: 8px;
   font-size: 0.95rem;
-  color: #333;
+  color: var(--navbar-text);
 }
 
 .navbar-right {
@@ -42,12 +43,34 @@
 
 .navbar-right a {
   text-decoration: none;
-  color: #333;
+  color: var(--navbar-text);
   font-weight: 500;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
 .navbar-right a:hover,
 .navbar-right a.active {
-  color: #ff7043;
+  color: var(--navbar-text);
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: brightness(0) invert(1);
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(20deg);
 }
