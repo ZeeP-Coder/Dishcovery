@@ -30,7 +30,7 @@ public class RecipeEntity {
     @Column(name = "category")
     private String category;
 
-    @Column(name = "image_url", length = 1000)
+    @Column(name = "image", length = 1000)
     private String imageUrl;
 
     @Column(name = "is_approved")

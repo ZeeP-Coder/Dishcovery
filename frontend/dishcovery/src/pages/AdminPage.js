@@ -108,7 +108,7 @@ function AdminPage() {
     }
     
     return (
-      <div className="admin-recipe-card">
+      <div className="admin-recipe-card" style={{ position: 'relative', paddingBottom: '70px' }}>
         <div className="recipe-header">
           <h3>{recipe.title}</h3>
           <span className="recipe-category">{recipe.category || "Uncategorized"}</span>
@@ -145,7 +145,15 @@ function AdminPage() {
           <p>{recipe.steps || "No steps provided"}</p>
         </div>
 
-        <div className="recipe-actions">
+        <div className="recipe-actions" style={{ 
+          position: 'absolute', 
+          bottom: '14px', 
+          left: '14px', 
+          right: '14px',
+          display: 'flex',
+          gap: '10px',
+          justifyContent: 'space-between'
+        }}>
           {isPending ? (
             <>
               <button 

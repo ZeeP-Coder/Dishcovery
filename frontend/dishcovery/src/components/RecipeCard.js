@@ -2,7 +2,7 @@ import React from "react";
 
 export default function RecipeCard({ dish, onOpen, isFav, toggleFav }) {
   return (
-    <article className="card">
+    <article className="card" style={{position: "relative", paddingBottom: "60px"}}>
       <img src={dish.image} alt={dish.name} />
       <div className="card-body">
         <div style={{display:"flex", justifyContent:"space-between", alignItems:"start", gap:8}}>
@@ -17,9 +17,24 @@ export default function RecipeCard({ dish, onOpen, isFav, toggleFav }) {
           </div>
           <div>{Array.from({length: Math.round(dish.rating || 0)}).map((_,i)=>(<span key={i}>★</span>))}</div>
         </div>
-        <div style={{marginTop:10, display:"flex", justifyContent:"flex-end"}}>
-          <button onClick={onOpen} style={{padding:"8px 12px", borderRadius:8, border:"none", background:"#FF7F50", color:"#fff", cursor:"pointer"}}>View</button>
-        </div>
+        <button 
+          onClick={onOpen} 
+          style={{
+            position: "absolute",
+            bottom: "14px",
+            right: "14px",
+            padding: "8px 20px",
+            borderRadius: 8,
+            border: "none",
+            background: "#FF7F50",
+            color: "#fff",
+            cursor: "pointer",
+            fontWeight: "500",
+            fontSize: "0.95rem"
+          }}
+        >
+          View
+        </button>
       </div>
     </article>
   );

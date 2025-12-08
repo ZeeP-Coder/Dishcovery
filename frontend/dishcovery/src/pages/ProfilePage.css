@@ -3,15 +3,15 @@
   max-width: 450px;
   margin: 30px auto;
   padding: 20px;
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px var(--shadow);
   text-align: center;
 }
 
 .profile-title {
   font-size: 26px;
-  color: #ff7043;
+  color: #ff7f50;
   font-weight: 700;
   margin-bottom: 20px;
 }
@@ -22,8 +22,8 @@
   border-radius: 50%;
   overflow: hidden;
   margin: 0 auto 10px;
-  background-color: #f4f4f4;
-  border: 3px solid #d3d3d3;
+  background-color: var(--bg-secondary);
+  border: 3px solid var(--border-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -36,14 +36,14 @@
 }
 
 .profile-no-pic {
-  color: #888;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
 .profile-details {
   margin-top: 20px;
   text-align: left;
-  background-color: #f7f7f7;
+  background-color: var(--bg-secondary);
   padding: 15px 18px;
   border-radius: 12px;
 }
@@ -51,6 +51,7 @@
 .profile-details p {
   margin: 8px 0;
   font-size: 16px;
+  color: var(--text-primary);
 }
 
 /* File input button */
@@ -67,14 +68,14 @@
 }
 
 .btn-remove-pic:hover {
-  background-color: #b7281d;
+  background-color: #ff9569;
 }
 
 .file-name {
   display: block;
   margin-top: 6px;
   font-size: 13px;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 /* Password Section */
@@ -85,7 +86,7 @@
 .password-title {
   font-size: 20px;
   font-weight: 600;
-  color: #ff7043;
+  color: #ff7f50;
   margin-bottom: 12px;
 }
 
@@ -106,7 +107,15 @@
   padding: 10px;
   font-size: 14px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.password-row input:focus {
+  outline: none;
+  border-color: #ff7f50;
+  box-shadow: 0 0 0 3px rgba(255, 127, 80, 0.2);
 }
 
 .password-update-row input {
@@ -125,7 +134,7 @@
 }
 
 .btn-change-password:hover {
-  background-color: #b7281d;
+  background-color: #ff9569;
 }
 
 /* Logout */

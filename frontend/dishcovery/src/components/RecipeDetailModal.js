@@ -184,7 +184,7 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
               <h3 style={{ marginBottom: "10px" }}>Comments</h3>
               {comments.length > 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {comments.map(c => (
+                  {comments.map((c, idx) => (
                     <div
                       key={idx}
                       style={{
@@ -196,8 +196,19 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                        <strong style={{ color: "#ff7f50" }}>{c.user}</strong>
-                        <small style={{ color: "var(--text-secondary)" }}>{c.date}</small>
+                        <strong style={{ color: "#ff7f50" }}>{c.username || `User ${c.userId}`}</strong>
+                        <small style={{ color: "var(--text-secondary)" }}>
+                          {c.datetimeCreatedAt 
+                            ? new Date(c.datetimeCreatedAt).toLocaleString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric', 
+                                year: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true
+                              })
+                            : "Just now"}
+                        </small>
                       </div>
                       <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-primary)" }}>{c.content}</p>
                     </div>
