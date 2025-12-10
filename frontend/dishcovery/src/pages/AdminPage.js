@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
-import RecipeDetailModal from "../components/RecipeDetailModal";
 import { apiGet, apiPut, apiDelete } from "../api/backend";
 import "./AdminPage.css";
 
@@ -596,39 +595,30 @@ function AdminPage() {
         </div>
 
         <div className="recipe-actions">
-          {isPending ? (
-            <>
-              <button className="btn-approve" onClick={() => handleApprove(recipe.recipeId)}>
-                ✓ Approve
-              </button>
-              <button className="btn-reject" onClick={() => handleReject(recipe.recipeId)}>
-                ✗ Reject
-              </button>
-            </>
-          ) : (
-            <>
-              <button className="btn-view" onClick={() => {
-                const mappedRecipe = {
-                  id: recipe.recipeId,
-                  backendId: recipe.recipeId,
-                  name: recipe.title,
-                  image: recipe.image,
-                  description: recipe.description,
-                  cuisine: recipe.category || "",
-                  ingredients: ingredients.map(ing => typeof ing === 'string' ? ing : ing.name),
-                  instructions: recipe.steps,
-                  cookTimeMinutes: 45,
-                  difficulty: "Medium",
-                  rating: 0
-                };
-                setSelectedRecipe(mappedRecipe);
-              }}>
-                👁 View
-              </button>
-              <button className="btn-delete" onClick={() => handleDeleteRecipe(recipe.recipeId)}>
-                🗑️ Delete
-              </button>
-            </>
+          <button className="btn-view" onClick={() => {
+            const mappedRecipe = {
+              id: recipe.recipeId,
+              backendId: recipe.recipeId,
+              name: recipe.title,
+              image: recipe.image,
+              description: recipe.description,
+              cuisine: recipe.category || "",
+              ingredients: ingredients.map(ing => typeof ing === 'string' ? ing : ing.name),
+              instructions: recipe.steps,
+              cookTimeMinutes: 45,
+              difficulty: "Medium",
+              rating: 0,
+              estimatedPrice: recipe.estimatedPrice,
+              isPending: isPending
+            };
+            setSelectedRecipe(mappedRecipe);
+          }}>
+            👁 View & {isPending ? 'Review' : 'Manage'}
+          </button>
+          {!isPending && (
+            <button className="btn-delete" onClick={() => handleDeleteRecipe(recipe.recipeId)}>
+              🗑️ Delete
+            </button>
           )}
         </div>
       </div>
@@ -770,12 +760,102 @@ function AdminPage() {
       </div>
 
       {selectedRecipe && (
-        <RecipeDetailModal
-          dish={selectedRecipe}
-          onClose={() => setSelectedRecipe(null)}
-          toggleFav={() => {}}
-          isFav={false}
-        />
+        <div className="modal-overlay" onClick={() => setSelectedRecipe(null)}>
+          <div className="modal-content admin-recipe-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setSelectedRecipe(null)}>✕</button>
+            
+            <div className="modal-body">
+              <h2>{selectedRecipe.name}</h2>
+              
+              {selectedRecipe.image && (
+                <img 
+                  src={selectedRecipe.image} 
+                  alt={selectedRecipe.name} 
+                  style={{ width: '100%', maxHeight: '300px', objectFit: 'cover', borderRadius: '12px', marginBottom: '20px' }}
+                />
+              )}
+              
+              <div className="recipe-meta">
+                <span className="badge">{selectedRecipe.cuisine}</span>
+                {selectedRecipe.estimatedPrice && (
+                  <span className="price-badge">₱{selectedRecipe.estimatedPrice.toFixed(2)}</span>
+                )}
+              </div>
+              
+              {selectedRecipe.description && (
+                <div className="recipe-section">
+                  <h3>Description</h3>
+                  <p>{selectedRecipe.description}</p>
+                </div>
+              )}
+              
+              <div className="recipe-section">
+                <h3>Ingredients</h3>
+                <ul className="ingredients-list">
+                  {selectedRecipe.ingredients.map((ing, i) => (
+                    <li key={i}>{ing}</li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="recipe-section">
+                <h3>Instructions</h3>
+                <p style={{ whiteSpace: 'pre-wrap' }}>{selectedRecipe.instructions}</p>
+              </div>
+              
+              {selectedRecipe.isPending && (
+                <div className="admin-actions" style={{ 
+                  display: 'flex', 
+                  gap: '12px', 
+                  marginTop: '24px', 
+                  paddingTop: '24px', 
+                  borderTop: '2px solid #e0e0e0' 
+                }}>
+                  <button 
+                    className="btn-approve" 
+                    onClick={() => {
+                      handleApprove(selectedRecipe.backendId);
+                      setSelectedRecipe(null);
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '12px 24px',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      background: '#4caf50',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    ✓ Approve Recipe
+                  </button>
+                  <button 
+                    className="btn-reject" 
+                    onClick={() => {
+                      handleReject(selectedRecipe.backendId);
+                      setSelectedRecipe(null);
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '12px 24px',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      background: '#f44336',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    ✗ Reject Recipe
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
