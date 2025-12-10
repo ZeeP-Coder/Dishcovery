@@ -16,6 +16,7 @@ function CreateRecipePage() {
     ingredients: [],
     instructions: "",
     category: "",
+    estimatedPrice: "",
     id: editingRecipe?.id || Date.now(),
     backendId: editingRecipe?.backendId || null,
   });
@@ -54,6 +55,13 @@ function CreateRecipePage() {
 
     if (recipe.image && !isValidUrl(recipe.image)) {
       newErrors.image = "Please enter a valid image URL";
+    }
+
+    if (recipe.estimatedPrice) {
+      const price = parseFloat(recipe.estimatedPrice);
+      if (isNaN(price) || price < 0) {
+        newErrors.estimatedPrice = "Please enter a valid price (0 or higher)";
+      }
     }
 
     setErrors(newErrors);
@@ -156,7 +164,8 @@ function CreateRecipePage() {
       steps: recipe.instructions,
       userId: userId,
       ingredients: recipe.ingredients,
-      category: recipe.category
+      category: recipe.category,
+      estimatedPrice: recipe.estimatedPrice ? parseFloat(recipe.estimatedPrice) : null
     };
 
     setIsLoading(true);
@@ -261,6 +270,20 @@ function CreateRecipePage() {
             <option value="Other">Other</option>
           </select>
           {errors.category && <span className="error-text">{errors.category}</span>}
+        </div>
+
+        <div className="form-group">
+          <label>Estimated Price (₱)</label>
+          <input
+            type="number"
+            placeholder="e.g., 250.50"
+            value={recipe.estimatedPrice}
+            onChange={(e) => setRecipe({ ...recipe, estimatedPrice: e.target.value })}
+            min="0"
+            step="0.01"
+            className={errors.estimatedPrice ? "input-error" : ""}
+          />
+          {errors.estimatedPrice && <span className="error-text">{errors.estimatedPrice}</span>}
         </div>
 
         <div className="form-group">

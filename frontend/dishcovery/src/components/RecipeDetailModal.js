@@ -121,6 +121,7 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
             <h2>{dish.name}</h2>
             <div style={{ color: "var(--text-secondary)", fontSize: ".95rem" }}>
               {dish.cuisine || "Unknown"} • {dish.cookTimeMinutes || "45"}m • {dish.difficulty || "Medium"}
+              {dish.estimatedPrice !== null && ` • ₱${dish.estimatedPrice.toFixed(2)}`}
             </div>
 
             <div style={{ marginTop: 8 }}>

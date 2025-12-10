@@ -5,6 +5,7 @@ import NavBar from "../components/NavBar";
 import HeroBanner from "../components/HeroBanner";
 import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
+import PriceFilter from "../components/PriceFilter";
 import RecipeGrid from "../components/RecipeGrid";
 import RecipeDetailModal from "../components/RecipeDetailModal";
 import { apiGet } from "../api/backend";
@@ -15,6 +16,7 @@ export default function HomePage() {
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState("");
   const [cuisineFilter, setCuisineFilter] = useState("All");
+  const [priceFilter, setPriceFilter] = useState({ minPrice: null, maxPrice: null });
   const [favorites, setFavorites] = useState([]);
   const [backendDishes, setBackendDishes] = useState(null);
 
@@ -33,6 +35,7 @@ export default function HomePage() {
     instructions: r.instructions || "",
     cookTimeMinutes: r.cookTimeMinutes || 45,
     difficulty: r.difficulty || "Medium",
+    estimatedPrice: r.estimatedPrice || null,
     isUserMade: !!r.user,
     original: r,
   });
@@ -60,6 +63,7 @@ export default function HomePage() {
           instructions: r.steps || "",
           cookTimeMinutes: 45,
           difficulty: "Medium",
+          estimatedPrice: r.estimatedPrice || null,
           user: r.userId,
           isUserMade: true
         }));
@@ -122,6 +126,11 @@ export default function HomePage() {
     const s = search.trim().toLowerCase();
     return effectiveDishes.filter((d) => {
       if (cuisineFilter !== "All" && d.cuisine !== cuisineFilter) return false;
+      
+      // Price filter
+      if (priceFilter.minPrice !== null && (d.estimatedPrice === null || d.estimatedPrice < priceFilter.minPrice)) return false;
+      if (priceFilter.maxPrice !== null && (d.estimatedPrice === null || d.estimatedPrice > priceFilter.maxPrice)) return false;
+      
       if (!s) return true;
       if (d.name.toLowerCase().includes(s)) return true;
       if (d.cuisine.toLowerCase().includes(s)) return true;
@@ -129,7 +138,7 @@ export default function HomePage() {
       if (Array.isArray(d.ingredients) && d.ingredients.some((i) => (i?.name || "").toLowerCase().includes(s))) return true;
       return false;
     });
-  }, [search, cuisineFilter, effectiveDishes]);
+  }, [search, cuisineFilter, priceFilter, effectiveDishes]);
 
   async function toggleFav(recipeId) {
     try {
@@ -176,6 +185,7 @@ export default function HomePage() {
       <main className="container">
         <SearchBar value={search} onChange={setSearch} />
         <FilterBar cuisines={cuisines} selected={cuisineFilter} onSelect={setCuisineFilter} />
+        <PriceFilter onFilter={setPriceFilter} />
         <section className="section">
           <div className="section-header">
             <h2 className="section-title">Recipes</h2>

@@ -33,6 +33,9 @@ public class RecipeEntity {
     @Column(name = "image", length = 1000)
     private String imageUrl;
 
+    @Column(name = "estimated_price")
+    private Double estimatedPrice;
+
     @Column(name = "is_approved")
     private boolean isApproved = false;
 
@@ -102,6 +105,14 @@ public class RecipeEntity {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Double getEstimatedPrice() {
+        return estimatedPrice;
+    }
+
+    public void setEstimatedPrice(Double estimatedPrice) {
+        this.estimatedPrice = estimatedPrice;
     }
 
     public boolean isApproved() {

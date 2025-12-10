@@ -49,6 +49,7 @@ function FavoritesPage() {
           userId: r.userId,
           cookTimeMinutes: 45,
           difficulty: "Medium",
+          estimatedPrice: r.estimatedPrice || null,
           isUserMade: true
         }));
 

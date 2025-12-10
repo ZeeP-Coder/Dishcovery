@@ -14,6 +14,7 @@ export default function RecipeCard({ dish, onOpen, isFav, toggleFav }) {
           <div>
             {dish.cuisine}
             {dish.cookTimeMinutes > 0 && ` • ${dish.cookTimeMinutes}m`}
+            {dish.estimatedPrice !== null && ` • ₱${dish.estimatedPrice.toFixed(2)}`}
           </div>
           <div>{Array.from({length: Math.round(dish.rating || 0)}).map((_,i)=>(<span key={i}>★</span>))}</div>
         </div>

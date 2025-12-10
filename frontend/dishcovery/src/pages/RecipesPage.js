@@ -29,6 +29,7 @@ function RecipesPage() {
           cookTimeMinutes: 45,
           difficulty: "Medium",
           rating: 0,
+          estimatedPrice: r.estimatedPrice || null,
           isUserMade: true,
         }));
         setUserRecipes(mapped);
