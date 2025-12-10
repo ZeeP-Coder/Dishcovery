@@ -10,6 +10,7 @@ import CategoriesPage from "./pages/CategoriesPage";
 import MyRecipesPage from "./pages/MyRecipesPage"; 
 import CreateRecipePage from "./pages/CreateRecipePage";
 import AdminPage from "./pages/AdminPage";
+import AdminHomePage from "./pages/AdminHomePage";
 import "./App.css";
 
 export const ThemeContext = createContext();
@@ -26,6 +27,15 @@ window.addEventListener("error", (event) => {
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = sessionStorage.getItem("dishcovery:user");
   return isAuthenticated ? children : <Navigate to="/login" replace />;
+};
+
+// Home route with admin/user differentiation
+const HomeRoute = () => {
+  const userStr = sessionStorage.getItem("dishcovery:user");
+  if (!userStr) return <Navigate to="/login" replace />;
+  
+  const user = JSON.parse(userStr);
+  return user.isAdmin ? <AdminHomePage /> : <HomePage />;
 };
 
 // Protects routes that require admin access
@@ -55,7 +65,7 @@ function App() {
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
     <Router>
       <Routes>
-        <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+        <Route path="/" element={<HomeRoute />} />
         <Route path="/recipes" element={<PrivateRoute><RecipesPage /></PrivateRoute>} />
         <Route path="/categories" element={<PrivateRoute><CategoriesPage /></PrivateRoute>} />
         <Route path="/favorites" element={<PrivateRoute><FavoritesPage /></PrivateRoute>} />

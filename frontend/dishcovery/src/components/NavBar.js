@@ -34,25 +34,46 @@ function NavBar() {
         >
           {theme === 'light' ? '🌙' : '☀️'}
         </button>
-        <Link to="/" className={location.pathname === "/" ? "active" : ""}>
-          Home
-        </Link>
-        <Link to="/recipes" className={location.pathname === "/recipes" ? "active" : ""}>
-          Recipes
-        </Link>
-        <Link to="/categories" className={location.pathname === "/categories" ? "active" : ""}>
-          Categories
-        </Link>
-        <Link to="/favorites" className={location.pathname === "/favorites" ? "active" : ""}>
-          Favorites
-        </Link>
-        <Link to="/my-recipes" className={location.pathname === "/my-recipes" ? "active" : ""}>
-          My Recipes
-        </Link>
-        <Link to="/profile" className={location.pathname === "/profile" ? "active" : ""}>
-          Profile
-        </Link>
-        {isAdmin && <Link to="/admin" className={location.pathname === "/admin" ? "active" : ""}>Admin</Link>}
+        {isAdmin ? (
+          <>
+            <Link to="/" className={location.pathname === "/" ? "active" : ""}>
+              Dashboard
+            </Link>
+            <Link to="/admin" className={location.pathname === "/admin" ? "active" : ""}>
+              Admin Panel
+            </Link>
+            <Link to="/my-recipes" className={location.pathname === "/my-recipes" ? "active" : ""}>
+              My Recipes
+            </Link>
+            <Link to="/create-recipe" className={location.pathname === "/create-recipe" ? "active" : ""}>
+              Create Recipe
+            </Link>
+            <Link to="/profile" className={location.pathname === "/profile" ? "active" : ""}>
+              Profile
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link to="/" className={location.pathname === "/" ? "active" : ""}>
+              Home
+            </Link>
+            <Link to="/recipes" className={location.pathname === "/recipes" ? "active" : ""}>
+              Recipes
+            </Link>
+            <Link to="/categories" className={location.pathname === "/categories" ? "active" : ""}>
+              Categories
+            </Link>
+            <Link to="/favorites" className={location.pathname === "/favorites" ? "active" : ""}>
+              Favorites
+            </Link>
+            <Link to="/my-recipes" className={location.pathname === "/my-recipes" ? "active" : ""}>
+              My Recipes
+            </Link>
+            <Link to="/profile" className={location.pathname === "/profile" ? "active" : ""}>
+              Profile
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );
