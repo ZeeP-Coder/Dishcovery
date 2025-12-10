@@ -156,7 +156,7 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
 
           <div>
             <button className="fav-btn" onClick={() => toggleFav(dish.id)}>
-              {isFav ? "♥" : "♡"}
+              {typeof isFav === 'function' ? (isFav(dish.id) ? "♥" : "♡") : (isFav ? "♥" : "♡")}
             </button>
             <button onClick={onClose} style={{ marginLeft: 10 }}>Close</button>
           </div>
