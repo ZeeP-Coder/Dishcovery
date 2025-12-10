@@ -16,6 +16,8 @@ function CreateRecipePage() {
     ingredients: [],
     instructions: "",
     category: "",
+    difficulty: "",
+    cookTimeMinutes: "",
     estimatedPrice: "",
     id: editingRecipe?.id || Date.now(),
     backendId: editingRecipe?.backendId || null,
@@ -27,7 +29,22 @@ function CreateRecipePage() {
   const [serverError, setServerError] = useState("");
 
   useEffect(() => {
-    if (editingRecipe) setRecipe(editingRecipe);
+    if (editingRecipe) {
+      setRecipe({
+        name: editingRecipe.name || "",
+        description: editingRecipe.description || "",
+        imageFile: editingRecipe.image || editingRecipe.imageFile || null,
+        imagePreview: editingRecipe.image || editingRecipe.imagePreview || "",
+        ingredients: editingRecipe.ingredients || [],
+        instructions: editingRecipe.instructions || "",
+        category: editingRecipe.category || "",
+        difficulty: editingRecipe.difficulty || "",
+        cookTimeMinutes: editingRecipe.cookTimeMinutes || "",
+        estimatedPrice: editingRecipe.estimatedPrice || "",
+        id: editingRecipe.id || Date.now(),
+        backendId: editingRecipe.backendId || null,
+      });
+    }
   }, [editingRecipe]);
 
   const validateForm = () => {
@@ -150,16 +167,26 @@ function CreateRecipePage() {
     const payload = {
       title: recipe.name,
       description: recipe.description,
-      image: recipe.imageFile || "", // Send base64 string or empty
+      image: recipe.imageFile || "",
       steps: recipe.instructions,
       userId: userId,
       ingredients: recipe.ingredients,
       category: recipe.category,
+      difficulty: recipe.difficulty || null,
+      cookTimeMinutes: recipe.cookTimeMinutes ? parseInt(recipe.cookTimeMinutes) : null,
       estimatedPrice: recipe.estimatedPrice ? parseFloat(recipe.estimatedPrice) : null
     };
 
     setIsLoading(true);
     setServerError("");
+    
+    // Log payload for debugging
+    console.log("Sending recipe payload:", {
+      ...payload,
+      image: payload.image ? `${payload.image.substring(0, 50)}...` : 'none',
+      imageSize: payload.image ? payload.image.length : 0
+    });
+    
     try {
       if (editingRecipe && editingRecipe.backendId) {
         // update existing recipe on backend
@@ -187,7 +214,21 @@ function CreateRecipePage() {
       navigate("/myrecipes");
     } catch (err) {
       console.error("Error details:", err);
-      setServerError(`Could not save recipe: ${err.message}`);
+      
+      // Provide more helpful error messages
+      let errorMessage = "Could not save recipe";
+      
+      if (err.message.includes("Failed to fetch")) {
+        errorMessage = "Cannot connect to server. Please make sure the backend is running on port 8080.";
+      } else if (err.message.includes("NetworkError") || err.message.includes("ERR_CONNECTION_REFUSED")) {
+        errorMessage = "Backend server is not running. Please start the backend application.";
+      } else if (err.message.includes("Data too long") || err.message.includes("Data truncation")) {
+        errorMessage = "Image is too large. Please use a smaller image (under 2MB).";
+      } else if (err.message) {
+        errorMessage = `Could not save recipe: ${err.message}`;
+      }
+      
+      setServerError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -271,14 +312,40 @@ function CreateRecipePage() {
         </div>
 
         <div className="form-group">
-          <label>Estimated Price (₱)</label>
+          <label>Difficulty</label>
+          <select
+            value={recipe.difficulty}
+            onChange={(e) => setRecipe({ ...recipe, difficulty: e.target.value })}
+            className="category-select"
+          >
+            <option value="">Select Difficulty</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Cooking Time (minutes)</label>
           <input
             type="number"
-            placeholder="e.g., 250.50"
+            placeholder="e.g., 45"
+            value={recipe.cookTimeMinutes}
+            onChange={(e) => setRecipe({ ...recipe, cookTimeMinutes: e.target.value })}
+            min="5"
+            step="5"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Estimated Cost (₱)</label>
+          <input
+            type="number"
+            placeholder="e.g., 250"
             value={recipe.estimatedPrice}
             onChange={(e) => setRecipe({ ...recipe, estimatedPrice: e.target.value })}
             min="0"
-            step="0.01"
+            step="5"
             className={errors.estimatedPrice ? "input-error" : ""}
           />
           {errors.estimatedPrice && <span className="error-text">{errors.estimatedPrice}</span>}
@@ -309,7 +376,7 @@ function CreateRecipePage() {
                     onClick={() => removeIngredient(i)}
                     title="Remove"
                   >
-                    ✕
+                    ×
                   </button>
                 </li>
               ))}

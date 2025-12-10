@@ -26,8 +26,8 @@ function RecipesPage() {
           cuisine: r.category || "",
           ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
           instructions: r.steps,
-          cookTimeMinutes: 45,
-          difficulty: "Medium",
+          cookTimeMinutes: r.cookTimeMinutes || null,
+          difficulty: r.difficulty || null,
           rating: 0,
           estimatedPrice: r.estimatedPrice || null,
           isUserMade: true,
@@ -142,7 +142,7 @@ function RecipesPage() {
                 cursor: "pointer",
               }}
             >
-              ✕ Clear Filter
+              × Clear Filter
             </button>
           )}
         </div>

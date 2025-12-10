@@ -20,7 +20,7 @@ function NavBar() {
     <nav className="navbar">
       <div className="navbar-left">
         <div className="logo">
-          <span role="img" aria-label="logo">🍽️</span>
+          <span role="img" aria-label="logo">👨‍🍳</span>
           <span className="brand-name">Dishcovery</span>
         </div>
         <span className="welcome">Hi, {nickname}!</span>
@@ -32,13 +32,10 @@ function NavBar() {
           onClick={toggleTheme}
           aria-label="Toggle theme"
         >
-          {theme === 'light' ? '🌙' : '☀️'}
+          {theme === 'light' ? '☾' : '☀'}
         </button>
         {isAdmin ? (
           <>
-            <Link to="/" className={location.pathname === "/" ? "active" : ""}>
-              Dashboard
-            </Link>
             <Link to="/admin" className={location.pathname === "/admin" ? "active" : ""}>
               Admin Panel
             </Link>

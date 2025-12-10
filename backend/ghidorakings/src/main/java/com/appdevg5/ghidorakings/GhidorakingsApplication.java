@@ -19,10 +19,10 @@ public class GhidorakingsApplication {
 	CommandLineRunner initAdmin(UserRepository userRepository) {
 		return args -> {
 			// Check if admin already exists
-			if (userRepository.findByEmail("jnfranzadin@gmail.com").isEmpty()) {
+			if (userRepository.findByEmail("dishcoveryadmin@gmail.com").isEmpty()) {
 				UserEntity admin = new UserEntity();
 				admin.setUsername("Admin");
-				admin.setEmail("jnfranzadin@gmail.com");
+				admin.setEmail("dishcoveryadmin@gmail.com");
 				admin.setPassword("dishcoveryadmin");
 				admin.setAdmin(true);
 				userRepository.save(admin);

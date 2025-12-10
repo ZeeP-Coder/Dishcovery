@@ -37,6 +37,9 @@ export default function MyRecipesPage() {
           ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
           instructions: r.steps,
           category: r.category || "",
+          difficulty: r.difficulty || null,
+          cookTimeMinutes: r.cookTimeMinutes || null,
+          estimatedPrice: r.estimatedPrice || null,
           userId: r.userId,
           isApproved: r.approved,
         }));
@@ -103,6 +106,14 @@ export default function MyRecipesPage() {
                 {recipe.image && <img src={recipe.image} alt={recipe.name} />}
                 <h3>{recipe.name}</h3>
                 
+                {/* Metadata line */}
+                <div style={{ marginBottom: "8px", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+                  {recipe.category}
+                  {recipe.cookTimeMinutes > 0 && ` • ${recipe.cookTimeMinutes}m`}
+                  {recipe.difficulty && ` • ${recipe.difficulty}`}
+                  {recipe.estimatedPrice !== null && ` • ₱${Math.round(recipe.estimatedPrice)}`}
+                </div>
+                
                 {/* Approval Status Badge */}
                 <div style={{ marginBottom: "10px" }}>
                   {recipe.isApproved ? (
@@ -125,7 +136,7 @@ export default function MyRecipesPage() {
                       fontSize: "0.85rem",
                       fontWeight: "bold"
                     }}>
-                      ⏳ Pending Approval
+                      ○ Pending Approval
                     </span>
                   )}
                 </div>

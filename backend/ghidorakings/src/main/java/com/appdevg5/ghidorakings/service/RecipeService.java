@@ -56,6 +56,15 @@ public class RecipeService {
             if (newRecipeDetails.getCategory() != null) {
                 recipe.setCategory(newRecipeDetails.getCategory());
             }
+            if (newRecipeDetails.getDifficulty() != null) {
+                recipe.setDifficulty(newRecipeDetails.getDifficulty());
+            }
+            if (newRecipeDetails.getCookTimeMinutes() != null) {
+                recipe.setCookTimeMinutes(newRecipeDetails.getCookTimeMinutes());
+            }
+            if (newRecipeDetails.getEstimatedPrice() != null) {
+                recipe.setEstimatedPrice(newRecipeDetails.getEstimatedPrice());
+            }
             if (newRecipeDetails.getImage() != null) {
                 recipe.setImage(newRecipeDetails.getImage());
             }

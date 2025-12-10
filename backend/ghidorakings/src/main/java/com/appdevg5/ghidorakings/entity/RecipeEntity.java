@@ -1,6 +1,7 @@
 package com.appdevg5.ghidorakings.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "recipe")
@@ -29,6 +30,13 @@ public class RecipeEntity {
 
     @Column(name = "category")
     private String category;
+
+    @Column(name = "difficulty")
+    private String difficulty;
+
+    @JsonProperty("cookTimeMinutes")
+    @Column(name = "cook_time_minutes")
+    private Integer cookTimeMinutes;
 
     @Column(name = "image", columnDefinition = "LONGTEXT")
     private String image;
@@ -97,6 +105,22 @@ public class RecipeEntity {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public Integer getCookTimeMinutes() {
+        return cookTimeMinutes;
+    }
+
+    public void setCookTimeMinutes(Integer cookTimeMinutes) {
+        this.cookTimeMinutes = cookTimeMinutes;
     }
 
     public String getImage() {

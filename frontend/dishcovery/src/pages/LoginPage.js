@@ -103,11 +103,11 @@ function LoginPage() {
           zIndex: 1000
         }}
       >
-        {theme === 'dark' ? '☀️' : '🌙'}
+        {theme === 'dark' ? '☀' : '☾'}
       </button>
       <div className="login-box">
         <div className="login-header">
-          <span className="login-logo">🍽️</span>
+          <span className="login-logo">👨‍🍳</span>
           <h2>Login to Dishcovery</h2>
         </div>
         

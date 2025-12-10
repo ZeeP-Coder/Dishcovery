@@ -266,7 +266,7 @@ function AdminPage() {
       <div className="dashboard-view">
         <div className="stats-grid">
           <div className="stat-card" style={{ borderColor: '#ff7f50' }}>
-            <div className="stat-icon" style={{ color: '#ff7f50' }}>📚</div>
+            <div className="stat-icon" style={{ color: '#ff7f50' }}>▣</div>
             <div className="stat-info">
               <h3>{totalRecipes}</h3>
               <p>Total Recipes</p>
@@ -274,7 +274,7 @@ function AdminPage() {
           </div>
           
           <div className="stat-card" style={{ borderColor: '#ffa500' }}>
-            <div className="stat-icon" style={{ color: '#ffa500' }}>⏳</div>
+            <div className="stat-icon" style={{ color: '#ffa500' }}>⧗</div>
             <div className="stat-info">
               <h3>{pendingRecipes.length}</h3>
               <p>Pending Approval</p>
@@ -282,7 +282,7 @@ function AdminPage() {
           </div>
           
           <div className="stat-card" style={{ borderColor: '#4169e1' }}>
-            <div className="stat-icon" style={{ color: '#4169e1' }}>👥</div>
+            <div className="stat-icon" style={{ color: '#4169e1' }}>⚈</div>
             <div className="stat-info">
               <h3>{totalUsers}</h3>
               <p>Total Users</p>
@@ -290,7 +290,7 @@ function AdminPage() {
           </div>
           
           <div className="stat-card" style={{ borderColor: '#32cd32' }}>
-            <div className="stat-icon" style={{ color: '#32cd32' }}>💬</div>
+            <div className="stat-icon" style={{ color: '#32cd32' }}>◎</div>
             <div className="stat-info">
               <h3>{totalComments}</h3>
               <p>Total Comments</p>
@@ -306,7 +306,7 @@ function AdminPage() {
           </div>
           
           <div className="stat-card" style={{ borderColor: '#ff69b4' }}>
-            <div className="stat-icon" style={{ color: '#ff69b4' }}>❤️</div>
+            <div className="stat-icon" style={{ color: '#ff69b4' }}>♥</div>
             <div className="stat-info">
               <h3>{totalFavorites}</h3>
               <p>Total Favorites</p>
@@ -316,7 +316,7 @@ function AdminPage() {
 
         <div className="dashboard-sections">
           <div className="analytics-section">
-            <h2>📊 Top Contributors</h2>
+            <h2>▲ Top Contributors</h2>
             <div className="contributors-list">
               {topContributors.map((contributor, idx) => (
                 <div key={idx} className="contributor-item">
@@ -331,29 +331,29 @@ function AdminPage() {
           </div>
 
           <div className="quick-actions">
-            <h2>⚡ Quick Actions</h2>
+            <h2>✦ Quick Actions</h2>
             <button className="action-btn" onClick={() => navigate('/create-recipe')}>
-              <span>➕</span>
+              <span>+</span>
               Create Recipe
             </button>
             <button className="action-btn" onClick={() => setActiveTab("pending")}>
-              <span>⏳</span>
+              <span>○</span>
               Review Pending ({pendingRecipes.length})
             </button>
             <button className="action-btn" onClick={() => setActiveTab("users")}>
-              <span>👥</span>
+              <span>⚈</span>
               Manage Users ({totalUsers})
             </button>
             <button className="action-btn" onClick={() => setActiveTab("comments")}>
-              <span>💬</span>
+              <span>◎</span>
               Moderate Comments ({totalComments})
             </button>
             <button className="action-btn" onClick={handleExportData}>
-              <span>💾</span>
+              <span>□</span>
               Export Data
             </button>
             <button className="action-btn" onClick={() => setActiveTab("analytics")}>
-              <span>📈</span>
+              <span>◥</span>
               View Analytics
             </button>
           </div>
@@ -372,7 +372,7 @@ function AdminPage() {
     return (
       <div className="users-view">
         <div className="view-header">
-          <h2>👥 User Management</h2>
+          <h2>⚈ User Management</h2>
           <input
             type="text"
             placeholder="Search users..."
@@ -423,14 +423,14 @@ function AdminPage() {
                           }}
                           onClick={() => handleToggleUserRole(user.userId, user.role || (user.isAdmin ? 'ADMIN' : 'USER'))}
                         >
-                          {user.role === 'ADMIN' || user.isAdmin ? '👤 Demote' : '👑 Promote'}
+                          {user.role === 'ADMIN' || user.isAdmin ? '▼ Demote' : '▲ Promote'}
                         </button>
                         {!user.isAdmin && (
                           <button
                             className="btn-delete-small"
                             onClick={() => handleDeleteUser(user.userId)}
                           >
-                            🗑️ Delete
+                            × Delete
                           </button>
                         )}
                       </div>
@@ -454,7 +454,7 @@ function AdminPage() {
     return (
       <div className="comments-view">
         <div className="view-header">
-          <h2>💬 Comment Moderation</h2>
+          <h2>◎ Comment Moderation</h2>
           <input
             type="text"
             placeholder="Search comments..."
@@ -483,7 +483,7 @@ function AdminPage() {
                     className="btn-delete-small"
                     onClick={() => handleDeleteComment(comment.commentId)}
                   >
-                    🗑️
+                    ×
                   </button>
                 </div>
                 <p className="comment-content">{comment.content}</p>
@@ -505,7 +505,7 @@ function AdminPage() {
 
     return (
       <div className="analytics-view">
-        <h2>📈 Platform Analytics</h2>
+        <h2>◥ Platform Analytics</h2>
         
         <div className="analytics-grid">
           <div className="analytics-card">
@@ -588,10 +588,17 @@ function AdminPage() {
           <span className="recipe-category">{recipe.category || "Uncategorized"}</span>
         </div>
         
+        {/* Metadata line */}
+        <div style={{ marginBottom: "8px", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+          {recipe.category || "Uncategorized"}
+          {recipe.cookTimeMinutes > 0 && ` • ${recipe.cookTimeMinutes}m`}
+          {recipe.difficulty && ` • ${recipe.difficulty}`}
+          {recipe.estimatedPrice !== null && ` • ₱${Math.round(recipe.estimatedPrice)}`}
+        </div>
+        
         <div className="recipe-info">
           <p><strong>By:</strong> User #{recipe.userId}</p>
           {recipe.description && <p><strong>Description:</strong> {recipe.description.substring(0, 100)}...</p>}
-          {recipe.estimatedPrice && <p><strong>Est. Price:</strong> ₱{recipe.estimatedPrice}</p>}
         </div>
 
         <div className="recipe-actions">
@@ -605,19 +612,19 @@ function AdminPage() {
               cuisine: recipe.category || "",
               ingredients: ingredients.map(ing => typeof ing === 'string' ? ing : ing.name),
               instructions: recipe.steps,
-              cookTimeMinutes: 45,
-              difficulty: "Medium",
+              cookTimeMinutes: recipe.cookTimeMinutes || null,
+              difficulty: recipe.difficulty || null,
               rating: 0,
               estimatedPrice: recipe.estimatedPrice,
               isPending: isPending
             };
             setSelectedRecipe(mappedRecipe);
           }}>
-            👁 View & {isPending ? 'Review' : 'Manage'}
+            ▶ View & {isPending ? 'Review' : 'Manage'}
           </button>
           {!isPending && (
             <button className="btn-delete" onClick={() => handleDeleteRecipe(recipe.recipeId)}>
-              🗑️ Delete
+              × Delete
             </button>
           )}
         </div>
@@ -630,7 +637,7 @@ function AdminPage() {
       <NavBar />
       <div className="admin-container">
         <div className="admin-header">
-          <h1>🛡️ Admin Dashboard</h1>
+          <h1>◆ Admin Dashboard</h1>
           <p className="admin-subtitle">Manage your Dishcovery platform</p>
         </div>
         
@@ -642,37 +649,37 @@ function AdminPage() {
             className={`tab-button ${activeTab === "dashboard" ? "active" : ""}`}
             onClick={() => { setActiveTab("dashboard"); setSearchTerm(""); clearSelection(); }}
           >
-            📊 Dashboard
+            ▦ Dashboard
           </button>
           <button 
             className={`tab-button ${activeTab === "pending" ? "active" : ""}`}
             onClick={() => { setActiveTab("pending"); setSearchTerm(""); clearSelection(); }}
           >
-            ⏳ Pending ({pendingRecipes.length})
+            ⧖ Pending ({pendingRecipes.length})
           </button>
           <button 
             className={`tab-button ${activeTab === "approved" ? "active" : ""}`}
             onClick={() => { setActiveTab("approved"); setSearchTerm(""); clearSelection(); }}
           >
-            ✅ Approved ({approvedRecipes.length})
+            ✓ Approved ({approvedRecipes.length})
           </button>
           <button 
             className={`tab-button ${activeTab === "users" ? "active" : ""}`}
             onClick={() => { setActiveTab("users"); setSearchTerm(""); }}
           >
-            👥 Users ({allUsers.length})
+            ⚉ Users ({allUsers.length})
           </button>
           <button 
             className={`tab-button ${activeTab === "comments" ? "active" : ""}`}
             onClick={() => { setActiveTab("comments"); setSearchTerm(""); }}
           >
-            💬 Comments ({allComments.length})
+            ◉ Comments ({allComments.length})
           </button>
           <button 
             className={`tab-button ${activeTab === "analytics" ? "active" : ""}`}
             onClick={() => { setActiveTab("analytics"); setSearchTerm(""); }}
           >
-            📈 Analytics
+            ◢ Analytics
           </button>
         </div>
 
@@ -698,7 +705,7 @@ function AdminPage() {
                         if (bulkActionMode) clearSelection();
                       }}
                     >
-                      {bulkActionMode ? '✖️ Cancel' : '☑️ Bulk Select'}
+                      {bulkActionMode ? '■ Cancel' : '▣ Bulk Select'}
                     </button>
                     {bulkActionMode && (
                       <>
@@ -721,15 +728,15 @@ function AdminPage() {
                       {activeTab === "pending" && (
                         <>
                           <button className="bulk-btn approve" onClick={handleBulkApprove}>
-                            ✅ Approve ({selectedRecipes.length})
+                            ✓ Approve ({selectedRecipes.length})
                           </button>
                           <button className="bulk-btn reject" onClick={handleBulkReject}>
-                            ❌ Reject ({selectedRecipes.length})
+                            ✗ Reject ({selectedRecipes.length})
                           </button>
                         </>
                       )}
                       <button className="bulk-btn delete" onClick={handleBulkDelete}>
-                        🗑️ Delete ({selectedRecipes.length})
+                        × Delete ({selectedRecipes.length})
                       </button>
                     </div>
                   )}
@@ -737,7 +744,7 @@ function AdminPage() {
                 <div className="recipes-grid">
                   {activeTab === "pending" ? (
                     pendingRecipes.length === 0 ? (
-                      <p className="no-recipes">✅ No pending recipes to review!</p>
+                      <p className="no-recipes">✓ No pending recipes to review!</p>
                     ) : (
                       pendingRecipes.map(recipe => (
                         <RecipeCard key={recipe.recipeId} recipe={recipe} isPending={true} />
@@ -762,7 +769,7 @@ function AdminPage() {
       {selectedRecipe && (
         <div className="modal-overlay" onClick={() => setSelectedRecipe(null)}>
           <div className="modal-content admin-recipe-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setSelectedRecipe(null)}>✕</button>
+            <button className="modal-close" onClick={() => setSelectedRecipe(null)}>×</button>
             
             <div className="modal-body">
               <h2>{selectedRecipe.name}</h2>

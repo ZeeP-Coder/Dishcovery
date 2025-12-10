@@ -120,8 +120,10 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
           <div>
             <h2>{dish.name}</h2>
             <div style={{ color: "var(--text-secondary)", fontSize: ".95rem" }}>
-              {dish.cuisine || "Unknown"} • {dish.cookTimeMinutes || "45"}m • {dish.difficulty || "Medium"}
-              {dish.estimatedPrice !== null && ` • ₱${dish.estimatedPrice.toFixed(2)}`}
+              {dish.cuisine || "Unknown"}
+              {dish.cookTimeMinutes && ` • ${dish.cookTimeMinutes}m`}
+              {dish.difficulty && ` • ${dish.difficulty}`}
+              {dish.estimatedPrice !== null && ` • ₱${Math.round(dish.estimatedPrice)}`}
             </div>
 
             <div style={{ marginTop: 8 }}>
@@ -155,8 +157,12 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
           </div>
 
           <div>
-            <button className="fav-btn" onClick={() => toggleFav(dish.id)}>
-              {isFav ? "♥" : "♡"}
+            <button 
+              className="fav-btn" 
+              onClick={() => toggleFav(dish.id)}
+              aria-label="Toggle favorite"
+            >
+              {typeof isFav === 'function' ? (isFav(dish.id) ? "♥" : "♡") : (isFav ? "♥" : "♡")}
             </button>
             <button onClick={onClose} style={{ marginLeft: 10 }}>Close</button>
           </div>

@@ -45,9 +45,16 @@ public class RecipeController {
     }
 
     @GetMapping("/getAllRecipes")
-    public List<RecipeEntity> getAllRecipes() {
-        // Only return approved recipes for regular users
-        return recipeService.getApprovedRecipes();
+    public ResponseEntity<?> getAllRecipes() {
+        try {
+            // Only return approved recipes for regular users
+            List<RecipeEntity> recipes = recipeService.getApprovedRecipes();
+            return ResponseEntity.ok(recipes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error fetching recipes: " + e.getMessage());
+        }
     }
 
     @GetMapping("/getRecipesByUserId/{userId}")

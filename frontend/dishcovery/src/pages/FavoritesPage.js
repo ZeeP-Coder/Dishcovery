@@ -47,8 +47,8 @@ function FavoritesPage() {
           category: "Recipe",
           cuisine: r.category || "",
           userId: r.userId,
-          cookTimeMinutes: 45,
-          difficulty: "Medium",
+          cookTimeMinutes: r.cookTimeMinutes || null,
+          difficulty: r.difficulty || null,
           estimatedPrice: r.estimatedPrice || null,
           isUserMade: true
         }));

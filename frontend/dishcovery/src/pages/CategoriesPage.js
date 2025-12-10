@@ -45,7 +45,7 @@ function CategoriesPage() {
         <h1 style={{ color: "#ff7f50", marginBottom: "25px" }}>Categories</h1>
         {categories.length === 0 ? (
           <p style={{ textAlign: "center", marginTop: "2rem", color: "var(--text-secondary)", fontSize: "1.1rem" }}>
-            No recipes available yet. Create your first recipe to get started! 🍽️
+            No recipes available yet. Create your first recipe to get started! 👨‍🍳
           </p>
         ) : (
           <div

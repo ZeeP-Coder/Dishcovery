@@ -134,11 +134,11 @@ function RegisterPage() {
           zIndex: 1000
         }}
       >
-        {theme === 'dark' ? '☀️' : '🌙'}
+        {theme === 'dark' ? '☀' : '☾'}
       </button>
       <div className="register-box">
         <div className="register-header">
-          <span className="register-logo">🍽️</span>
+          <span className="register-logo">👨‍🍳</span>
           <h2>Register for Dishcovery</h2>
         </div>
 

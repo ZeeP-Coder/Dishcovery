@@ -19,6 +19,7 @@ export default function HomePage() {
   const [priceFilter, setPriceFilter] = useState({ minPrice: null, maxPrice: null });
   const [favorites, setFavorites] = useState([]);
   const [backendDishes, setBackendDishes] = useState(null);
+  const [backendError, setBackendError] = useState(null);
 
   const normalizeRecipe = (r) => ({
     id: r.id,
@@ -33,8 +34,8 @@ export default function HomePage() {
     // Use description if present, otherwise fall back to instructions
     description: r.description || r.instructions || "",
     instructions: r.instructions || "",
-    cookTimeMinutes: r.cookTimeMinutes || 45,
-    difficulty: r.difficulty || "Medium",
+    cookTimeMinutes: r.cookTimeMinutes || null,
+    difficulty: r.difficulty || null,
     estimatedPrice: r.estimatedPrice || null,
     isUserMade: !!r.user,
     original: r,
@@ -50,6 +51,7 @@ export default function HomePage() {
     let mounted = true;
     const fetchBackend = async () => {
       try {
+        setBackendError(null);
         const data = await apiGet("/recipe/getAllRecipes");
         if (!mounted) return;
         const mapped = (data || []).map((r) => ({
@@ -61,15 +63,17 @@ export default function HomePage() {
           ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
           description: r.description || "",
           instructions: r.steps || "",
-          cookTimeMinutes: 45,
-          difficulty: "Medium",
+          cookTimeMinutes: r.cookTimeMinutes || null,
+          difficulty: r.difficulty || null,
           estimatedPrice: r.estimatedPrice || null,
           user: r.userId,
           isUserMade: true
         }));
         setBackendDishes(mapped);
       } catch (err) {
-        console.warn("Could not fetch backend recipes", err);
+        console.error("Failed to fetch backend recipes:", err);
+        if (!mounted) return;
+        setBackendError("Failed to load recipes. Please check the server connection.");
         setBackendDishes(null);
       }
       
@@ -183,6 +187,18 @@ export default function HomePage() {
       <NavBar />
       <HeroBanner />
       <main className="container">
+        {backendError && (
+          <div style={{
+            backgroundColor: '#fee',
+            border: '1px solid #fcc',
+            padding: '15px',
+            borderRadius: '5px',
+            marginBottom: '20px',
+            color: '#c33'
+          }}>
+            {backendError}
+          </div>
+        )}
         <SearchBar value={search} onChange={setSearch} />
         <FilterBar cuisines={cuisines} selected={cuisineFilter} onSelect={setCuisineFilter} />
         <PriceFilter onFilter={setPriceFilter} />

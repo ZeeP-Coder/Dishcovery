@@ -9,13 +9,16 @@ export default function RecipeCard({ dish, onOpen, isFav, toggleFav }) {
           <h3>{dish.name}</h3>
           <button className="fav-btn" onClick={() => toggleFav(dish.id)} aria-label="Toggle favorite">{isFav ? "♥" : "♡"}</button>
         </div>
-        {dish.description && !dish.description.startsWith('http') && <p>{dish.description}</p>}
-        <div className="meta">
-          <div>
+        <div className="meta" style={{marginBottom: "8px"}}>
+          <div style={{fontSize: "0.9rem", color: "var(--text-secondary)"}}>
             {dish.cuisine}
             {dish.cookTimeMinutes > 0 && ` • ${dish.cookTimeMinutes}m`}
-            {dish.estimatedPrice !== null && ` • ₱${dish.estimatedPrice.toFixed(2)}`}
+            {dish.difficulty && ` • ${dish.difficulty}`}
+            {dish.estimatedPrice !== null && ` • ₱${Math.round(dish.estimatedPrice)}`}
           </div>
+        </div>
+        {dish.description && !dish.description.startsWith('http') && <p>{dish.description}</p>}
+        <div className="meta">
           <div>{Array.from({length: Math.round(dish.rating || 0)}).map((_,i)=>(<span key={i}>★</span>))}</div>
         </div>
         <button 
