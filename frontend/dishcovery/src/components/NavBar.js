@@ -36,17 +36,8 @@ function NavBar() {
         </button>
         {isAdmin ? (
           <>
-            <Link to="/" className={location.pathname === "/" ? "active" : ""}>
-              Home
-            </Link>
             <Link to="/admin" className={location.pathname === "/admin" ? "active" : ""}>
               Admin Dashboard
-            </Link>
-            <Link to="/my-recipes" className={location.pathname === "/my-recipes" ? "active" : ""}>
-              My Recipes
-            </Link>
-            <Link to="/create-recipe" className={location.pathname === "/create-recipe" ? "active" : ""}>
-              Create Recipe
             </Link>
             <Link to="/profile" className={location.pathname === "/profile" ? "active" : ""}>
               Profile
