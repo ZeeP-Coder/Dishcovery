@@ -157,12 +157,8 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
           </div>
 
           <div>
-            <button 
-              className="fav-btn" 
-              onClick={() => toggleFav(dish.id)}
-              aria-label="Toggle favorite"
-            >
-              {typeof isFav === 'function' ? (isFav(dish.id) ? "♥" : "♡") : (isFav ? "♥" : "♡")}
+            <button className="fav-btn" onClick={() => toggleFav(dish.id)}>
+              {isFav ? "♥" : "♡"}
             </button>
             <button onClick={onClose} style={{ marginLeft: 10 }}>Close</button>
           </div>
