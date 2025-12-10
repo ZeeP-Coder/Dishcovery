@@ -33,7 +33,7 @@ export default function MyRecipesPage() {
           backendId: r.recipeId,
           name: r.title,
           description: r.description,
-          image: r.imageUrl,
+          image: r.image,
           ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
           instructions: r.steps,
           category: r.category || "",

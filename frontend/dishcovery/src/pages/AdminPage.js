@@ -581,8 +581,8 @@ function AdminPage() {
             />
           </div>
         )}
-        {recipe.imageUrl && (
-          <img src={recipe.imageUrl} alt={recipe.title} className="recipe-image" />
+        {recipe.image && (
+          <img src={recipe.image} alt={recipe.title} className="recipe-image" />
         )}
         <div className="recipe-header">
           <h3>{recipe.title}</h3>
@@ -612,7 +612,7 @@ function AdminPage() {
                   id: recipe.recipeId,
                   backendId: recipe.recipeId,
                   name: recipe.title,
-                  image: recipe.imageUrl,
+                  image: recipe.image,
                   description: recipe.description,
                   cuisine: recipe.category || "",
                   ingredients: ingredients.map(ing => typeof ing === 'string' ? ing : ing.name),

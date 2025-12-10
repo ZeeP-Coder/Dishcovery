@@ -40,7 +40,7 @@ function FavoritesPage() {
           id: r.recipeId,
           backendId: r.recipeId,
           name: r.title,
-          image: r.imageUrl || "",
+          image: r.image || "",
           description: r.description || "",
           ingredients: r.ingredients ? JSON.parse(r.ingredients) : [],
           instructions: r.steps || "",

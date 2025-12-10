@@ -56,8 +56,8 @@ public class RecipeService {
             if (newRecipeDetails.getCategory() != null) {
                 recipe.setCategory(newRecipeDetails.getCategory());
             }
-            if (newRecipeDetails.getImageUrl() != null) {
-                recipe.setImageUrl(newRecipeDetails.getImageUrl());
+            if (newRecipeDetails.getImage() != null) {
+                recipe.setImage(newRecipeDetails.getImage());
             }
             if (newRecipeDetails.getUserId() != null) {
                 recipe.setUserId(newRecipeDetails.getUserId());

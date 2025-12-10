@@ -56,7 +56,7 @@ export default function HomePage() {
           id: r.recipeId,
           backendId: r.recipeId,
           name: r.title,
-          image: r.imageUrl,
+          image: r.image,
           cuisine: r.category || r.cuisine || "Other",
           ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
           description: r.description || "",

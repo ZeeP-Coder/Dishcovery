@@ -11,7 +11,7 @@ function CreateRecipePage() {
   const [recipe, setRecipe] = useState({
     name: "",
     description: "",
-    image: "",
+    imageFile: null,
     imagePreview: "",
     ingredients: [],
     instructions: "",
@@ -53,9 +53,7 @@ function CreateRecipePage() {
       newErrors.instructions = "Instructions must be at least 10 characters";
     }
 
-    if (recipe.image && !isValidUrl(recipe.image)) {
-      newErrors.image = "Please enter a valid image URL";
-    }
+    // Image is optional, no validation needed for base64
 
     if (recipe.estimatedPrice) {
       const price = parseFloat(recipe.estimatedPrice);
@@ -68,15 +66,6 @@ function CreateRecipePage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
-
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -86,8 +75,9 @@ function CreateRecipePage() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors({ ...errors, image: 'Image must be less than 5MB' });
+    // Limit to 2MB to prevent too large base64 strings
+    if (file.size > 2 * 1024 * 1024) {
+      setErrors({ ...errors, image: 'Image must be less than 2MB' });
       return;
     }
 
@@ -95,7 +85,7 @@ function CreateRecipePage() {
     reader.onload = () => {
       setRecipe({
         ...recipe,
-        image: file,
+        imageFile: reader.result, // Store as base64 string
         imagePreview: reader.result
       });
       setErrors({ ...errors, image: null });
@@ -160,7 +150,7 @@ function CreateRecipePage() {
     const payload = {
       title: recipe.name,
       description: recipe.description,
-      imageUrl: recipe.image,
+      image: recipe.imageFile || "", // Send base64 string or empty
       steps: recipe.instructions,
       userId: userId,
       ingredients: recipe.ingredients,
@@ -242,15 +232,23 @@ function CreateRecipePage() {
         </div>
 
         <div className="form-group">
-          <label>Image URL</label>
+          <label>Recipe Image</label>
           <input
-            type="text"
-            placeholder="https://example.com/image.jpg"
-            value={recipe.image}
-            onChange={(e) => setRecipe({ ...recipe, image: e.target.value })}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
             className={errors.image ? "input-error" : ""}
           />
           {errors.image && <span className="error-text">{errors.image}</span>}
+          {recipe.imagePreview && (
+            <div style={{ marginTop: '10px' }}>
+              <img 
+                src={recipe.imagePreview} 
+                alt="Preview" 
+                style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', borderRadius: '8px' }}
+              />
+            </div>
+          )}
         </div>
 
         <div className="form-group">

@@ -30,8 +30,8 @@ public class RecipeEntity {
     @Column(name = "category")
     private String category;
 
-    @Column(name = "image", length = 1000)
-    private String imageUrl;
+    @Column(name = "image", columnDefinition = "LONGTEXT")
+    private String image;
 
     @Column(name = "estimated_price")
     private Double estimatedPrice;
@@ -99,12 +99,12 @@ public class RecipeEntity {
         this.category = category;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Double getEstimatedPrice() {

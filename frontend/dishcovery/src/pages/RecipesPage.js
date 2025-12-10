@@ -21,7 +21,7 @@ function RecipesPage() {
           id: r.recipeId,
           backendId: r.recipeId,
           name: r.title,
-          image: r.imageUrl,
+          image: r.image,
           description: r.description,
           cuisine: r.category || "",
           ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
