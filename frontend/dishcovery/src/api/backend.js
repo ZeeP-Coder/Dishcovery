@@ -2,6 +2,20 @@ const API_BASE = "http://localhost:8080";
 
 export { API_BASE };
 
+// Helper to get current user ID from session
+function getCurrentUserId() {
+  try {
+    const userStr = sessionStorage.getItem("dishcovery:user");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      return user.id || user.userId;
+    }
+  } catch (error) {
+    console.error("Error getting user ID:", error);
+  }
+  return null;
+}
+
 async function handleResponse(res) {
   if (!res.ok) {
     const text = await res.text().catch(() => "");
@@ -18,43 +32,77 @@ async function handleResponse(res) {
   return res.text();
 }
 
-export async function apiGet(path) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export async function apiGet(path, includeUserId = false) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  
+  if (includeUserId) {
+    const userId = getCurrentUserId();
+    if (userId) {
+      headers["X-User-Id"] = userId.toString();
+    }
+  }
+  
+  const res = await fetch(`${API_BASE}${path}`, { headers });
   return handleResponse(res);
 }
 
-export async function apiPost(path, body) {
+export async function apiPost(path, body, includeUserId = false) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  
+  if (includeUserId) {
+    const userId = getCurrentUserId();
+    if (userId) {
+      headers["X-User-Id"] = userId.toString();
+    }
+  }
+  
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(body),
   });
   return handleResponse(res);
 }
 
-export async function apiPut(path, body) {
+export async function apiPut(path, body, includeUserId = false) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  
+  if (includeUserId) {
+    const userId = getCurrentUserId();
+    if (userId) {
+      headers["X-User-Id"] = userId.toString();
+    }
+  }
+  
   const res = await fetch(`${API_BASE}${path}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(body),
   });
   return handleResponse(res);
 }
 
-export async function apiDelete(path) {
+export async function apiDelete(path, includeUserId = false) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  
+  if (includeUserId) {
+    const userId = getCurrentUserId();
+    if (userId) {
+      headers["X-User-Id"] = userId.toString();
+    }
+  }
+  
   const res = await fetch(`${API_BASE}${path}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
   });
   return handleResponse(res);
 }

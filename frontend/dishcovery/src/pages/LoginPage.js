@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
-import { apiGet } from "../api/backend";
+import { apiPost } from "../api/backend";
 import { ThemeContext } from "../App";
 
 function LoginPage() {
@@ -41,10 +41,11 @@ function LoginPage() {
     
     setIsLoading(true);
     try {
-      const users = await apiGet("/user/getAll");
-      const user = users.find(
-        (u) => u.email === email && u.password === password
-      );
+      // Use the login endpoint
+      const user = await apiPost("/user/login", {
+        email: email,
+        password: password
+      });
 
       if (!user) {
         setServerError("Invalid email or password.");
@@ -72,7 +73,7 @@ function LoginPage() {
       }
     } catch (err) {
       console.error(err);
-      setServerError("Connection failed. Please check your internet and try again.");
+      setServerError("Invalid email or password.");
       setIsLoading(false);
     }
   };

@@ -31,11 +31,11 @@ function AdminHomePage() {
       const user = JSON.parse(sessionStorage.getItem('user'));
       const [recipes, users, comments, ratings, pending, approved, myRecipes] = await Promise.all([
         apiGet('/recipe/getAllRecipes'),
-        apiGet('/user/getAll'),
+        apiGet('/user/getAll', true),
         apiGet('/comment/getAllComments'),
         apiGet('/rating/getAllRatings'),
-        apiGet('/recipe/admin/pending'),
-        apiGet('/recipe/admin/approved'),
+        apiGet('/recipe/admin/pending', true),
+        apiGet('/recipe/admin/approved', true),
         apiGet(`/recipe/getRecipesByUserId/${user.user_id}`)
       ]);
 

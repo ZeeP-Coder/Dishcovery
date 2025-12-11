@@ -19,18 +19,32 @@ public class GhidorakingsApplication {
 	@Bean
 	CommandLineRunner initAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
-			// Check if admin already exists
-			if (userRepository.findByEmail("dishcoveryadmin@gmail.com").isEmpty()) {
+			// Check if admin exists
+			var existingAdmin = userRepository.findByEmail("dishcoveryadmin@gmail.com");
+			
+			if (existingAdmin.isEmpty()) {
+				// Create new admin with hashed password
 				UserEntity admin = new UserEntity();
 				admin.setUsername("Admin");
 				admin.setEmail("dishcoveryadmin@gmail.com");
-				// Hash the admin password
 				admin.setPassword(passwordEncoder.encode("dishcoveryadmin"));
 				admin.setAdmin(true);
 				userRepository.save(admin);
 				System.out.println("Admin account created successfully!");
 			} else {
-				System.out.println("Admin account already exists.");
+				// Check if existing admin has plain text password and hash it
+				UserEntity admin = existingAdmin.get();
+				String currentPassword = admin.getPassword();
+				
+				// If password doesn't start with $2a$ (BCrypt prefix), it's plain text
+				if (currentPassword != null && !currentPassword.startsWith("$2a$") && !currentPassword.startsWith("$2b$")) {
+					System.out.println("Migrating admin password to BCrypt hash...");
+					admin.setPassword(passwordEncoder.encode(currentPassword));
+					userRepository.save(admin);
+					System.out.println("Admin password successfully migrated!");
+				} else {
+					System.out.println("Admin account already exists with hashed password.");
+				}
 			}
 		};
 	}
@@ -54,6 +68,36 @@ public class GhidorakingsApplication {
 				}
 			} catch (Exception e) {
 				System.out.println("Image migration completed or already done.");
+			}
+		};
+	}
+	
+	@Bean
+	CommandLineRunner migrateUserPasswords(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+		return args -> {
+			try {
+				System.out.println("Checking for plain text passwords...");
+				var allUsers = userRepository.findAll();
+				int migrated = 0;
+				
+				for (UserEntity user : allUsers) {
+					String password = user.getPassword();
+					// Check if password is plain text (not BCrypt hash)
+					if (password != null && !password.startsWith("$2a$") && !password.startsWith("$2b$")) {
+						System.out.println("Migrating password for user: " + user.getEmail());
+						user.setPassword(passwordEncoder.encode(password));
+						userRepository.save(user);
+						migrated++;
+					}
+				}
+				
+				if (migrated > 0) {
+					System.out.println("Successfully migrated " + migrated + " user passwords to BCrypt!");
+				} else {
+					System.out.println("All user passwords are already hashed.");
+				}
+			} catch (Exception e) {
+				System.out.println("Password migration completed or already done.");
 			}
 		};
 	}

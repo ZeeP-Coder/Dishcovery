@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 import com.appdevg5.ghidorakings.entity.RecipeEntity;
+import com.appdevg5.ghidorakings.entity.UserEntity;
 import com.appdevg5.ghidorakings.service.RecipeService;
+import com.appdevg5.ghidorakings.service.UserService;
 
 
 @RestController
@@ -16,6 +18,16 @@ import com.appdevg5.ghidorakings.service.RecipeService;
 public class RecipeController {
     @Autowired
     RecipeService recipeService;
+    
+    @Autowired
+    UserService userService;
+    
+    // Helper method to verify admin status from database
+    private boolean isUserAdmin(Integer userId) {
+        if (userId == null) return false;
+        UserEntity user = userService.getUserById(userId);
+        return user != null && user.isAdmin();
+    }
 
     @GetMapping("/print")
     public String getMethodName(@RequestParam String param) {
@@ -83,21 +95,30 @@ public class RecipeController {
 
     // ADMIN: Get all pending recipes (not approved)
     @GetMapping("/admin/pending")
-    public ResponseEntity<List<RecipeEntity>> getPendingRecipes() {
+    public ResponseEntity<?> getPendingRecipes(@RequestHeader(value = "X-User-Id", required = false) Integer userId) {
+        if (!isUserAdmin(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Admin privileges required.");
+        }
         List<RecipeEntity> pendingRecipes = recipeService.getPendingRecipes();
         return ResponseEntity.ok(pendingRecipes);
     }
 
     // ADMIN: Get all approved recipes
     @GetMapping("/admin/approved")
-    public ResponseEntity<List<RecipeEntity>> getApprovedRecipes() {
+    public ResponseEntity<?> getApprovedRecipes(@RequestHeader(value = "X-User-Id", required = false) Integer userId) {
+        if (!isUserAdmin(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Admin privileges required.");
+        }
         List<RecipeEntity> approvedRecipes = recipeService.getApprovedRecipes();
         return ResponseEntity.ok(approvedRecipes);
     }
 
     // ADMIN: Approve a recipe
     @PutMapping("/admin/approve/{recipeId}")
-    public ResponseEntity<?> approveRecipe(@PathVariable Integer recipeId) {
+    public ResponseEntity<?> approveRecipe(@PathVariable Integer recipeId, @RequestHeader(value = "X-User-Id", required = false) Integer userId) {
+        if (!isUserAdmin(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Admin privileges required.");
+        }
         try {
             RecipeEntity approved = recipeService.approveRecipe(recipeId);
             if (approved == null) {
@@ -112,7 +133,10 @@ public class RecipeController {
 
     // ADMIN: Reject/delete a recipe
     @DeleteMapping("/admin/reject/{recipeId}")
-    public ResponseEntity<String> rejectRecipe(@PathVariable Integer recipeId) {
+    public ResponseEntity<?> rejectRecipe(@PathVariable Integer recipeId, @RequestHeader(value = "X-User-Id", required = false) Integer userId) {
+        if (!isUserAdmin(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Admin privileges required.");
+        }
         String result = recipeService.deleteRecipe(recipeId);
         if (result == null) {
             return ResponseEntity.notFound().build();

@@ -42,9 +42,9 @@ function AdminPage() {
     setError("");
     try {
       const [pending, approved, users, comments, ratings, favorites] = await Promise.all([
-        apiGet("/recipe/admin/pending").catch(() => []),
-        apiGet("/recipe/admin/approved").catch(() => []),
-        apiGet("/user/getAll").catch(() => []),
+        apiGet("/recipe/admin/pending", true).catch(() => []),
+        apiGet("/recipe/admin/approved", true).catch(() => []),
+        apiGet("/user/getAll", true).catch(() => []),
         apiGet("/comment/getAllComments").catch(() => []),
         apiGet("/rating/getAllRatings").catch(() => []),
         apiGet("/favorite/getAllFavorites").catch(() => [])
@@ -70,7 +70,7 @@ function AdminPage() {
 
   const handleApprove = async (recipeId) => {
     try {
-      await apiPut(`/recipe/admin/approve/${recipeId}`, {});
+      await apiPut(`/recipe/admin/approve/${recipeId}`, {}, true);
       showSuccess("Recipe approved successfully!");
       await loadAllData();
     } catch (err) {
@@ -83,7 +83,7 @@ function AdminPage() {
     if (!window.confirm("Are you sure you want to reject this recipe?")) return;
     
     try {
-      await apiDelete(`/recipe/admin/reject/${recipeId}`);
+      await apiDelete(`/recipe/admin/reject/${recipeId}`, true);
       showSuccess("Recipe rejected successfully!");
       await loadAllData();
     } catch (err) {
@@ -155,7 +155,7 @@ function AdminPage() {
     if (!window.confirm(`Approve ${selectedRecipes.length} recipes?`)) return;
 
     try {
-      await Promise.all(selectedRecipes.map(id => apiPut(`/recipe/admin/approve/${id}`, {})));
+      await Promise.all(selectedRecipes.map(id => apiPut(`/recipe/admin/approve/${id}`, {}, true)));
       showSuccess(`${selectedRecipes.length} recipes approved!`);
       clearSelection();
       await loadAllData();
@@ -169,7 +169,7 @@ function AdminPage() {
     if (!window.confirm(`Reject ${selectedRecipes.length} recipes?`)) return;
 
     try {
-      await Promise.all(selectedRecipes.map(id => apiPut(`/recipe/admin/reject/${id}`, {})));
+      await Promise.all(selectedRecipes.map(id => apiDelete(`/recipe/admin/reject/${id}`, true)));
       showSuccess(`${selectedRecipes.length} recipes rejected!`);
       clearSelection();
       await loadAllData();

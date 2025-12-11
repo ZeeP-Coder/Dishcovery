@@ -11,6 +11,7 @@ import MyRecipesPage from "./pages/MyRecipesPage";
 import CreateRecipePage from "./pages/CreateRecipePage";
 import AdminPage from "./pages/AdminPage";
 import AdminHomePage from "./pages/AdminHomePage";
+import { apiGet } from "./api/backend";
 import "./App.css";
 
 export const ThemeContext = createContext();
@@ -51,6 +52,39 @@ function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('dishcovery-theme') || 'light';
   });
+
+  // Verify user session on app load
+  useEffect(() => {
+    const verifyUser = async () => {
+      const userStr = sessionStorage.getItem("dishcovery:user");
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          // Verify actual admin status from database
+          const actualUser = await apiGet(`/user/get/${user.id}`);
+          
+          if (actualUser && actualUser.admin !== user.isAdmin) {
+            // Session was tampered with - correct it
+            console.warn("Session storage was modified. Correcting...");
+            const correctedUser = {
+              ...user,
+              isAdmin: actualUser.admin
+            };
+            sessionStorage.setItem("dishcovery:user", JSON.stringify(correctedUser));
+            // Force page reload to apply changes
+            window.location.reload();
+          }
+        } catch (error) {
+          console.error("Failed to verify user session:", error);
+          // If user doesn't exist anymore, clear session
+          sessionStorage.removeItem("dishcovery:user");
+          window.location.href = "/login";
+        }
+      }
+    };
+    
+    verifyUser();
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
