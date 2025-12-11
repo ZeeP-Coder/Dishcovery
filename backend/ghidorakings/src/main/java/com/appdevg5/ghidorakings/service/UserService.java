@@ -4,6 +4,7 @@ import com.appdevg5.ghidorakings.entity.UserEntity;
 import com.appdevg5.ghidorakings.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,15 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     // CREATE
     public UserEntity createUser(UserEntity user) {
         // Ensure a new user is inserted even if client includes a userId
         user.setUserId(null);
+        // Hash the password before saving
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -43,7 +49,12 @@ public class UserService {
 
             user.setUsername(newUserDetails.getUsername());
             user.setEmail(newUserDetails.getEmail());
-            user.setPassword(newUserDetails.getPassword());
+            
+            // Only hash and update password if a new one is provided
+            if (newUserDetails.getPassword() != null && !newUserDetails.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(newUserDetails.getPassword()));
+            }
+            
             // Optionally update admin status if provided
             user.setAdmin(newUserDetails.isAdmin());
 
@@ -68,6 +79,14 @@ public class UserService {
 
     // LOGIN
     public UserEntity login(String email, String password) {
-        return userRepository.findByEmailAndPassword(email, password).orElse(null);
+        // Find user by email
+        UserEntity user = userRepository.findByEmail(email).orElse(null);
+        
+        // If user exists and password matches
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+            return user;
+        }
+        
+        return null;
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.appdevg5.ghidorakings.entity.UserEntity;
 import com.appdevg5.ghidorakings.repository.UserRepository;
 
@@ -16,14 +17,15 @@ public class GhidorakingsApplication {
 	}
 
 	@Bean
-	CommandLineRunner initAdmin(UserRepository userRepository) {
+	CommandLineRunner initAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
 			// Check if admin already exists
 			if (userRepository.findByEmail("dishcoveryadmin@gmail.com").isEmpty()) {
 				UserEntity admin = new UserEntity();
 				admin.setUsername("Admin");
 				admin.setEmail("dishcoveryadmin@gmail.com");
-				admin.setPassword("dishcoveryadmin");
+				// Hash the admin password
+				admin.setPassword(passwordEncoder.encode("dishcoveryadmin"));
 				admin.setAdmin(true);
 				userRepository.save(admin);
 				System.out.println("Admin account created successfully!");
