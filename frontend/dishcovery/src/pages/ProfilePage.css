@@ -16,30 +16,6 @@
   margin-bottom: 20px;
 }
 
-.profile-pic-box {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin: 0 auto 10px;
-  background-color: var(--bg-secondary);
-  border: 3px solid var(--border-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.profile-pic-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.profile-no-pic {
-  color: var(--text-secondary);
-  font-size: 14px;
-}
-
 .profile-details {
   margin-top: 20px;
   text-align: left;
@@ -52,30 +28,6 @@
   margin: 8px 0;
   font-size: 16px;
   color: var(--text-primary);
-}
-
-/* File input button */
-.btn-remove-pic {
-  margin-top: 10px;
-  background-color: #ff7f50;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s;
-}
-
-.btn-remove-pic:hover {
-  background-color: #ff9569;
-}
-
-.file-name {
-  display: block;
-  margin-top: 6px;
-  font-size: 13px;
-  color: var(--text-secondary);
 }
 
 /* Password Section */

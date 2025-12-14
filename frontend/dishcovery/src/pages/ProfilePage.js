@@ -1,46 +1,22 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import "./ProfilePage.css";
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const fileInputRef = useRef(null);
 
   const userStr = sessionStorage.getItem("dishcovery:user");
   const user = userStr ? JSON.parse(userStr) : null;
-  const [profilePic, setProfilePic] = useState("");
-  const [fileName, setFileName] = useState("");
 
   // Password state
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  useEffect(() => {
-    // Placeholder if you want to fetch user recipes later
-  }, [user?.email]);
-
   const handleLogout = () => {
     sessionStorage.removeItem("dishcovery:user");
     navigate("/login");
-  };
-
-  const handleProfilePicChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = () => {
-      setProfilePic(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleRemoveProfilePic = () => {
-    setProfilePic("");
-    setFileName("");
   };
 
   const handleChangePassword = (e) => {
@@ -70,40 +46,6 @@ function ProfilePage() {
         {/* Profile Section */}
         <div className="profile-center">
           <h1 className="profile-title">PROFILE</h1>
-
-          <div className="profile-pic-box">
-            {profilePic ? (
-              <img src={profilePic} alt="Profile" className="profile-pic-img" />
-            ) : (
-              <div className="profile-no-pic">No Profile Picture</div>
-            )}
-          </div>
-
-          {/* Hidden File Input */}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleProfilePicChange}
-            ref={fileInputRef}
-            style={{ display: "none" }}
-          />
-
-          {/* Upload / Remove Button */}
-          <button
-            className="btn-remove-pic"
-            onClick={() => {
-              if (profilePic) {
-                handleRemoveProfilePic();
-              } else {
-                fileInputRef.current.click();
-              }
-            }}
-          >
-            {profilePic ? "Remove Picture" : "Upload Picture"}
-          </button>
-
-          {/* Show file name if uploaded */}
-          {fileName && <span className="file-name">{fileName}</span>}
 
           <div className="profile-details">
             <p><strong>Nickname:</strong> {user?.nickname || "Nickname"}</p>
