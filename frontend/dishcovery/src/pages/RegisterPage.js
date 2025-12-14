@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
-import { apiGet, apiPost } from "../api/backend";
+import { apiPost } from "../api/backend";
 import { ThemeContext } from "../App";
 
 function RegisterPage() {
@@ -66,16 +66,8 @@ function RegisterPage() {
 
     setIsLoading(true);
     try {
-      // Check if email already exists in backend
-      const users = await apiGet("/user/getAll");
-      const existing = users.find((u) => u.email === email);
-      if (existing) {
-        setServerError("An account with this email already exists.");
-        setIsLoading(false);
-        return;
-      }
-
       // Backend expects: username, email, password
+      // Note: Backend will handle duplicate email validation
       const created = await apiPost("/user/add", {
         username: nickname,
         email,
@@ -102,7 +94,9 @@ function RegisterPage() {
       navigate("/");
     } catch (err) {
       console.error(err);
-      setServerError("Registration failed. Please check your connection and try again.");
+      // Try to get error message from backend
+      const errorMessage = err.message || "Registration failed. Please check your connection and try again.";
+      setServerError(errorMessage);
       setIsLoading(false);
     }
   };

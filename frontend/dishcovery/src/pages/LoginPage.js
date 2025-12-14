@@ -41,17 +41,14 @@ function LoginPage() {
     
     setIsLoading(true);
     try {
+      // Clear any existing session before logging in
+      sessionStorage.removeItem("dishcovery:user");
+      
       // Use the login endpoint
       const user = await apiPost("/user/login", {
         email: email,
         password: password
       });
-
-      if (!user) {
-        setServerError("Invalid email or password.");
-        setIsLoading(false);
-        return;
-      }
 
       // Map backend fields into the shape used on the frontend
       const current = {
@@ -73,7 +70,9 @@ function LoginPage() {
       }
     } catch (err) {
       console.error(err);
-      setServerError("Invalid email or password.");
+      // Extract error message from backend response
+      const errorMessage = err.message || "Invalid email or password.";
+      setServerError(errorMessage);
       setIsLoading(false);
     }
   };

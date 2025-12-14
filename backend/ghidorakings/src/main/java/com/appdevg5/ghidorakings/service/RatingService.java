@@ -24,6 +24,11 @@ public class RatingService {
     public List<RatingEntity> getAllRatings() {
         return ratingRepository.findAll();
     }
+    
+    // Get rating by ID
+    public RatingEntity getRatingById(int ratingId) {
+        return ratingRepository.findById(ratingId).orElse(null);
+    }
 
     public RatingEntity updateRating(int ratingId, RatingEntity newRatingDetails) {
         try {

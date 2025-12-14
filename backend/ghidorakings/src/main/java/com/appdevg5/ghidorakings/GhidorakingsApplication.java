@@ -36,6 +36,14 @@ public class GhidorakingsApplication {
 				UserEntity admin = existingAdmin.get();
 				String currentPassword = admin.getPassword();
 				
+				// Ensure admin status is set to true (in case it was changed)
+				if (!admin.isAdmin()) {
+					System.out.println("Fixing admin status...");
+					admin.setAdmin(true);
+					userRepository.save(admin);
+					System.out.println("Admin status corrected!");
+				}
+				
 				// If password doesn't start with $2a$ (BCrypt prefix), it's plain text
 				if (currentPassword != null && !currentPassword.startsWith("$2a$") && !currentPassword.startsWith("$2b$")) {
 					System.out.println("Migrating admin password to BCrypt hash...");

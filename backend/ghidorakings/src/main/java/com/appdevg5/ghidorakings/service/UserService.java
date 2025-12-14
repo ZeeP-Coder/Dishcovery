@@ -24,6 +24,11 @@ public class UserService {
 
     // CREATE
     public UserEntity createUser(UserEntity user) {
+        // Check if email already exists
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("An account with this email already exists.");
+        }
+        
         // Ensure a new user is inserted even if client includes a userId
         user.setUserId(null);
         // Hash the password before saving

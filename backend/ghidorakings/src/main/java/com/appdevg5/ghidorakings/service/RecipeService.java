@@ -35,6 +35,11 @@ public class RecipeService {
     public List<RecipeEntity> getAllRecipes() {
         return recipeRepository.findAll();
     }
+    
+    // Get recipe by ID
+    public RecipeEntity getRecipeById(int recipeId) {
+        return recipeRepository.findById(recipeId).orElse(null);
+    }
 
     public RecipeEntity updateRecipe(int recipeId, RecipeEntity newRecipeDetails){
         try{

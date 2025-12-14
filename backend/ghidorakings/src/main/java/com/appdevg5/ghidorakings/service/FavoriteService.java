@@ -28,6 +28,11 @@ public class FavoriteService {
     public List<FavoriteEntity> getFavoritesByUserId(Integer userId) {
         return favoriteRepository.findByUserId(userId);
     }
+    
+    // Get favorite by ID
+    public FavoriteEntity getFavoriteById(int favoriteId) {
+        return favoriteRepository.findById(favoriteId).orElse(null);
+    }
 
     public FavoriteEntity updateFavorite(int favoriteId, FavoriteEntity newFavoriteDetails) {
         try {

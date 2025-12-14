@@ -113,15 +113,15 @@ export async function getComments() {
 }
 
 export async function addComment(body) {
-  return apiPost("/comment/insertComment", body);
+  return apiPost("/comment/insertComment", body, true); // Include user ID for authentication
 }
 
 export async function updateComment(commentId, body) {
-  return apiPut(`/comment/updateComment?commentId=${commentId}`, body);
+  return apiPut(`/comment/updateComment?commentId=${commentId}`, body, true); // Include user ID for ownership check
 }
 
 export async function deleteComment(commentId) {
-  return apiDelete(`/comment/deleteComment/${commentId}`);
+  return apiDelete(`/comment/deleteComment/${commentId}`, true); // Include user ID for ownership check
 }
 
 // ===== RATING API =====
@@ -130,15 +130,15 @@ export async function getRatings() {
 }
 
 export async function addRating(body) {
-  return apiPost("/rating/insertRating", body);
+  return apiPost("/rating/insertRating", body, true); // Include user ID for authentication
 }
 
 export async function updateRating(ratingId, body) {
-  return apiPut(`/rating/updateRating?ratingId=${ratingId}`, body);
+  return apiPut(`/rating/updateRating?ratingId=${ratingId}`, body, true); // Include user ID for ownership check
 }
 
 export async function deleteRating(ratingId) {
-  return apiDelete(`/rating/deleteRating/${ratingId}`);
+  return apiDelete(`/rating/deleteRating/${ratingId}`, true); // Include user ID for ownership check
 }
 
 // ===== INGREDIENT API =====
@@ -168,15 +168,15 @@ export async function getRecipes() {
 }
 
 export async function addRecipe(body) {
-  return apiPost("/recipe/insertRecipe", body);
+  return apiPost("/recipe/insertRecipe", body, true); // Include user ID for authentication
 }
 
 export async function updateRecipe(recipeId, body) {
-  return apiPut(`/recipe/updateRecipe/${recipeId}`, body);
+  return apiPut(`/recipe/updateRecipe/${recipeId}`, body, true); // Include user ID for ownership check
 }
 
 export async function deleteRecipe(recipeId) {
-  return apiDelete(`/recipe/deleteRecipe/${recipeId}`);
+  return apiDelete(`/recipe/deleteRecipe/${recipeId}`, true); // Include user ID for ownership check
 }
 
 // ===== FAVORITE API =====
@@ -185,13 +185,13 @@ export async function getFavorites() {
 }
 
 export async function getUserFavorites(userId) {
-  return apiGet(`/favorite/getUserFavorites/${userId}`);
+  return apiGet(`/favorite/getUserFavorites/${userId}`, true); // Include user ID for authentication
 }
 
 export async function addFavorite(body) {
-  return apiPost("/favorite/insertFavorite", body);
+  return apiPost("/favorite/insertFavorite", body, true); // Include user ID for authentication
 }
 
 export async function deleteFavorite(favoriteId) {
-  return apiDelete(`/favorite/deleteFavorite/${favoriteId}`);
+  return apiDelete(`/favorite/deleteFavorite/${favoriteId}`, true); // Include user ID for ownership check
 }

@@ -14,7 +14,6 @@ import com.appdevg5.ghidorakings.service.UserService;
 
 @RestController
 @RequestMapping("/recipe")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class RecipeController {
     @Autowired
     RecipeService recipeService;
@@ -35,17 +34,28 @@ public class RecipeController {
     }
     
     @PostMapping("/insertRecipe")
-    public ResponseEntity<?> insertRecipe(@RequestBody RecipeEntity recipeEntity) {
+    public ResponseEntity<?> insertRecipe(@RequestBody RecipeEntity recipeEntity,
+                                         @RequestHeader(value = "X-User-Id", required = false) Integer requesterId) {
         try {
+            // Authentication required
+            if (requesterId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Authentication required.");
+            }
+            
             if (recipeEntity == null) {
                 return ResponseEntity.badRequest().body("Recipe entity cannot be null");
             }
             if (recipeEntity.getTitle() == null || recipeEntity.getTitle().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Recipe title is required");
             }
-            if (recipeEntity.getUserId() == null || recipeEntity.getUserId() <= 0) {
-                return ResponseEntity.badRequest().body("Valid user ID is required");
+            
+            // Ensure user can only create recipes for themselves
+            if (!recipeEntity.getUserId().equals(requesterId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You can only create recipes for yourself.");
             }
+            
             RecipeEntity created = recipeService.createRecipe(recipeEntity);
             return ResponseEntity.ok(created);
         } catch (IllegalArgumentException e) {
@@ -76,7 +86,25 @@ public class RecipeController {
     }
 
     @PutMapping("/updateRecipe/{recipeId}")
-    public ResponseEntity<RecipeEntity> updateRecipe(@PathVariable Integer recipeId, @RequestBody RecipeEntity newRecipeDetails) {
+    public ResponseEntity<?> updateRecipe(@PathVariable Integer recipeId, @RequestBody RecipeEntity newRecipeDetails,
+                                         @RequestHeader(value = "X-User-Id", required = false) Integer requesterId) {
+        // Authentication required
+        if (requesterId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Authentication required.");
+        }
+        
+        // Check ownership - only recipe owner or admin can update
+        RecipeEntity existingRecipe = recipeService.getRecipeById(recipeId);
+        if (existingRecipe == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        if (!existingRecipe.getUserId().equals(requesterId) && !isUserAdmin(requesterId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("You can only update your own recipes.");
+        }
+        
         RecipeEntity updated = recipeService.updateRecipe(recipeId, newRecipeDetails);
         if (updated == null) {
             return ResponseEntity.notFound().build();
@@ -85,7 +113,25 @@ public class RecipeController {
     }
 
     @DeleteMapping("/deleteRecipe/{recipeId}")
-    public ResponseEntity<String> deleteRecipe(@PathVariable Integer recipeId) {
+    public ResponseEntity<?> deleteRecipe(@PathVariable Integer recipeId,
+                                         @RequestHeader(value = "X-User-Id", required = false) Integer requesterId) {
+        // Authentication required
+        if (requesterId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Authentication required.");
+        }
+        
+        // Check ownership - only recipe owner or admin can delete
+        RecipeEntity existingRecipe = recipeService.getRecipeById(recipeId);
+        if (existingRecipe == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        if (!existingRecipe.getUserId().equals(requesterId) && !isUserAdmin(requesterId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("You can only delete your own recipes.");
+        }
+        
         String result = recipeService.deleteRecipe(recipeId);
         if (result == null) {
             return ResponseEntity.notFound().build();

@@ -24,6 +24,11 @@ public class CommentService {
     public List<CommentEntity> getAllComments() {
         return commentRepository.findAll();
     }
+    
+    // Get comment by ID
+    public CommentEntity getCommentById(int commentId) {
+        return commentRepository.findById(commentId).orElse(null);
+    }
 
     public CommentEntity updateComment(int commentId, CommentEntity newCommentDetails) {
         try {

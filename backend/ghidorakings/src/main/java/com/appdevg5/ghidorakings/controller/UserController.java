@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
@@ -18,8 +17,13 @@ public class UserController {
 
     // CREATE USER
     @PostMapping("/add")
-    public UserEntity createUser(@RequestBody UserEntity user) {
-        return userService.createUser(user);
+    public ResponseEntity<?> createUser(@RequestBody UserEntity user) {
+        try {
+            UserEntity created = userService.createUser(user);
+            return ResponseEntity.ok(created);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // READ ALL USERS (Admin only)
@@ -61,16 +65,21 @@ public class UserController {
                 .body("You can only update your own profile.");
         }
         
-        // Get the existing user from database to preserve isAdmin status
+        // Get the existing user from database to preserve admin status
         UserEntity existingUser = userService.getUserById(id);
         if (existingUser == null) {
             return ResponseEntity.notFound().build();
         }
         
-        // Prevent users from modifying their own admin status
-        // Only existing admins can modify admin status of others
-        if (!isUserAdmin(requesterId)) {
-            user.setAdmin(existingUser.isAdmin()); // Preserve original admin status
+        // CRITICAL: Protect the main admin account - it must ALWAYS remain admin
+        if ("dishcoveryadmin@gmail.com".equals(existingUser.getEmail())) {
+            user.setAdmin(true); // Force admin status to true for main admin account
+        } else {
+            // Prevent users from modifying their own admin status
+            // Only existing admins can modify admin status of others
+            if (!isUserAdmin(requesterId)) {
+                user.setAdmin(existingUser.isAdmin()); // Preserve original admin status
+            }
         }
         
         UserEntity updated = userService.updateUser(id, user);
@@ -87,13 +96,27 @@ public class UserController {
                 .body("Access denied. Admin privileges required.");
         }
         
+        // CRITICAL: Prevent deletion of the main admin account
+        UserEntity userToDelete = userService.getUserById(id);
+        if (userToDelete != null && "dishcoveryadmin@gmail.com".equals(userToDelete.getEmail())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("Cannot delete the main admin account.");
+        }
+        
         String result = userService.deleteUser(id);
         return ResponseEntity.ok(result);
     }
 
     // LOGIN
     @PostMapping("/login")
-    public UserEntity login(@RequestBody UserEntity user) {
-        return userService.login(user.getEmail(), user.getPassword());
+    public ResponseEntity<?> login(@RequestBody UserEntity user) {
+        UserEntity loggedInUser = userService.login(user.getEmail(), user.getPassword());
+        
+        if (loggedInUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid email or password");
+        }
+        
+        return ResponseEntity.ok(loggedInUser);
     }
 }

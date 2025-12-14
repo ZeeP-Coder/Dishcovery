@@ -20,8 +20,8 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private boolean isAdmin = false;
+    @Column(name = "is_admin", nullable = false)
+    private boolean admin = false;
 
     // Default Constructor
     public UserEntity() {}
@@ -59,11 +59,16 @@ public class UserEntity {
         this.password = password;
     }
 
-    public boolean isAdmin() {
-        return isAdmin;
+    public boolean getAdmin() {
+        return admin;
     }
 
-    public void setAdmin(boolean isAdmin) {
-        this.isAdmin = isAdmin;
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+    
+    // Legacy support for isAdmin() getter
+    public boolean isAdmin() {
+        return admin;
     }
 }
