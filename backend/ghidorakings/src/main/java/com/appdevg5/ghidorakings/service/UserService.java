@@ -60,9 +60,6 @@ public class UserService {
                 user.setPassword(passwordEncoder.encode(newUserDetails.getPassword()));
             }
             
-            // Optionally update admin status if provided
-            user.setAdmin(newUserDetails.isAdmin());
-
             return userRepository.save(user);
 
         } catch (Exception e) {

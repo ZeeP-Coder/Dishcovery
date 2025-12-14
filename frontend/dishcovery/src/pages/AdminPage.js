@@ -213,22 +213,6 @@ function AdminPage() {
     showSuccess("Data exported successfully!");
   };
 
-  const handleToggleUserRole = async (userId, currentRole) => {
-    const newRole = currentRole === 'ADMIN' ? 'USER' : 'ADMIN';
-    const action = newRole === 'ADMIN' ? 'promote to admin' : 'demote to user';
-    
-    if (!window.confirm(`${action}?`)) return;
-
-    try {
-      const user = allUsers.find(u => u.userId === userId);
-      await apiPut(`/user/update/${userId}`, { ...user, role: newRole });
-      showSuccess(`User ${action}d successfully!`);
-      await loadAllData();
-    } catch (err) {
-      setError(`Failed to ${action}.`);
-    }
-  };
-
   // Dashboard Component
   const DashboardView = () => {
     const totalRecipes = pendingRecipes.length + approvedRecipes.length;
@@ -414,26 +398,14 @@ function AdminPage() {
                     <td>{userRecipes}</td>
                     <td>{userComments}</td>
                     <td>
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      {!user.isAdmin && (
                         <button
                           className="btn-delete-small"
-                          style={{ 
-                            background: user.role === 'ADMIN' ? '#ff9800' : '#4caf50',
-                            marginBottom: '0.25rem'
-                          }}
-                          onClick={() => handleToggleUserRole(user.userId, user.role || (user.isAdmin ? 'ADMIN' : 'USER'))}
+                          onClick={() => handleDeleteUser(user.userId)}
                         >
-                          {user.role === 'ADMIN' || user.isAdmin ? '▼ Demote' : '▲ Promote'}
+                          × Delete
                         </button>
-                        {!user.isAdmin && (
-                          <button
-                            className="btn-delete-small"
-                            onClick={() => handleDeleteUser(user.userId)}
-                          >
-                            × Delete
-                          </button>
-                        )}
-                      </div>
+                      )}
                     </td>
                   </tr>
                 );

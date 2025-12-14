@@ -71,16 +71,8 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         
-        // CRITICAL: Protect the main admin account - it must ALWAYS remain admin
-        if ("dishcoveryadmin@gmail.com".equals(existingUser.getEmail())) {
-            user.setAdmin(true); // Force admin status to true for main admin account
-        } else {
-            // Prevent users from modifying their own admin status
-            // Only existing admins can modify admin status of others
-            if (!isUserAdmin(requesterId)) {
-                user.setAdmin(existingUser.isAdmin()); // Preserve original admin status
-            }
-        }
+        // Preserve existing admin status; promotion/demotion is not supported through this endpoint
+        user.setAdmin(existingUser.isAdmin());
         
         UserEntity updated = userService.updateUser(id, user);
         return ResponseEntity.ok(updated);
