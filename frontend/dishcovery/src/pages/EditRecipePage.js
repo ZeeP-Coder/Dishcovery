@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../pages/CreateRecipePage.css";
-import { apiGet, apiPut } from "../api/backend";
+import { loadUserRecipes, saveUserRecipes } from "../utils/recipeStorage";
 
 export default function EditRecipePage() {
   const { id } = useParams();
@@ -9,25 +9,14 @@ export default function EditRecipePage() {
 
   const [recipe, setRecipe] = useState(null);
   const [ingredientInput, setIngredientInput] = useState("");
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchRecipe = async () => {
-      try {
-        const data = await apiGet(`/recipe/getRecipe/${id}`);
-        setRecipe(data);
-      } catch (error) {
-        console.error("Error fetching recipe:", error);
-        alert("Failed to load recipe");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRecipe();
+    const allRecipes = loadUserRecipes();
+    const found = allRecipes.find((r) => r.id === Number(id));
+    setRecipe(found);
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
-  if (!recipe) return <p>Recipe not found</p>;
+  if (!recipe) return <p>Loading...</p>;
 
   const addIngredient = () => {
     if (!ingredientInput.trim()) return;
@@ -47,15 +36,15 @@ export default function EditRecipePage() {
     });
   };
 
-  const handleUpdate = async () => {
-    try {
-      await apiPut(`/recipe/updateRecipe/${recipe.recipeId}`, recipe);
-      alert("Recipe updated successfully!");
-      navigate("/my-recipes");
-    } catch (error) {
-      console.error("Error updating recipe:", error);
-      alert("Failed to update recipe");
-    }
+  const handleUpdate = () => {
+    const allRecipes = loadUserRecipes();
+    const updated = allRecipes.map((r) =>
+      r.id === recipe.id ? recipe : r
+    );
+
+    saveUserRecipes(updated);
+
+    navigate("/my-recipes");
   };
 
   return (

@@ -1,0 +1,136 @@
+{
+  "sampleRecipes": [
+    {
+      "id": 1,
+      "name": "Spaghetti Carbonara",
+      "cuisine": "Italian",
+      "description": "Classic creamy pasta with bacon and parmesan cheese.",
+      "ingredients": [
+        { "name": "Spaghetti" },
+        { "name": "Eggs" },
+        { "name": "Parmesan" },
+        { "name": "Bacon" }
+      ],
+      "image": "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Sushi Platter",
+      "cuisine": "Japanese",
+      "description": "Assorted sushi with salmon, tuna, and shrimp.",
+      "ingredients": [
+        { "name": "Rice" },
+        { "name": "Nori" },
+        { "name": "Fish" },
+        { "name": "Soy Sauce" }
+      ],
+      "image": "https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Adobo",
+      "cuisine": "Filipino",
+      "description": "Tender pork or chicken stewed in soy sauce, vinegar, and garlic.",
+      "ingredients": [
+        { "name": "Soy Sauce" },
+        { "name": "Vinegar" },
+        { "name": "Garlic" },
+        { "name": "Bay Leaf" }
+      ],
+      "image": "https://salu-salo.com/wp-content/uploads/2015/04/Pork-Adobo-3.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Kimchi Fried Rice",
+      "cuisine": "Korean",
+      "description": "Savory fried rice with kimchi and egg on top.",
+      "ingredients": [
+        { "name": "Kimchi" },
+        { "name": "Rice" },
+        { "name": "Egg" },
+        { "name": "Gochujang" }
+      ],
+      "image": "https://www.themealdb.com/images/media/meals/ssrrrs1503664277.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Chicken Tikka Masala",
+      "cuisine": "Indian",
+      "description": "Grilled chicken simmered in creamy spiced tomato sauce.",
+      "ingredients": [
+        { "name": "Chicken" },
+        { "name": "Tomato" },
+        { "name": "Cream" },
+        { "name": "Spices" }
+      ],
+      "image": "https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Tacos al Pastor",
+      "cuisine": "Mexican",
+      "description": "Soft corn tortillas with marinated pork and pineapple.",
+      "ingredients": [
+        { "name": "Pork" },
+        { "name": "Tortilla" },
+        { "name": "Pineapple" },
+        { "name": "Onion" }
+      ],
+      "image": "https://www.themealdb.com/images/media/meals/xquakq1619787532.jpg"
+    },
+    {
+      "id": 7,
+      "name": "Paella Valenciana",
+      "cuisine": "Spanish",
+      "description": "Traditional rice dish with saffron, chicken, and seafood.",
+      "ingredients": [
+        { "name": "Rice" },
+        { "name": "Saffron" },
+        { "name": "Seafood" },
+        { "name": "Peas" }
+      ],
+      "image": "https://www.themealdb.com/images/media/meals/wxywrq1468235067.jpg"
+    },
+    {
+      "id": 8,
+      "name": "Beef Bourguignon",
+      "cuisine": "French",
+      "description": "Beef slow-cooked in red wine with mushrooms and bacon.",
+      "ingredients": [
+        { "name": "Beef" },
+        { "name": "Red Wine" },
+        { "name": "Mushrooms" },
+        { "name": "Bacon" }
+      ],
+      "image": "https://www.themealdb.com/images/media/meals/vtqxtu1511784197.jpg"
+    },
+    {
+      "id": 9,
+      "name": "Pad Thai",
+      "cuisine": "Thai",
+      "description": "Stir-fried rice noodles with shrimp, egg, and peanuts.",
+      "ingredients": [
+        { "name": "Rice Noodles" },
+        { "name": "Shrimp" },
+        { "name": "Peanuts" },
+        { "name": "Bean Sprouts" }
+      ],
+      "image": "https://www.themealdb.com/images/media/meals/uuuspp1468263334.jpg"
+    },
+    {
+      "id": 10,
+      "name": "Greek Salad",
+      "cuisine": "Greek",
+      "description": "Fresh salad with cucumber, tomato, feta, and olives.",
+      "ingredients": [
+        { "name": "Cucumber" },
+        { "name": "Tomato" },
+        { "name": "Feta" },
+        { "name": "Olives" }
+      ],
+      "image": "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg"
+    }
+  ]
+}
+
+
