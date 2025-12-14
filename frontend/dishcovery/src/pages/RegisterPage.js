@@ -68,30 +68,15 @@ function RegisterPage() {
     try {
       // Backend expects: username, email, password
       // Note: Backend will handle duplicate email validation
-      const created = await apiPost("/user/add", {
+      await apiPost("/user/add", {
         username: nickname,
         email,
         password,
       });
 
-      // Auto-login the user by storing in sessionStorage
-      const mapped = {
-        id: created.getUserId ? created.getUserId : created.userId || created.user_id || created.id,
-        nickname: created.getUsername ? created.getUsername : created.username,
-        email: created.getEmail ? created.getEmail : created.email,
-      };
-
-      // Normalize fields for both plain object and JPA-returned JSON
-      if (typeof mapped.id === "object") {
-        mapped.id = created.userId || created.user_id || created.id;
-        mapped.nickname = created.username || created.getUsername?.() || nickname;
-        mapped.email = created.email || created.getEmail?.() || email;
-      }
-
-      const user = { id: mapped.id, nickname: mapped.nickname, email: mapped.email };
-      sessionStorage.setItem("dishcovery:user", JSON.stringify(user));
+      // Registration successful - redirect to login page
       setIsLoading(false);
-      navigate("/");
+      navigate("/login");
     } catch (err) {
       console.error(err);
       // Try to get error message from backend
