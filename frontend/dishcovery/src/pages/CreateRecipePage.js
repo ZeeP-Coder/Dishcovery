@@ -191,14 +191,14 @@ function CreateRecipePage() {
       if (editingRecipe && editingRecipe.backendId) {
         // update existing recipe on backend
         const payloadToSend = { ...payload, ingredients: JSON.stringify(payload.ingredients || []) };
-        await apiPut(`/recipe/updateRecipe/${editingRecipe.backendId}`, payloadToSend);
+        await apiPut(`/recipe/updateRecipe/${editingRecipe.backendId}`, payloadToSend, true); // Include user ID for authentication
         setIsLoading(false);
         navigate("/myrecipes");
         return;
       }
 
       const payloadToSend = { ...payload, ingredients: JSON.stringify(payload.ingredients || []) };
-      const data = await apiPost("/recipe/insertRecipe", payloadToSend);
+      const data = await apiPost("/recipe/insertRecipe", payloadToSend, true); // Include user ID for authentication
       
       // Verify we got a valid response
       if (!data || typeof data !== 'object') {
