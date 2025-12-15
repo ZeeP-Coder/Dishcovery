@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.appdevg5.ghidorakings.entity.CommentEntity;
+import com.appdevg5.ghidorakings.entity.UserEntity;
 import com.appdevg5.ghidorakings.repository.CommentRepository;
 
 @Service
@@ -15,26 +16,48 @@ public class CommentService {
     @Autowired
     CommentRepository commentRepository;
 
+    @Autowired
+    UserService userService;
+
+    private void attachUsername(CommentEntity comment) {
+        if (comment == null || comment.getUserId() == null) {
+            return;
+        }
+
+        UserEntity user = userService.getUserById(comment.getUserId());
+        if (user != null) {
+            comment.setUsername(user.getUsername());
+        }
+    }
+
     public CommentEntity createComment(CommentEntity comment) {
         // clear id to avoid accidental update if client sends an id
         comment.setCommentId(null);
-        return commentRepository.save(comment);
+        CommentEntity saved = commentRepository.save(comment);
+        attachUsername(saved);
+        return saved;
     }
 
     public List<CommentEntity> getAllComments() {
-        return commentRepository.findAll();
+        List<CommentEntity> comments = commentRepository.findAll();
+        comments.forEach(this::attachUsername);
+        return comments;
     }
     
     // Get comment by ID
     public CommentEntity getCommentById(int commentId) {
-        return commentRepository.findById(commentId).orElse(null);
+        CommentEntity comment = commentRepository.findById(commentId).orElse(null);
+        attachUsername(comment);
+        return comment;
     }
 
     public CommentEntity updateComment(int commentId, CommentEntity newCommentDetails) {
         try {
             CommentEntity comment = commentRepository.findById(commentId).orElseThrow(() -> new NoSuchElementException("Comment with ID " + commentId + " not found."));
             comment.setContent(newCommentDetails.getContent());
-            return commentRepository.save(comment);
+            CommentEntity updated = commentRepository.save(comment);
+            attachUsername(updated);
+            return updated;
         } catch (NoSuchElementException e) {
             throw e;
         }

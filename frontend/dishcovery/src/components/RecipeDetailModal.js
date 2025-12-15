@@ -199,7 +199,7 @@ export default function RecipeDetailModal({ dish, onClose, isFav, toggleFav }) {
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                        <strong style={{ color: "#ff7f50" }}>{c.username || `User ${c.userId}`}</strong>
+                        <strong style={{ color: "#ff7f50" }}>{c.username || c.nickname || "User"}</strong>
                         <small style={{ color: "var(--text-secondary)" }}>
                           {c.datetimeCreatedAt 
                             ? new Date(c.datetimeCreatedAt).toLocaleString('en-US', { 

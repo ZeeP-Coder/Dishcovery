@@ -24,6 +24,9 @@ public class CommentEntity {
     @Column(name = "recipe_id")
     private Integer recipeId;
 
+    @Transient
+    private String username;
+
     public CommentEntity() {}
 
     @PrePersist
@@ -71,5 +74,13 @@ public class CommentEntity {
 
     public void setRecipeId(Integer recipeId) {
         this.recipeId = recipeId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
