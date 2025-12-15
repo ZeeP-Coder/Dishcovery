@@ -170,11 +170,15 @@ export default function HomePage() {
         if (favoriteToDelete) {
           await deleteFavorite(favoriteToDelete.favoriteId);
           setFavorites(prev => prev.filter(id => id !== recipeId));
+          // Dispatch event to notify other components
+          window.dispatchEvent(new Event('favoritesChanged'));
         }
       } else {
         // Add to favorites
         await addFavorite({ userId, recipeId });
         setFavorites(prev => [...prev, recipeId]);
+        // Dispatch event to notify other components
+        window.dispatchEvent(new Event('favoritesChanged'));
       }
     } catch (err) {
       console.error("Error toggling favorite:", err);

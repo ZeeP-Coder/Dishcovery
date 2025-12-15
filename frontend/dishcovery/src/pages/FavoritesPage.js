@@ -15,6 +15,7 @@ function FavoritesPage() {
   useEffect(() => {
     async function loadData() {
       try {
+        setLoading(true);
         const userStr = sessionStorage.getItem("dishcovery:user");
         if (!userStr) {
           setLoading(false);
@@ -42,7 +43,7 @@ function FavoritesPage() {
           name: r.title,
           image: r.image || "",
           description: r.description || "",
-          ingredients: r.ingredients ? JSON.parse(r.ingredients) : [],
+          ingredients: (typeof r.ingredients === "string" && r.ingredients) ? JSON.parse(r.ingredients) : (r.ingredients || []),
           instructions: r.steps || "",
           category: "Recipe",
           cuisine: r.category || "",
@@ -64,7 +65,27 @@ function FavoritesPage() {
         setLoading(false);
       }
     }
+    
     loadData();
+    
+    // Reload data when page becomes visible
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        loadData();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    
+    // Listen for favorites changes from other pages
+    const handleFavoritesChanged = () => {
+      loadData();
+    };
+    window.addEventListener("favoritesChanged", handleFavoritesChanged);
+    
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("favoritesChanged", handleFavoritesChanged);
+    };
   }, []);
 
   // Filter only favorite recipes
@@ -74,12 +95,18 @@ function FavoritesPage() {
   async function toggleFav(recipeId) {
     try {
       const userStr = sessionStorage.getItem("dishcovery:user");
-      if (!userStr) return;
+      if (!userStr) {
+        alert("Please log in to manage favorites");
+        return;
+      }
       
       const user = JSON.parse(userStr);
       const userId = user?.id;
       
-      if (!userId) return;
+      if (!userId) {
+        alert("Please log in to manage favorites");
+        return;
+      }
 
       const isFavorite = favorites.includes(recipeId);
       
@@ -91,14 +118,19 @@ function FavoritesPage() {
         if (favoriteToDelete) {
           await deleteFavorite(favoriteToDelete.favoriteId);
           setFavorites(favorites.filter(id => id !== recipeId));
+          // Dispatch event to notify other components
+          window.dispatchEvent(new Event('favoritesChanged'));
         }
       } else {
         // Add to favorites
         await addFavorite({ userId, recipeId });
         setFavorites([...favorites, recipeId]);
+        // Dispatch event to notify other components
+        window.dispatchEvent(new Event('favoritesChanged'));
       }
     } catch (err) {
       console.error("Error toggling favorite:", err);
+      alert(`Failed to update favorite: ${err.message || 'Please try again'}`);
     }
   }
 
