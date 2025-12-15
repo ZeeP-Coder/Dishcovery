@@ -1,7 +1,13 @@
 package com.appdevg5.ghidorakings.entity;
 
-import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "recipe")
@@ -24,9 +30,14 @@ public class RecipeEntity {
     @Column(name = "user_id")
     private Integer userId;
 
-    // store ingredients as JSON text
+    // legacy storage; kept to preserve schema but not used by API payload
+    @JsonIgnore
     @Column(name = "ingredients", columnDefinition = "TEXT")
-    private String ingredients;
+    private String ingredientsJson;
+
+    // Transient list to receive/send ingredients via IngredientEntity payloads
+    @Transient
+    private List<IngredientEntity> ingredients;
 
     @Column(name = "category")
     private String category;
@@ -91,12 +102,87 @@ public class RecipeEntity {
         this.userId = userId;
     }
 
-    public String getIngredients() {
-        return ingredients;
+    public String getIngredientsJson() {
+        return ingredientsJson;
     }
 
-    public void setIngredients(String ingredients) {
-        this.ingredients = ingredients;
+    public void setIngredientsJson(String ingredientsJson) {
+        this.ingredientsJson = ingredientsJson;
+    }
+
+    @JsonProperty("ingredients")
+    public List<IngredientEntity> getIngredients() {
+        if (ingredients != null) {
+            return ingredients;
+        }
+        if (ingredientsJson != null) {
+            return convertToIngredientList(ingredientsJson);
+        }
+        return null;
+    }
+
+    @JsonProperty("ingredients")
+    public void setIngredients(Object ingredients) {
+        this.ingredients = convertToIngredientList(ingredients);
+        if (ingredients instanceof String) {
+            this.ingredientsJson = (String) ingredients;
+        }
+    }
+
+    private List<IngredientEntity> convertToIngredientList(Object raw) {
+        if (raw == null) {
+            return null;
+        }
+
+        List<IngredientEntity> result = new ArrayList<>();
+
+        if (raw instanceof List<?>) {
+            for (Object item : (List<?>) raw) {
+                if (item == null) continue;
+                if (item instanceof IngredientEntity) {
+                    result.add((IngredientEntity) item);
+                } else if (item instanceof String) {
+                    IngredientEntity ing = new IngredientEntity();
+                    ing.setName(((String) item).trim());
+                    result.add(ing);
+                } else if (item instanceof Map<?, ?>) {
+                    Map<?, ?> mapItem = (Map<?, ?>) item;
+                    IngredientEntity ing = new IngredientEntity();
+                    Object name = mapItem.get("name");
+                    Object qty = mapItem.get("quantity");
+                    if (name != null) {
+                        ing.setName(name.toString().trim());
+                    }
+                    if (qty != null) {
+                        ing.setQuantity(qty.toString());
+                    }
+                    result.add(ing);
+                }
+            }
+            return result;
+        }
+
+        if (raw instanceof String) {
+            String rawJson = (String) raw;
+            // Simple JSON array parsing for ingredients ["item1", "item2"]
+            if (rawJson.trim().startsWith("[") && rawJson.trim().endsWith("]")) {
+                String content = rawJson.trim().substring(1, rawJson.trim().length() - 1);
+                if (!content.trim().isEmpty()) {
+                    String[] parts = content.split(",");
+                    for (String part : parts) {
+                        String cleaned = part.trim().replaceAll("^\"|\"$", "");
+                        if (!cleaned.isEmpty()) {
+                            IngredientEntity ing = new IngredientEntity();
+                            ing.setName(cleaned);
+                            result.add(ing);
+                        }
+                    }
+                }
+            }
+            return result.isEmpty() ? null : result;
+        }
+
+        return result.isEmpty() ? null : result;
     }
 
     public String getCategory() {

@@ -141,7 +141,11 @@ export default function MyRecipesPage() {
                   )}
                 </div>
 
-                <p className="small-label"><b>Ingredients: </b>{recipe.ingredients.join(", ")}</p>
+                <p className="small-label"><b>Ingredients: </b>
+                  {recipe.ingredients.map(ing => 
+                    typeof ing === 'string' ? ing : (ing.quantity ? `${ing.name} - ${ing.quantity}` : ing.name)
+                  ).join(", ")}
+                </p>
                 <p className="small-label"><b>Instructions: </b>{recipe.instructions}</p>
 
                 {/* Buttons inline */}

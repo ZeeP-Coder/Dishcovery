@@ -45,11 +45,11 @@ public class IngredientEntity {
         this.quantity = quantity;
     }
 
-    public int getRecipeId() {
+    public Integer getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(int recipeId) {
+    public void setRecipeId(Integer recipeId) {
         this.recipeId = recipeId;
     }
 }

@@ -1,13 +1,15 @@
 package com.appdevg5.ghidorakings.service;
 
-import com.appdevg5.ghidorakings.entity.IngredientEntity;
-import com.appdevg5.ghidorakings.repository.IngredientRepository;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.appdevg5.ghidorakings.entity.IngredientEntity;
+import com.appdevg5.ghidorakings.repository.IngredientRepository;
 
 @Service
 public class IngredientService {
@@ -49,5 +51,52 @@ public class IngredientService {
     // DELETE
     public void deleteIngredient(int id) {
         ingredientRepository.deleteById(id);
+    }
+
+    public List<IngredientEntity> findByRecipeId(Integer recipeId) {
+        if (recipeId == null) {
+            return Collections.emptyList();
+        }
+        return ingredientRepository.findByRecipeId(recipeId);
+    }
+
+    public List<IngredientEntity> replaceIngredientsForRecipe(Integer recipeId, List<IngredientEntity> ingredients) {
+        if (recipeId == null) {
+            return Collections.emptyList();
+        }
+
+        try {
+            // Delete existing ingredients for this recipe
+            ingredientRepository.deleteByRecipeId(recipeId);
+        } catch (Exception e) {
+            System.err.println("Error deleting ingredients for recipe " + recipeId + ": " + e.getMessage());
+        }
+        
+        if (ingredients == null || ingredients.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<IngredientEntity> toSave = new ArrayList<>();
+        for (IngredientEntity ing : ingredients) {
+            if (ing == null) continue;
+            
+            String name = ing.getName();
+            if (name == null || name.trim().isEmpty()) {
+                continue; // Skip ingredients without names
+            }
+            
+            IngredientEntity copy = new IngredientEntity();
+            copy.setIngredientId(null);
+            copy.setName(name.trim());
+            copy.setQuantity(ing.getQuantity() != null ? ing.getQuantity().trim() : "");
+            copy.setRecipeId(recipeId);
+            toSave.add(copy);
+        }
+
+        if (toSave.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return ingredientRepository.saveAll(toSave);
     }
 }

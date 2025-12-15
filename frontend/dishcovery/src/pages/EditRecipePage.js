@@ -21,9 +21,28 @@ export default function EditRecipePage() {
   const addIngredient = () => {
     if (!ingredientInput.trim()) return;
 
+    // Parse ingredient format: "Name - Quantity" or just "Name"
+    const input = ingredientInput.trim();
+    const parts = input.split('-').map(p => p.trim());
+    
+    let ingredientObj;
+    if (parts.length >= 2) {
+      // Has quantity: "Pancit - 1"
+      ingredientObj = {
+        name: parts[0],
+        quantity: parts.slice(1).join('-').trim()
+      };
+    } else {
+      // No quantity, just name
+      ingredientObj = {
+        name: input,
+        quantity: ""
+      };
+    }
+
     setRecipe({
       ...recipe,
-      ingredients: [...recipe.ingredients, ingredientInput.trim()],
+      ingredients: [...recipe.ingredients, ingredientObj],
     });
 
     setIngredientInput("");
@@ -84,7 +103,7 @@ export default function EditRecipePage() {
         <div className="ingredient-section">
           <input
             type="text"
-            placeholder="Add Ingredient"
+            placeholder="e.g., Pancit - 1 or Tomato sauce - 2 cups"
             value={ingredientInput}
             onChange={(e) => setIngredientInput(e.target.value)}
           />
@@ -94,11 +113,16 @@ export default function EditRecipePage() {
         </div>
 
         <ul className="ingredient-list">
-          {recipe.ingredients.map((ing, i) => (
-            <li key={i} onClick={() => removeIngredient(i)}>
-              {ing}
-            </li>
-          ))}
+          {recipe.ingredients.map((ing, i) => {
+            const displayText = typeof ing === 'string' 
+              ? ing 
+              : (ing.quantity ? `${ing.name} - ${ing.quantity}` : ing.name);
+            return (
+              <li key={i} onClick={() => removeIngredient(i)}>
+                {displayText}
+              </li>
+            );
+          })}
         </ul>
 
         <textarea

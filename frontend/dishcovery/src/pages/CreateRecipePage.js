@@ -3,6 +3,28 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "../pages/CreateRecipePage.css";
 import { apiPost, apiPut } from "../api/backend";
 
+// Normalize ingredients to object format {name, quantity}
+const normalizeIngredients = (ingredients) => {
+  if (!ingredients) return [];
+  if (!Array.isArray(ingredients)) return [];
+  
+  return ingredients.map(ing => {
+    if (typeof ing === 'string') {
+      // Parse string format "Name - Quantity" or just "Name"
+      const parts = ing.split('-').map(p => p.trim());
+      if (parts.length >= 2) {
+        return {
+          name: parts[0],
+          quantity: parts.slice(1).join('-').trim()
+        };
+      }
+      return { name: ing, quantity: "" };
+    }
+    // Already an object
+    return ing;
+  });
+};
+
 function CreateRecipePage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,7 +57,7 @@ function CreateRecipePage() {
         description: editingRecipe.description || "",
         imageFile: editingRecipe.image || editingRecipe.imageFile || null,
         imagePreview: editingRecipe.image || editingRecipe.imagePreview || "",
-        ingredients: editingRecipe.ingredients || [],
+        ingredients: normalizeIngredients(editingRecipe.ingredients),
         instructions: editingRecipe.instructions || "",
         category: editingRecipe.category || "",
         difficulty: editingRecipe.difficulty || "",
@@ -112,11 +134,37 @@ function CreateRecipePage() {
 
   const addIngredient = () => {
     if (!ingredientInput.trim()) return;
-    if (recipe.ingredients.includes(ingredientInput.trim())) {
+    
+    // Parse ingredient format: "Name - Quantity" or just "Name"
+    const input = ingredientInput.trim();
+    const parts = input.split('-').map(p => p.trim());
+    
+    let ingredientObj;
+    if (parts.length >= 2) {
+      // Has quantity: "Pancit - 1"
+      ingredientObj = {
+        name: parts[0],
+        quantity: parts.slice(1).join('-').trim() // Join back in case name had dashes
+      };
+    } else {
+      // No quantity, just name
+      ingredientObj = {
+        name: input,
+        quantity: ""
+      };
+    }
+    
+    // Check if ingredient name already exists
+    const exists = recipe.ingredients.some(ing => 
+      (typeof ing === 'string' ? ing : ing.name) === ingredientObj.name
+    );
+    
+    if (exists) {
       alert("This ingredient is already added");
       return;
     }
-    setRecipe({ ...recipe, ingredients: [...recipe.ingredients, ingredientInput.trim()] });
+    
+    setRecipe({ ...recipe, ingredients: [...recipe.ingredients, ingredientObj] });
     setIngredientInput("");
   };
 
@@ -190,15 +238,13 @@ function CreateRecipePage() {
     try {
       if (editingRecipe && editingRecipe.backendId) {
         // update existing recipe on backend
-        const payloadToSend = { ...payload, ingredients: JSON.stringify(payload.ingredients || []) };
-        await apiPut(`/recipe/updateRecipe/${editingRecipe.backendId}`, payloadToSend, true); // Include user ID for authentication
+        await apiPut(`/recipe/updateRecipe/${editingRecipe.backendId}`, payload, true); // Include user ID for authentication
         setIsLoading(false);
         navigate("/myrecipes");
         return;
       }
 
-      const payloadToSend = { ...payload, ingredients: JSON.stringify(payload.ingredients || []) };
-      const data = await apiPost("/recipe/insertRecipe", payloadToSend, true); // Include user ID for authentication
+      const data = await apiPost("/recipe/insertRecipe", payload, true); // Include user ID for authentication
       
       // Verify we got a valid response
       if (!data || typeof data !== 'object') {
@@ -356,7 +402,7 @@ function CreateRecipePage() {
           <div className="ingredient-section">
             <input
               type="text"
-              placeholder="Add ingredient..."
+              placeholder="e.g., Pancit - 1 or Tomato sauce - 2 cups"
               value={ingredientInput}
               onChange={(e) => setIngredientInput(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -367,19 +413,26 @@ function CreateRecipePage() {
 
           {recipe.ingredients.length > 0 && (
             <ul className="ingredient-list">
-              {recipe.ingredients.map((ing, i) => (
-                <li key={i} className="ingredient-item">
-                  {ing}
-                  <button
-                    type="button"
-                    className="ingredient-remove"
-                    onClick={() => removeIngredient(i)}
-                    title="Remove"
-                  >
-                    ×
-                  </button>
-                </li>
-              ))}
+              {recipe.ingredients.map((ing, i) => {
+                // Handle both string and object formats
+                const displayText = typeof ing === 'string' 
+                  ? ing 
+                  : (ing.quantity ? `${ing.name} - ${ing.quantity}` : ing.name);
+                
+                return (
+                  <li key={i} className="ingredient-item">
+                    {displayText}
+                    <button
+                      type="button"
+                      className="ingredient-remove"
+                      onClick={() => removeIngredient(i)}
+                      title="Remove"
+                    >
+                      ×
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

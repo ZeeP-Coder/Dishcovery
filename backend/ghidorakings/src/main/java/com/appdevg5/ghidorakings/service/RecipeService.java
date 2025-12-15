@@ -1,11 +1,14 @@
 package com.appdevg5.ghidorakings.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.appdevg5.ghidorakings.entity.IngredientEntity;
 import com.appdevg5.ghidorakings.entity.RecipeEntity;
 import com.appdevg5.ghidorakings.repository.RecipeRepository;
 
@@ -15,6 +18,45 @@ import com.appdevg5.ghidorakings.repository.RecipeRepository;
 public class RecipeService {
     @Autowired
     RecipeRepository recipeRepository;
+
+    @Autowired
+    IngredientService ingredientService;
+
+    private void syncIngredients(RecipeEntity recipe, Integer recipeId) {
+        if (recipe == null || recipeId == null) {
+            return;
+        }
+
+        try {
+            List<IngredientEntity> incoming = recipe.getIngredients();
+            
+            // If no ingredients provided and we have legacy JSON, don't sync
+            if (incoming == null && recipe.getIngredientsJson() != null) {
+                return;
+            }
+            
+            // Only sync if we have ingredients to process
+            if (incoming != null && !incoming.isEmpty()) {
+                List<IngredientEntity> saved = ingredientService.replaceIngredientsForRecipe(recipeId, incoming);
+                recipe.setIngredients(saved);
+            } else if (incoming != null && incoming.isEmpty()) {
+                // Empty list means clear all ingredients
+                ingredientService.replaceIngredientsForRecipe(recipeId, new ArrayList<>());
+                recipe.setIngredients(new ArrayList<>());
+            }
+        } catch (Exception e) {
+            System.err.println("Error syncing ingredients for recipe " + recipeId + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void attachIngredients(RecipeEntity recipe) {
+        if (recipe == null || recipe.getRecipeId() == null) {
+            return;
+        }
+        List<IngredientEntity> ingredients = ingredientService.findByRecipeId(recipe.getRecipeId());
+        recipe.setIngredients(ingredients);
+    }
 
     public RecipeEntity createRecipe(RecipeEntity recipe) {
         // Validate required fields
@@ -29,16 +71,23 @@ public class RecipeService {
         recipe.setRecipeId(null);
         // New recipes must be approved by admin first
         recipe.setApproved(false);
-        return recipeRepository.save(recipe);
+        RecipeEntity saved = recipeRepository.save(recipe);
+        syncIngredients(recipe, saved.getRecipeId());
+        attachIngredients(saved);
+        return saved;
     }
 
     public List<RecipeEntity> getAllRecipes() {
-        return recipeRepository.findAll();
+        List<RecipeEntity> recipes = recipeRepository.findAll();
+        recipes.forEach(this::attachIngredients);
+        return recipes;
     }
     
     // Get recipe by ID
     public RecipeEntity getRecipeById(int recipeId) {
-        return recipeRepository.findById(recipeId).orElse(null);
+        RecipeEntity recipe = recipeRepository.findById(recipeId).orElse(null);
+        attachIngredients(recipe);
+        return recipe;
     }
 
     public RecipeEntity updateRecipe(int recipeId, RecipeEntity newRecipeDetails){
@@ -54,9 +103,9 @@ public class RecipeService {
             if (newRecipeDetails.getSteps() != null) {
                 recipe.setSteps(newRecipeDetails.getSteps());
             }
-            // copy ingredients if provided (may be JSON string)
+            // replace ingredients if provided
             if (newRecipeDetails.getIngredients() != null) {
-                recipe.setIngredients(newRecipeDetails.getIngredients());
+                syncIngredients(newRecipeDetails, recipeId);
             }
             if (newRecipeDetails.getCategory() != null) {
                 recipe.setCategory(newRecipeDetails.getCategory());
@@ -76,7 +125,9 @@ public class RecipeService {
             if (newRecipeDetails.getUserId() != null) {
                 recipe.setUserId(newRecipeDetails.getUserId());
             }
-            return recipeRepository.save(recipe);
+            RecipeEntity updated = recipeRepository.save(recipe);
+            attachIngredients(updated);
+            return updated;
         } catch (NoSuchElementException e) {
             throw e;
         }
@@ -93,12 +144,16 @@ public class RecipeService {
 
     // Get all pending recipes (not approved)
     public List<RecipeEntity> getPendingRecipes() {
-        return recipeRepository.findByIsApproved(false);
+        List<RecipeEntity> recipes = recipeRepository.findByIsApproved(false);
+        recipes.forEach(this::attachIngredients);
+        return recipes;
     }
 
     // Get all approved recipes
     public List<RecipeEntity> getApprovedRecipes() {
-        return recipeRepository.findByIsApproved(true);
+        List<RecipeEntity> recipes = recipeRepository.findByIsApproved(true);
+        recipes.forEach(this::attachIngredients);
+        return recipes;
     }
 
     // Approve a recipe
@@ -107,7 +162,9 @@ public class RecipeService {
             RecipeEntity recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new NoSuchElementException("Recipe with ID " + recipeId + " not found."));
             recipe.setApproved(true);
-            return recipeRepository.save(recipe);
+            RecipeEntity saved = recipeRepository.save(recipe);
+            attachIngredients(saved);
+            return saved;
         } catch (NoSuchElementException e) {
             return null;
         }
@@ -115,7 +172,12 @@ public class RecipeService {
 
     // Get all recipes by user ID (for "My Recipes" page)
     public List<RecipeEntity> getRecipesByUserId(Integer userId) {
-        return recipeRepository.findByUserId(userId);
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+        List<RecipeEntity> recipes = recipeRepository.findByUserId(userId);
+        recipes.forEach(this::attachIngredients);
+        return recipes;
     }
 
 }
